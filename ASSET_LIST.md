@@ -87,3 +87,24 @@ assets/ui/
 ```
 
 A Discord loginhoz később backend kell, mert a Discord Client Secret nem kerülhet frontend kódba.
+
+
+## 0.1.1 sprite sheet méretek
+
+A jelenlegi játék ezekre van optimalizálva:
+
+- `assets/player/cherry_sprite_sheet.png` → 1152x1536 PNG, 6 oszlop x 8 sor, 192x192 frame.
+  - Row 0: Idle Down
+  - Row 1: Walk Down
+  - Row 2: Idle Up
+  - Row 3: Walk Up
+  - Row 4: Idle Left
+  - Row 5: Walk Left
+  - Row 6: Idle Right
+  - Row 7: Walk Right
+- `assets/enemies/slime_sprite_sheet.png` → 1536x1152 PNG, 4 oszlop x 3 sor, 384x384 frame.
+  - Row 0: Idle
+  - Row 1: Move
+  - Row 2: Death
+
+A sprite sheetek valódi RGBA PNG-k, fekete háttér eltávolítva.
