@@ -1066,3 +1066,17 @@ body.is-playing #game {
     height: 100vh !important;
   }
 }
+
+
+/* v0.3.1 loading freeze hard-fix */
+body.is-loading-stage #skill,
+body.is-loading-stage #hud,
+body.is-loading-stage #stageHud {
+  display: none !important;
+}
+.stage-loading {
+  user-select: none;
+}
+.loading-card {
+  pointer-events: none;
+}
