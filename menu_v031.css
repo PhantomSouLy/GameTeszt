@@ -791,3 +791,65 @@
     font-size:26px;
   }
 }
+
+
+/* v0.3.1 fullscreen mobile game viewport hotfix */
+body.is-playing #game {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+html:fullscreen,
+html:-webkit-full-screen,
+body:fullscreen,
+body:-webkit-full-screen {
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  background: #153d2c !important;
+}
+
+html:fullscreen #game,
+html:-webkit-full-screen #game,
+body:fullscreen #game,
+body:-webkit-full-screen #game {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-width: 100vw !important;
+  min-height: 100vh !important;
+  z-index: 0 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+html:fullscreen #app,
+html:-webkit-full-screen #app,
+body:fullscreen #app,
+body:-webkit-full-screen #app {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 10 !important;
+}
+
+@media (max-width: 820px) {
+  #game {
+    width: 100vw !important;
+    height: 100dvh !important;
+    min-width: 100vw !important;
+    min-height: 100dvh !important;
+  }
+
+  html:fullscreen #game,
+  html:-webkit-full-screen #game,
+  body:fullscreen #game,
+  body:-webkit-full-screen #game {
+    height: 100vh !important;
+    min-height: 100vh !important;
+  }
+}
