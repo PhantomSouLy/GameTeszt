@@ -524,10 +524,17 @@ class GaCherryGame {
     const moving = Math.hypot(mv.x, mv.y) > 0.08;
     const dir = p.lastDir || "down";
     const anim = spec.animations || { idle: spec.rows || {}, walk: spec.rows || {} };
-    const row = moving ? (anim.walk?.[dir] ?? 0) : (anim.idle?.[dir] ?? 0);
 
-    // FIX: idle-ben nem valt frame-et, mindig az elso frame-et hasznalja.
-    // Igy Cherry nem fog allas kozben jobbra-balra ugralni.
+    // FONTOS FIX:
+    // A Cherry sheetben a jobb oldali sorok is balra néznek.
+    // Ezért jobbra mozgásnál a BAL oldali sort használjuk, majd canvasban tükrözzük.
+    const drawDir = dir === "right" ? "left" : dir;
+    const mirrorX = dir === "right";
+
+    const row = moving ? (anim.walk?.[drawDir] ?? 0) : (anim.idle?.[drawDir] ?? 0);
+
+    // Idle-ben nem vált frame-et, mindig az első frame-et használja.
+    // Így Cherry nem ugrál állás közben.
     const fps = spec.walkFps || 8;
     const frame = moving ? Math.floor(this.animTime * fps) % spec.columns : 0;
 
@@ -550,14 +557,27 @@ class GaCherryGame {
     if (p.invuln > 0) c.globalAlpha = 0.65;
 
     if (img) {
-      c.drawImage(
-        img,
-        sx, sy, sw, sh,
-        s.x - dw / 2,
-        s.y - dh * 0.86,
-        dw,
-        dh
-      );
+      if (mirrorX) {
+        c.translate(s.x, 0);
+        c.scale(-1, 1);
+        c.drawImage(
+          img,
+          sx, sy, sw, sh,
+          -dw / 2,
+          s.y - dh * 0.86,
+          dw,
+          dh
+        );
+      } else {
+        c.drawImage(
+          img,
+          sx, sy, sw, sh,
+          s.x - dw / 2,
+          s.y - dh * 0.86,
+          dw,
+          dh
+        );
+      }
     } else {
       c.fillStyle = "#ff77b9";
       c.beginPath();

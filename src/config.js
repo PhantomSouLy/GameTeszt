@@ -1,8 +1,8 @@
 window.GC_CONFIG = {
-  version: "0.1.3",
+  version: "0.1.4",
   assetSpec: {
     player: {
-      src: "assets/player/cherry_sprite_sheet.png?v=4x8-left-right-fix",
+      src: "assets/player/cherry_sprite_sheet.png?v=4x8-mirror-right-fix",
       frameWidth: 192,
       frameHeight: 192,
       columns: 4,
@@ -19,10 +19,9 @@ window.GC_CONFIG = {
       crop: { top: 0, right: 0, bottom: 14, left: 0 },
 
       animations: {
-        // A sheetben a bal/jobb sorok fel voltak cserelve,
-        // ezért itt megcseréljük a left/right row indexeket.
-        idle: { down: 0, up: 2, left: 6, right: 4 },
-        walk: { down: 1, up: 3, left: 7, right: 5 }
+        // A jobb iranyt a game.js tukrozi, ezert itt left/right ugyanarra a sorra mutat.
+        idle: { down: 0, up: 2, left: 4, right: 4 },
+        walk: { down: 1, up: 3, left: 5, right: 5 }
       }
     },
     slime: {
