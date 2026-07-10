@@ -1,33 +1,47 @@
-CHERRIFT v0.3.2 Early Build Patch Notes
-
-[Changed]
-- Stage progression is longer and less empty.
-- World 1-1 now requires 120 enemy defeats instead of a very small early number.
-- Later stages now scale upward into 135 / 155 / 175 / 210+ enemy clears.
-- World 2 stages also use larger enemy defeat goals.
-- Normal spawn speed is increased.
-- Normal max alive enemy count is increased.
-- Raid waves now start earlier and contain more mobs.
-- Raid wave spawn speed is faster, so raids should actually feel like raid moments.
+CHERRIFT v0.3.3 Early Build Patch Notes
 
 [Added]
-- In-game fullscreen toggle added to the Pause menu.
-- During a run, press Pause, then use the FULLSCREEN button to enter/exit fullscreen.
-- Added src/progression_fullscreen_patch_v032.js for the in-game fullscreen binding.
+- Combat-feel patch file: src/combat_hud_upgrade_patch_v033.js
+- Generalized upgrade system prep.
+- New upgrades are not skin-specific. They adapt by combat style.
+- Multi Strike:
+  - Ranged skins: +1 projectile.
+  - Melee skins: +18% melee range.
+- Combat Arc:
+  - Ranged skins: wider projectile spread.
+  - Melee skins: wider melee cone.
+- Skill Flow: lower skill cooldown.
+- Thorn Aura: nearby enemies take slow aura damage.
+- Damage numbers on enemy hit.
+- Death pop effect on enemy kill.
+- Raid warning banner.
+- Mini boss HP bar.
+- Stage Clear screen polish.
+- World Select button added to Stage Clear actions.
 
-[Fixed / Kept]
-- Level-up freeze fix remains included.
+[Changed]
+- HUD cleaned up.
+- Duplicate kill text next to the timer is hidden.
+- Stage objective is now the main kill tracker: World x-y · kills/goal.
+- Stage objective no longer uses the heavy glass background.
+- Raid info no longer uses the small glass box; raid now appears as a clear center warning.
+- Version display updated to v0.3.3 EARLY BUILD.
+
+[Kept]
+- CHERRIFT branding only.
+- World Select flow: Main Play -> World Select -> Play -> Loading -> Stage.
 - Loading freeze fix remains included.
-- CHERRIFT branding remains correct.
-- World Select flow remains: Main Play -> World Select -> Play -> Loading -> Stage.
-- PC main menu layout is preserved.
+- Level-up freeze fix remains included.
+- In-game fullscreen button remains in Pause menu.
+- Progression numbers from v0.3.2 remain included.
+
+[Design Rule]
+- Common/Rare/Epic skins use universal and combat-style upgrades only.
+- Legendary+ skins can later add unique skin-specific upgrades.
+- This prevents every skin from needing a separate upgrade tree too early.
 
 [Files changed]
 - index.html
 - menu_v031.css
-- src/progression_v031.js
-- src/world_select_carousel_v031.js
-- src/progression_fullscreen_patch_v032.js
-
-[Notes]
-- From now on patch notes are kept in this single PATCH_NOTES_CHERRIFT.txt file instead of multiple md files.
+- src/combat_hud_upgrade_patch_v033.js
+- PATCH_NOTES_CHERRIFT.txt

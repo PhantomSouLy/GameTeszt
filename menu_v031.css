@@ -1147,3 +1147,220 @@ body.is-levelup .upgrade-card {
     min-height: 58px;
   }
 }
+
+
+/* CHERRIFT v0.3.3 - HUD cleanup + combat feel */
+#kills {
+  display: none !important;
+}
+
+body.is-playing .run-box {
+  gap: 6px !important;
+  min-width: 96px;
+}
+
+body.is-playing #timer {
+  font-size: 18px;
+}
+
+body.is-playing #runCoins::before {
+  content: "🪙 ";
+}
+
+body.is-playing .stage-hud {
+  top: max(12px, env(safe-area-inset-top)) !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  width: auto !important;
+  max-width: calc(100vw - 210px);
+  z-index: 62 !important;
+  pointer-events: none !important;
+}
+
+body.is-playing .stage-box {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,.72), 0 0 10px rgba(0,0,0,.55);
+}
+
+body.is-playing .stage-box .tiny {
+  display: none !important;
+}
+
+body.is-playing .stage-box b,
+body.is-playing .stage-box small {
+  margin: 0 !important;
+  color: #fff !important;
+  font-size: 13px !important;
+  line-height: 1.1 !important;
+  letter-spacing: .2px;
+  white-space: nowrap;
+  opacity: .92;
+}
+
+body.is-playing .stage-box b::after {
+  content: " ·";
+}
+
+body.is-playing .raid-box {
+  display: none !important;
+}
+
+.raid-warning-v033 {
+  position: fixed;
+  left: 50%;
+  top: 18%;
+  transform: translate(-50%, -50%) scale(.96);
+  z-index: 250;
+  min-width: min(520px, 82vw);
+  padding: 16px 18px;
+  border-radius: 22px;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(135deg, rgba(255,47,150,.92), rgba(255,129,190,.70));
+  border: 1px solid rgba(255,235,246,.76);
+  box-shadow: 0 0 36px rgba(255,47,150,.42), 0 20px 60px rgba(0,0,0,.38);
+  transition: opacity .16s ease, transform .16s ease;
+}
+
+.raid-warning-v033.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.raid-warning-v033 b {
+  display: block;
+  font-size: clamp(28px, 7vw, 52px);
+  line-height: 1;
+  letter-spacing: 1px;
+  text-shadow: 0 4px 16px rgba(0,0,0,.35);
+}
+
+.raid-warning-v033 small {
+  display: block;
+  margin-top: 6px;
+  font-weight: 900;
+  opacity: .9;
+}
+
+.boss-hud-v033 {
+  position: fixed;
+  left: 50%;
+  top: max(56px, calc(env(safe-area-inset-top) + 56px));
+  transform: translateX(-50%);
+  z-index: 240;
+  width: min(620px, 72vw);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+
+.boss-hud-v033.show {
+  opacity: 1;
+}
+
+.boss-hud-v033 .boss-name {
+  text-align: center;
+  font-weight: 1000;
+  letter-spacing: .9px;
+  text-transform: uppercase;
+  color: #ffe3f2;
+  text-shadow: 0 2px 10px rgba(0,0,0,.75);
+  margin-bottom: 5px;
+}
+
+.boss-hud-v033 .boss-bar {
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(0,0,0,.44);
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow: 0 8px 18px rgba(0,0,0,.24);
+}
+
+.boss-hud-v033 .boss-bar i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff3f9f, #ffd2e9);
+  box-shadow: 0 0 18px rgba(255,91,172,.55);
+}
+
+#stageClearModal .modal-card {
+  width: min(720px, 94vw);
+}
+
+#stageClearTitle {
+  font-size: clamp(38px, 7vw, 72px);
+  line-height: .92;
+  color: #fff9fd;
+  text-shadow: 0 0 18px rgba(255,91,172,.38);
+}
+
+#stageClearSubtitle {
+  font-weight: 800;
+  color: #ffd2e9;
+}
+
+.stage-clear-summary {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stage-clear-summary .glass {
+  border-radius: 18px !important;
+}
+
+.stage-clear-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.stage-clear-actions .menu-btn {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+@media (max-width: 820px) {
+  body.is-playing .stage-hud {
+    top: max(9px, env(safe-area-inset-top)) !important;
+    max-width: calc(100vw - 150px);
+  }
+
+  body.is-playing .stage-box b,
+  body.is-playing .stage-box small {
+    font-size: 11px !important;
+  }
+
+  .boss-hud-v033 {
+    top: max(50px, calc(env(safe-area-inset-top) + 50px));
+    width: min(430px, 76vw);
+  }
+
+  .boss-hud-v033 .boss-name {
+    font-size: 12px;
+  }
+
+  .boss-hud-v033 .boss-bar {
+    height: 10px;
+  }
+
+  .raid-warning-v033 {
+    top: 20%;
+    padding: 13px 14px;
+  }
+
+  .stage-clear-summary,
+  .stage-clear-actions {
+    grid-template-columns: 1fr;
+  }
+}
