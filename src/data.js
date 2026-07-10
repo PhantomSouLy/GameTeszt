@@ -1,11 +1,11 @@
 window.CHERRIFT_DATA = {
-  version: "0.2.3",
-  slots: ["Weapon","Helmet","Armor","Gloves","Boots","Ring","Necklace"],
+  version: "0.2.4-fixed-full",
+  slots: ["Weapon", "Helmet", "Armor", "Gloves", "Boots", "Ring", "Necklace"],
   slotIcons: { Weapon:"🗡️", Helmet:"⛑️", Armor:"🛡️", Gloves:"🧤", Boots:"👢", Ring:"💍", Necklace:"📿" },
   gearTypes: {
-    Crimson: { label:"Crimson", role:"Offensive", emoji:"🔴", stats:["damage","crit","critDamage","attackSpeed"] },
-    Azure: { label:"Azure", role:"Defensive", emoji:"🔵", stats:["maxHp","armor","regen"] },
-    Verdant: { label:"Verdant", role:"Hybrid", emoji:"🟢", stats:["damage","maxHp","moveSpeed","pickup"] }
+    Crimson: { label:"Crimson", role:"Offensive", emoji:"🔴", stats:["damage", "crit", "critDamage", "attackSpeed"] },
+    Azure: { label:"Azure", role:"Defensive", emoji:"🔵", stats:["maxHp", "armor", "regen"] },
+    Verdant: { label:"Verdant", role:"Hybrid", emoji:"🟢", stats:["damage", "maxHp", "moveSpeed", "pickup"] }
   },
   rarities: {
     Common: { mult:1, color:"#ffffff" },
@@ -14,25 +14,16 @@ window.CHERRIFT_DATA = {
   },
   skins: [
     {
-      id:"cherry_default", name:"Cherry", rarity:"Common", emoji:"🐰",
+      id:"cherry_default", name:"Base Cherry", rarity:"Common", emoji:"🐰",
       weapon:"Pink Bloom Orb", skill:"Bloom Dash",
-      desc:"Alap CHERRIFT skin. Pink orb lövés, rövid dash és kis körsebzés.",
-      stats:{ damage:0, speed:0 },
-      gradient:["#ff73b9","#281226"]
+      desc:"Alap Cherry skin. Külön idle/walk sprite sheet + rövid dash skill.",
+      stats:{ damage:0, speed:0 }, gradient:["#ff73b9", "#281226"]
     },
     {
-      id:"sakura_cherry", name:"Sakura Cherry", rarity:"Common", emoji:"🌸",
-      weapon:"Petal Shot", skill:"Petal Burst",
-      desc:"Virágszirom lövés. Skill: körkörös sziromrobbanás több irányba.",
-      stats:{ damage:-1, speed:10 },
-      gradient:["#ff9ccf","#38204b"]
-    },
-    {
-      id:"bunny_rare", name:"Bunny Cherry", rarity:"Rare", emoji:"🐇",
-      weapon:"Bunny Bolt", skill:"Haste Bloom",
-      desc:"Gyorsabb lövés és mozgás. Skill: rövid attack speed buff.",
-      stats:{ damage:2, speed:16 },
-      gradient:["#ffffff","#ff68b3"]
+      id:"fairy_cherry", name:"Fairy Cherry", rarity:"Rare", emoji:"🧚‍♀️",
+      weapon:"Fairy Bloom Orb", skill:"Magic Burst",
+      desc:"Tündér Cherry skin. Külön idle/walk sprite sheet + mágikus burst skill.",
+      stats:{ damage:2, speed:8 }, gradient:["#b6ffd8", "#ff9ed0"]
     }
   ],
   upgrades: [

@@ -3,23 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>CHERRIFT v0.2.3</title>
+  <title>CHERRIFT v0.2.4 FIXED</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <canvas id="game"></canvas>
 
   <div id="app">
-    <div class="ambient-petals" aria-hidden="true">
-      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-      <i></i><i></i><i></i><i></i><i></i><i></i>
-    </div>
-
     <section id="menu" class="screen menu-screen">
-      <div class="menu-vignette"></div>
+      <div class="menu-bg" aria-hidden="true"></div>
 
-      <main class="menu-left">
-        <div class="version">v0.2.3</div>
+      <main class="menu-left glass-soft">
+        <div class="version">v0.2.4 FIXED</div>
         <h1 class="game-logo">CHERRIFT</h1>
         <p class="tagline">SURVIVE. EVOLVE. BLOOM.</p>
 
@@ -39,19 +34,6 @@
           </div>
         </div>
       </main>
-
-      <div class="hero-splash">
-        <div class="moon"></div>
-        <div class="splash-character">
-          <div class="bunny-ear left"></div>
-          <div class="bunny-ear right"></div>
-          <div class="hair"></div>
-          <div class="face"></div>
-          <div class="body"></div>
-          <div class="weapon"></div>
-        </div>
-        <div class="mini-bunny">🐰</div>
-      </div>
 
       <aside class="menu-right">
         <div class="top-icons">
@@ -81,7 +63,7 @@
         </div>
 
         <div class="side-card glass news">
-          <header><h3>News</h3><span>v0.2.3</span></header>
+          <header><h3>News</h3><span>v0.2.4</span></header>
           <p><b id="selectedSkinText">Cherry</b></p>
           <p id="bestRun">00:00 · 0 kills</p>
         </div>
@@ -174,7 +156,7 @@
         <button class="back">←</button>
         <div>
           <h2>Chests</h2>
-          <p>Gear garantált. Kis eséllyel Common vagy Rare skin is eshet.</p>
+          <p>Gear garantált. Kis eséllyel skin unlock is eshet.</p>
         </div>
       </header>
 
@@ -192,7 +174,7 @@
         <button class="back">←</button>
         <div>
           <h2>Settings</h2>
-          <p>Mobilon a bal oldali nagy képernyőterület mozgat. Nincs látható joystick UI.</p>
+          <p>Mobilon a bal oldali nagy képernyőterület mozgat. A skill gomb külön marad jobb alul.</p>
         </div>
       </header>
 
@@ -211,7 +193,7 @@
             <input id="touchMode" type="checkbox" checked />
             <span>Full-screen touch movement</span>
           </label>
-          <p class="hint">A bal oldali nagy területen húzással mozogsz. A skill gomb külön marad jobb alul.</p>
+          <p class="hint">Játék közben a képernyő üres részén húzással mozogsz.</p>
         </div>
 
         <div class="settings-card glass">
