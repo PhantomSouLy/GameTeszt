@@ -1,20 +1,42 @@
-window.DATA={
- skins:[
- {id:'cherry',name:'Cherry',rarity:'common',icon:'🐰',weapon:'Pink Bloom',skill:'Bloom Burst',desc:'Balanced starter. Fires pink bloom bolts.',stats:{damage:0,speed:0,hp:0}},
- {id:'sakura',name:'Sakura Cherry',rarity:'common',icon:'🌸',weapon:'Petal Shot',skill:'Petal Dash',desc:'Faster projectiles and a short invulnerable dash.',stats:{damage:-2,speed:20,hp:0}},
- {id:'moon',name:'Moon Bunny',rarity:'rare',icon:'🌙',weapon:'Moon Shard',skill:'Lunar Barrage',desc:'Rare skin. Fires piercing moon shards and releases a circular barrage.',stats:{damage:5,speed:-8,hp:10}}
- ],
- slots:['Weapon','Helmet','Armor','Gloves','Boots','Ring','Necklace'],
- types:{assault:{name:'Crimson',label:'Offensive',icon:'⚔',stats:['damage','crit','attackSpeed']},guardian:{name:'Azure',label:'Defensive',icon:'🛡',stats:['maxHp','armor','regen']},vanguard:{name:'Verdant',label:'Hybrid',icon:'⚖',stats:['damage','maxHp','moveSpeed']}},
- upgrades:[
- {name:'Bloom Power',desc:'+20% damage',apply:p=>p.damage*=1.2},
- {name:'Rapid Bloom',desc:'+15% attack speed',apply:p=>p.fireInterval*=.85},
- {name:'Heart Petal',desc:'+25 maximum HP and heal',apply:p=>{p.maxHp+=25;p.hp=Math.min(p.maxHp,p.hp+25)}},
- {name:'Swift Step',desc:'+12% movement speed',apply:p=>p.speed*=1.12},
- {name:'Critical Bloom',desc:'+8% critical chance',apply:p=>p.crit+=.08},
- {name:'Magnet Flower',desc:'+35 pickup radius',apply:p=>p.magnet+=35},
- {name:'Twin Bloom',desc:'+1 projectile',apply:p=>p.multishot=Math.min(5,p.multishot+1)},
- {name:'Piercing Petal',desc:'+1 enemy pierced',apply:p=>p.pierce+=1},
- {name:'Skill Flow',desc:'-18% skill cooldown',apply:p=>p.skillCooldown*=.82}
- ]
+window.CHERRIFT_DATA = {
+  version: "0.2.1",
+  slots: ["Weapon","Helmet","Armor","Gloves","Boots","Ring","Necklace"],
+  gearTypes: {
+    Crimson: { label:"Crimson", role:"Offensive", emoji:"🔴", stats:["damage","crit","critDamage","attackSpeed"] },
+    Azure: { label:"Azure", role:"Defensive", emoji:"🔵", stats:["maxHp","armor","regen"] },
+    Verdant: { label:"Verdant", role:"Hybrid", emoji:"🟢", stats:["damage","maxHp","moveSpeed","pickup"] }
+  },
+  rarities: {
+    Common: { mult:1, color:"#ffffff" },
+    Uncommon: { mult:1.45, color:"#7dff99" },
+    Rare: { mult:2.05, color:"#75c8ff" }
+  },
+  skins: [
+    {
+      id:"cherry_default", name:"Cherry", rarity:"Common", emoji:"🐰",
+      weapon:"Pink Bloom Orb", skill:"Bloom Dash",
+      desc:"Alap pink lövedék. Skill: rövid dash és kis sebzés körülötted.",
+      stats:{ damage:0, speed:0 }
+    },
+    {
+      id:"sakura_cherry", name:"Sakura Cherry", rarity:"Common", emoji:"🌸",
+      weapon:"Petal Shot", skill:"Petal Burst",
+      desc:"Virágszirom lövés. Skill: körkörös szirom robbanás.",
+      stats:{ damage:-1, speed:10 }
+    },
+    {
+      id:"bunny_rare", name:"Bunny Cherry", rarity:"Rare", emoji:"🐇",
+      weapon:"Bunny Bolt", skill:"Haste Bloom",
+      desc:"Gyorsabb lövés. Skill: rövid attack speed buff.",
+      stats:{ damage:2, speed:16 }
+    }
+  ],
+  upgrades: [
+    { id:"damage", name:"Bloom Damage", desc:"+15% sebzés", apply:p=>p.damage*=1.15 },
+    { id:"speed", name:"Swift Bunny", desc:"+12% mozgási sebesség", apply:p=>p.speed*=1.12 },
+    { id:"firerate", name:"Quick Bloom", desc:"+12% attack speed", apply:p=>p.fireInterval*=0.88 },
+    { id:"hp", name:"Soft Shield", desc:"+20 max HP és gyógyítás", apply:p=>{p.maxHp+=20;p.hp=Math.min(p.maxHp,p.hp+20)} },
+    { id:"pickup", name:"Petal Magnet", desc:"+28 pickup radius", apply:p=>p.pickup+=28 },
+    { id:"crit", name:"Lucky Bloom", desc:"+8% crit chance", apply:p=>p.crit+=0.08 }
+  ]
 };

@@ -1,1 +1,213 @@
-window.UI={q:s=>document.querySelector(s),all:s=>[...document.querySelectorAll(s)],hideAll(){this.all('.screen,.panel').forEach(x=>x.classList.add('hidden'))},menu(){Game.mode='menu';this.hideAll();this.q('#menu').classList.remove('hidden');this.q('#hud').classList.add('hidden');this.q('#skill').classList.add('hidden');this.refresh()},showPanel(id){this.hideAll();this.q('#'+id).classList.remove('hidden');this.refresh()},showGame(){this.hideAll();this.q('#hud').classList.remove('hidden');this.q('#skill').classList.remove('hidden')},refresh(){this.q('#menuCoins').textContent=Save.data.coins;this.q('#menuKeys').textContent=Save.data.keys;this.q('#bestRun').textContent=this.time(Save.data.bestTime)+' · '+Save.data.bestKills+' kills';this.renderSkins();this.renderGear();this.q('#volume').value=Save.data.settings.volume;this.q('#touchMode').checked=Save.data.settings.touchMode},renderSkins(){this.q('#skinGrid').innerHTML=DATA.skins.map(s=>{let owned=Save.data.skins.includes(s.id),sel=Save.data.selectedSkin===s.id;return `<article class="skin-card ${sel?'selected':''}"><div class="skin-art">${s.icon}</div><p class="rarity ${s.rarity}">${s.rarity}</p><h3>${s.name}</h3><p><b>${s.weapon}</b> · ${s.skill}</p><small>${s.desc}</small><button data-skin="${s.id}" ${owned?'':'disabled'}>${sel?'EQUIPPED':owned?'EQUIP':'LOCKED'}</button></article>`}).join('');this.all('[data-skin]').forEach(b=>b.onclick=()=>{Save.data.selectedSkin=b.dataset.skin;Save.save();this.refresh()})},renderGear(){this.q('#equipped').innerHTML=DATA.slots.map(s=>{let g=Save.data.equipped[s];return `<div class="slot"><b>${s}</b><p>${g?g.name:'Empty'}</p>${g?`<button data-unequip="${s}">Unequip</button>`:''}</div>`}).join('');this.q('#inventory').innerHTML=Save.data.inventory.length?Save.data.inventory.map((g,i)=>`<article class="item ${g.type}"><span class="rarity ${g.rarity}">${g.rarity}</span><h4>${g.name}</h4><small>${DATA.types[g.type].name} · ${g.slot}</small><p>${Object.entries(g.stats).map(([k,v])=>`+${v}${['crit','attackSpeed','armor'].includes(k)?'%':''} ${k}`).join('<br>')}</p><button data-equip="${i}">EQUIP</button></article>`).join(''):'<p>No gear yet. Open chests!</p>';let s=Game.gearStats();this.q('#totalStats').innerHTML='<h3>Total gear stats</h3>'+Object.entries(s).filter(x=>x[1]).map(([k,v])=>`<p>${k}: +${v}</p>`).join('');this.all('[data-equip]').forEach(b=>b.onclick=()=>{let i=+b.dataset.equip,g=Save.data.inventory[i],old=Save.data.equipped[g.slot];Save.data.equipped[g.slot]=g;Save.data.inventory.splice(i,1);if(old)Save.data.inventory.push(old);Save.save();this.renderGear()});this.all('[data-unequip]').forEach(b=>b.onclick=()=>{let g=Save.data.equipped[b.dataset.unequip];delete Save.data.equipped[b.dataset.unequip];Save.data.inventory.push(g);Save.save();this.renderGear()})},openChest(){if(Save.data.keys<1)return this.toast('No chest keys. Find them during runs.');Save.data.keys--;let g=this.randomGear();Save.data.inventory.push(g);let skin=null;if(Math.random()<.08){let possible=DATA.skins.filter(s=>!Save.data.skins.includes(s.id)&&(s.rarity==='common'||s.rarity==='rare'));if(possible.length){skin=possible[Math.floor(Math.random()*possible.length)];Save.data.skins.push(skin.id)}}Save.save();this.q('#chestResult').innerHTML=`<div class="item ${g.type}"><h3>${g.name}</h3><p>${g.slot} · ${g.rarity} · ${DATA.types[g.type].name}</p></div>${skin?`<h2>✨ NEW SKIN: ${skin.name} ✨</h2>`:''}`;this.refresh()},randomGear(){let slot=DATA.slots[Math.floor(Math.random()*DATA.slots.length)],type=Object.keys(DATA.types)[Math.floor(Math.random()*3)],rarity=Math.random()<.25?'rare':Math.random()<.45?'uncommon':'common',scale=rarity==='rare'?3:rarity==='uncommon'?2:1,stats={},pool=DATA.types[type].stats;for(let i=0;i<(rarity==='rare'?3:2);i++){let k=pool[Math.floor(Math.random()*pool.length)],base=k==='maxHp'?12:k==='damage'?3:k==='regen'?1:4;stats[k]=(stats[k]||0)+base*scale}return{id:Date.now()+Math.random(),name:`${DATA.types[type].name} ${slot}`,slot,type,rarity,stats}},levelUp(){this.q('#levelModal').classList.remove('hidden');let a=[...DATA.upgrades].sort(()=>Math.random()-.5).slice(0,3);this.q('#upgrades').innerHTML=a.map((u,i)=>`<button class="upgrade" data-up="${i}"><b>${u.name}</b><br><small>${u.desc}</small></button>`).join('');this.all('[data-up]').forEach(b=>b.onclick=()=>{a[+b.dataset.up].apply(Game.p);this.q('#levelModal').classList.add('hidden');Game.mode='playing'})},hud(g){this.q('#hpFill').style.width=100*g.p.hp/g.p.maxHp+'%';this.q('#hpText').textContent=`HP ${Math.ceil(g.p.hp)} / ${g.p.maxHp}`;this.q('#xpFill').style.width=100*g.p.xp/g.p.next+'%';this.q('#xpText').textContent=`LV ${g.p.level} · ${g.p.xp}/${g.p.next}`;this.q('#timer').textContent=this.time(g.time);this.q('#kills').textContent=g.kills+' kills';this.q('#runCoins').textContent=g.runCoins;this.q('#cooldown').textContent=g.p.skill>0?g.p.skill.toFixed(1):'READY'},gameOver(g){this.q('#hud').classList.add('hidden');this.q('#skill').classList.add('hidden');this.q('#runResult').innerHTML=`<h3>${this.time(g.time)}</h3><p>${g.kills} kills · Level ${g.p.level} · ${g.runCoins} coins</p>`;this.q('#gameOver').classList.remove('hidden')},time(t){t=Math.floor(t||0);return String(t/60|0).padStart(2,'0')+':'+String(t%60).padStart(2,'0')},toast(t){let e=this.q('#toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800)}};
+window.UI = {
+  init(save, game) {
+    this.save = save; this.game = game;
+    this.bind();
+    this.refreshMenu();
+    this.renderSkins();
+    this.renderGear();
+  },
+  bind() {
+    document.getElementById("playBtn").onclick=()=>this.game.start();
+    document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>this.open(b.dataset.open));
+    document.querySelectorAll(".back").forEach(b=>b.onclick=()=>this.open("menu"));
+    document.getElementById("pause").onclick=()=>this.pause();
+    document.getElementById("resume").onclick=()=>this.resume();
+    document.getElementById("quit").onclick=()=>this.quit();
+    document.getElementById("retry").onclick=()=>this.game.start();
+    document.getElementById("toMenu").onclick=()=>this.quit();
+    document.getElementById("openChest").onclick=()=>this.openChest();
+    document.getElementById("fullscreen").onclick=()=>this.fullscreen();
+    const volume=document.getElementById("volume");
+    volume.value=this.save.settings.volume;
+    volume.oninput=()=>{this.save.settings.volume=+volume.value; CherriftStorage.save(this.save);};
+    const touch=document.getElementById("touchMode");
+    touch.checked=this.save.settings.touchMode;
+    touch.onchange=()=>{this.save.settings.touchMode=touch.checked; this.game.input.touchMode=touch.checked; CherriftStorage.save(this.save);};
+    this.game.input.touchMode=this.save.settings.touchMode;
+  },
+  open(id) {
+    ["menu","skins","gear","chests","settings"].forEach(x=>document.getElementById(x).classList.toggle("hidden", x!==id));
+    if (id==="menu") this.refreshMenu();
+    if (id==="skins") this.renderSkins();
+    if (id==="gear") this.renderGear();
+  },
+  showGame() {
+    ["menu","skins","gear","chests","settings","gameOver","pauseModal","levelModal"].forEach(x=>document.getElementById(x).classList.add("hidden"));
+    document.getElementById("hud").classList.remove("hidden");
+    document.getElementById("skill").classList.remove("hidden");
+  },
+  refreshMenu() {
+    document.getElementById("menuCoins").textContent=this.save.coins;
+    document.getElementById("menuKeys").textContent=this.save.keys;
+    const s=CHERRIFT_DATA.skins.find(x=>x.id===this.save.selectedSkin);
+    document.getElementById("selectedSkinText").textContent=s?`${s.emoji} ${s.name}`:"Cherry";
+    document.getElementById("bestRun").textContent=`${this.fmt(this.save.best.time)} · ${this.save.best.kills} kills`;
+    CherriftStorage.save(this.save);
+  },
+  renderSkins() {
+    const grid=document.getElementById("skinGrid");
+    grid.innerHTML="";
+    CHERRIFT_DATA.skins.forEach(s=>{
+      const unlocked=this.save.unlockedSkins.includes(s.id);
+      const el=document.createElement("div");
+      el.className=`item-card ${this.save.selectedSkin===s.id?"selected":""}`;
+      el.innerHTML=`
+        <div class="item-top"><div class="item-icon">${s.emoji}</div><div><h3>${s.name}</h3><small class="rarity-${s.rarity.toLowerCase()}">${s.rarity}</small></div></div>
+        <p><b>${s.weapon}</b><br>${s.skill}</p>
+        <p>${s.desc}</p>
+        <div class="item-actions">${unlocked?`<button data-equip="${s.id}">${this.save.selectedSkin===s.id?"EQUIPPED":"EQUIP"}</button>`:`<button disabled>LOCKED</button>`}</div>`;
+      grid.appendChild(el);
+    });
+    grid.querySelectorAll("[data-equip]").forEach(b=>b.onclick=()=>{this.save.selectedSkin=b.dataset.equip; this.renderSkins(); this.refreshMenu();});
+  },
+  gearName(g){ return `${g.rarity} ${g.type} ${g.slot}`; },
+  makeGear() {
+    const slots=CHERRIFT_DATA.slots;
+    const types=Object.keys(CHERRIFT_DATA.gearTypes);
+    const rarityRoll=Math.random();
+    const rarity=rarityRoll<.62?"Common":rarityRoll<.90?"Uncommon":"Rare";
+    const type=types[Math.floor(Math.random()*types.length)];
+    const slot=slots[Math.floor(Math.random()*slots.length)];
+    const mult=CHERRIFT_DATA.rarities[rarity].mult;
+    const id="g_"+Date.now()+"_"+Math.random().toString(16).slice(2);
+    const stats={};
+    const pool=CHERRIFT_DATA.gearTypes[type].stats;
+    const count=rarity==="Rare"?3:rarity==="Uncommon"?2:1;
+    for(let i=0;i<count;i++){
+      const stat=pool[Math.floor(Math.random()*pool.length)];
+      const base={damage:4,crit:3,critDamage:8,attackSpeed:5,maxHp:18,armor:4,regen:.45,moveSpeed:8,pickup:16}[stat]||2;
+      stats[stat]=(stats[stat]||0)+Math.round(base*mult*(.75+Math.random()*.65)*10)/10;
+    }
+    return { id, slot, type, rarity, stats };
+  },
+  renderGear() {
+    const eq=document.getElementById("equipped");
+    eq.innerHTML="";
+    CHERRIFT_DATA.slots.forEach(slot=>{
+      const g=this.save.equipped[slot];
+      const row=document.createElement("div");
+      row.className="slot-row";
+      row.innerHTML=`<b>${slot}</b><span>${g?this.gearName(g):"Empty"}</span>`;
+      eq.appendChild(row);
+    });
+    const inv=document.getElementById("inventory");
+    inv.innerHTML="";
+    this.save.inventory.forEach(g=>{
+      const el=document.createElement("div");
+      el.className="item-card";
+      el.innerHTML=`
+        <div class="item-top"><div class="item-icon">${CHERRIFT_DATA.gearTypes[g.type].emoji}</div><div><h3>${g.slot}</h3><small class="rarity-${g.rarity.toLowerCase()} type-${g.type.toLowerCase()}">${g.rarity} · ${g.type}</small></div></div>
+        <p>${Object.entries(g.stats).map(([k,v])=>`+${v} ${k}`).join("<br>")}</p>
+        <div class="item-actions"><button data-equipgear="${g.id}">EQUIP</button><button data-sell="${g.id}">SELL</button></div>`;
+      inv.appendChild(el);
+    });
+    inv.querySelectorAll("[data-equipgear]").forEach(b=>b.onclick=()=>this.equipGear(b.dataset.equipgear));
+    inv.querySelectorAll("[data-sell]").forEach(b=>b.onclick=()=>this.sellGear(b.dataset.sell));
+    const stats=this.totalGearStats(this.save);
+    document.getElementById("totalStats").innerHTML="<h3>Total Gear Stats</h3>"+(Object.keys(stats).length?Object.entries(stats).map(([k,v])=>`<div>+${Math.round(v*10)/10} ${k}</div>`).join(""):"<p>No gear equipped.</p>");
+  },
+  totalGearStats(save) {
+    const out={};
+    Object.values(save.equipped||{}).forEach(g=>{
+      if(!g) return;
+      Object.entries(g.stats).forEach(([k,v])=>out[k]=(out[k]||0)+v);
+    });
+    return out;
+  },
+  equipGear(id) {
+    const idx=this.save.inventory.findIndex(g=>g.id===id);
+    if(idx<0) return;
+    const g=this.save.inventory[idx];
+    const old=this.save.equipped[g.slot];
+    this.save.equipped[g.slot]=g;
+    this.save.inventory.splice(idx,1);
+    if(old) this.save.inventory.push(old);
+    CherriftStorage.save(this.save);
+    this.renderGear(); this.toast("Gear equipped");
+  },
+  sellGear(id) {
+    const idx=this.save.inventory.findIndex(g=>g.id===id);
+    if(idx<0) return;
+    const g=this.save.inventory[idx];
+    const val=g.rarity==="Rare"?45:g.rarity==="Uncommon"?18:7;
+    this.save.inventory.splice(idx,1); this.save.coins+=val;
+    CherriftStorage.save(this.save);
+    this.renderGear(); this.refreshMenu(); this.toast(`Sold +${val} coins`);
+  },
+  openChest() {
+    if(this.save.keys<=0) return this.toast("No chest keys");
+    this.save.keys--;
+    const gear=this.makeGear();
+    this.save.inventory.push(gear);
+    let msg=`<b>${this.gearName(gear)}</b><br>${Object.entries(gear.stats).map(([k,v])=>`+${v} ${k}`).join(" · ")}`;
+    const skinRoll=Math.random();
+    if(skinRoll<.09) {
+      const locked=CHERRIFT_DATA.skins.filter(s=>!this.save.unlockedSkins.includes(s.id) && (s.rarity==="Common" || s.rarity==="Rare"));
+      if(locked.length) {
+        const s=locked[Math.floor(Math.random()*locked.length)];
+        this.save.unlockedSkins.push(s.id);
+        msg+=`<br><br>🎀 SKIN UNLOCKED: <b>${s.name}</b>`;
+      }
+    }
+    document.getElementById("chestResult").innerHTML=msg;
+    CherriftStorage.save(this.save);
+    this.refreshMenu(); this.renderGear();
+  },
+  updateHUD(game) {
+    const p=game.player;
+    document.getElementById("hpFill").style.width=`${Math.max(0,p.hp/p.maxHp*100)}%`;
+    document.getElementById("xpFill").style.width=`${Math.max(0,p.xp/p.xpNext*100)}%`;
+    document.getElementById("hpText").textContent=`HP ${Math.ceil(p.hp)} / ${Math.ceil(p.maxHp)}`;
+    document.getElementById("xpText").textContent=`LV ${p.level}`;
+    document.getElementById("timer").textContent=this.fmt(game.time);
+    document.getElementById("kills").textContent=`${game.kills} kills`;
+    document.getElementById("runCoins").textContent=game.runCoins;
+    const sk=document.getElementById("skill");
+    const cd=document.getElementById("cooldown");
+    if(p.skillTimer>0){ sk.classList.add("cooldown"); cd.textContent=Math.ceil(p.skillTimer); }
+    else { sk.classList.remove("cooldown"); cd.textContent=""; }
+  },
+  showLevelUp(game) {
+    const list=document.getElementById("upgrades");
+    list.innerHTML="";
+    const opts=[...CHERRIFT_DATA.upgrades].sort(()=>Math.random()-.5).slice(0,3);
+    opts.forEach(up=>{
+      const b=document.createElement("button");
+      b.className="upgrade-card";
+      b.innerHTML=`<strong>${up.name}</strong><span>${up.desc}</span>`;
+      b.onclick=()=>game.applyUpgrade(up);
+      list.appendChild(b);
+    });
+    document.getElementById("levelModal").classList.remove("hidden");
+  },
+  hideLevelUp(){ document.getElementById("levelModal").classList.add("hidden"); },
+  pause(){ if(this.game.mode==="playing"){this.game.mode="paused";document.getElementById("pauseModal").classList.remove("hidden");} },
+  resume(){ this.game.mode="playing"; document.getElementById("pauseModal").classList.add("hidden"); },
+  quit(){
+    document.getElementById("hud").classList.add("hidden");
+    document.getElementById("skill").classList.add("hidden");
+    document.getElementById("pauseModal").classList.add("hidden");
+    document.getElementById("gameOver").classList.add("hidden");
+    this.game.mode="menu";
+    this.open("menu");
+  },
+  showGameOver(game) {
+    document.getElementById("runResult").innerHTML=`<p>Time: <b>${this.fmt(game.time)}</b></p><p>Kills: <b>${game.kills}</b></p><p>Coins this run: <b>${game.runCoins}</b></p>`;
+    document.getElementById("gameOver").classList.remove("hidden");
+  },
+  fullscreen() {
+    const el=document.documentElement;
+    if(!document.fullscreenElement) el.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  },
+  fmt(sec) {
+    sec=Math.floor(sec||0); const m=Math.floor(sec/60), s=sec%60;
+    return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+  },
+  toast(msg) {
+    const t=document.getElementById("toast");
+    t.textContent=msg; t.classList.add("show");
+    clearTimeout(this.toastTimer);
+    this.toastTimer=setTimeout(()=>t.classList.remove("show"),1600);
+  }
+};

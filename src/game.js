@@ -1,1 +1,400 @@
-class CherriftGame{constructor(canvas,input){this.c=canvas;this.x=canvas.getContext('2d');this.input=input;this.mode='menu';this.last=performance.now();this.resize();addEventListener('resize',()=>this.resize());requestAnimationFrame(t=>this.loop(t))}resize(){this.w=this.c.width=innerWidth*devicePixelRatio;this.h=this.c.height=innerHeight*devicePixelRatio;this.x.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);this.vw=innerWidth;this.vh=innerHeight}gearStats(){const s={damage:0,maxHp:0,crit:0,attackSpeed:0,armor:0,regen:0,moveSpeed:0};Object.values(Save.data.equipped).forEach(g=>g&&Object.entries(g.stats).forEach(([k,v])=>s[k]=(s[k]||0)+v));return s}start(){const skin=DATA.skins.find(s=>s.id===Save.data.selectedSkin)||DATA.skins[0],g=this.gearStats();this.skin=skin;this.mode='playing';this.time=0;this.kills=0;this.runCoins=0;this.levelPending=false;this.p={x:0,y:0,r:20,hp:100+g.maxHp+skin.stats.hp,maxHp:100+g.maxHp+skin.stats.hp,speed:230+g.moveSpeed+skin.stats.speed,damage:18+g.damage+skin.stats.damage,fireInterval:.48/(1+g.attackSpeed/100),fire:0,crit:.05+g.crit/100,armor:g.armor,regen:g.regen,magnet:115,multishot:1,pierce:0,level:1,xp:0,next:18,skillCooldown:8,skill:0,inv:0};this.enemies=[];this.bullets=[];this.orbs=[];this.coins=[];this.chests=[];this.fx=[];this.obstacles=this.makeMap();this.spawn=0;UI.showGame()}makeMap(){let a=[];for(let i=0;i<95;i++){let o={x:(Math.random()-.5)*3900,y:(Math.random()-.5)*3900,r:25+Math.random()*35,type:['tree','bush','rock','flower'][Math.floor(Math.random()*4)]};if(Math.hypot(o.x,o.y)>260)a.push(o)}return a}loop(t){let dt=Math.min(.033,(t-this.last)/1000);this.last=t;if(this.mode==='playing')this.update(dt);this.draw();requestAnimationFrame(n=>this.loop(n))}update(dt){const p=this.p,m=this.input.move();p.fire-=dt;p.skill=Math.max(0,p.skill-dt);p.inv=Math.max(0,p.inv-dt);p.hp=Math.min(p.maxHp,p.hp+p.regen*dt);this.move(p,m.x*p.speed*dt,m.y*p.speed*dt);if(this.input.consumeSkill())this.useSkill();this.spawn-=dt;if(this.spawn<=0){this.spawn=Math.max(.25,1.2-this.time/160);this.spawnEnemy()}this.time+=dt;this.autoFire();for(const b of this.bullets){b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;for(const e of this.enemies)if(!e.dead&&!b.dead&&Math.hypot(b.x-e.x,b.y-e.y)<b.r+e.r){let dmg=b.damage*(Math.random()<p.crit?2:1);e.hp-=dmg;b.hits++;if(b.hits>b.pierce)b.dead=true;this.fx.push({x:e.x,y:e.y,t:.2,c:'#ff7fbd'});if(e.hp<=0)this.kill(e)}}this.bullets=this.bullets.filter(b=>b.life>0&&!b.dead);for(const e of this.enemies){if(e.dead)continue;let dx=p.x-e.x,dy=p.y-e.y,l=Math.hypot(dx,dy)||1;e.x+=dx/l*e.speed*dt;e.y+=dy/l*e.speed*dt;if(l<e.r+p.r&&p.inv<=0){p.hp-=Math.max(1,8-p.armor*.12);p.inv=.35}}this.enemies=this.enemies.filter(e=>!e.dead);this.pick(this.orbs,dt,o=>{p.xp+=o.value;if(p.xp>=p.next){p.xp-=p.next;p.next=Math.floor(p.next*1.32+5);p.level++;this.mode='level';UI.levelUp()}});this.pick(this.coins,dt,o=>this.runCoins+=o.value);for(const c of this.chests){if(Math.hypot(c.x-p.x,c.y-p.y)<42){c.dead=true;Save.data.keys++;UI.toast('Chest key found!')}}this.chests=this.chests.filter(c=>!c.dead);this.fx.forEach(f=>f.t-=dt);this.fx=this.fx.filter(f=>f.t>0);if(p.hp<=0)this.over();UI.hud(this)}move(p,dx,dy){for(const [ax,v] of [['x',dx],['y',dy]]){p[ax]+=v;let hit=this.obstacles.some(o=>o.type!=='flower'&&Math.hypot(p.x-o.x,p.y-o.y)<p.r+o.r*.65);if(hit)p[ax]-=v}}spawnEnemy(){let a=Math.random()*Math.PI*2,d=Math.max(this.vw,this.vh)*.65+120;let type=Math.random()<.18?'blue':Math.random()<.25?'pink':'green';let mul=type==='blue'?1.5:type==='pink'?.75:1;this.enemies.push({x:this.p.x+Math.cos(a)*d,y:this.p.y+Math.sin(a)*d,r:type==='blue'?28:23,hp:(38+this.time*.12)*mul,speed:(62+Math.min(90,this.time*.3))/Math.sqrt(mul),type})}autoFire(){if(this.p.fire>0||!this.enemies.length)return;let e=this.enemies.reduce((a,b)=>Math.hypot(b.x-this.p.x,b.y-this.p.y)<Math.hypot(a.x-this.p.x,a.y-this.p.y)?b:a);let ang=Math.atan2(e.y-this.p.y,e.x-this.p.x);this.p.fire=this.p.fireInterval;for(let i=0;i<this.p.multishot;i++){let off=(i-(this.p.multishot-1)/2)*.12;this.bullets.push({x:this.p.x,y:this.p.y,vx:Math.cos(ang+off)*560,vy:Math.sin(ang+off)*560,r:this.skin.id==='moon'?9:7,damage:this.p.damage,life:1.5,pierce:this.p.pierce+(this.skin.id==='moon'?1:0),hits:0})}}useSkill(){if(this.p.skill>0)return;this.p.skill=this.p.skillCooldown;if(this.skin.id==='sakura'){this.p.inv=1;let m=this.input.move();this.move(this.p,m.x*180,m.y*180)}else{let n=this.skin.id==='moon'?20:12;for(let i=0;i<n;i++){let a=i/n*Math.PI*2;this.bullets.push({x:this.p.x,y:this.p.y,vx:Math.cos(a)*500,vy:Math.sin(a)*500,r:9,damage:this.p.damage*1.5,life:1.3,pierce:1,hits:0})}}}kill(e){e.dead=true;this.kills++;this.orbs.push({x:e.x,y:e.y,value:e.type==='blue'?6:3});if(Math.random()<.16)this.coins.push({x:e.x+10,y:e.y,value:1});if(Math.random()<.008)this.chests.push({x:e.x,y:e.y})}pick(list,dt,fn){for(const o of list){let d=Math.hypot(o.x-this.p.x,o.y-this.p.y);if(d<this.p.magnet){let s=250+(this.p.magnet-d)*4;o.x+=(this.p.x-o.x)/(d||1)*s*dt;o.y+=(this.p.y-o.y)/(d||1)*s*dt}if(d<25){o.dead=true;fn(o)}}for(let i=list.length-1;i>=0;i--)if(list[i].dead)list.splice(i,1)}over(){this.mode='over';Save.data.coins+=this.runCoins;Save.data.bestTime=Math.max(Save.data.bestTime,this.time);Save.data.bestKills=Math.max(Save.data.bestKills,this.kills);Save.save();UI.gameOver(this)}draw(){let c=this.x,w=this.vw,h=this.vh;c.clearRect(0,0,w,h);if(this.mode==='menu'){let g=c.createLinearGradient(0,0,w,h);g.addColorStop(0,'#130b25');g.addColorStop(1,'#4c174d');c.fillStyle=g;c.fillRect(0,0,w,h);for(let i=0;i<45;i++){c.fillStyle='#ff9fc855';c.beginPath();c.arc((i*113+Date.now()*.012)%w,(i*79+Date.now()*.02)%h,2+i%3,0,7);c.fill()}return}if(!this.p)return;c.save();c.translate(w/2-this.p.x,h/2-this.p.y);c.fillStyle='#315d39';c.fillRect(this.p.x-w/2-80,this.p.y-h/2-80,w+160,h+160);let tile=90;c.strokeStyle='#ffffff08';for(let x=Math.floor((this.p.x-w/2)/tile)*tile;x<this.p.x+w/2;x+=tile)for(let y=Math.floor((this.p.y-h/2)/tile)*tile;y<this.p.y+h/2;y+=tile)c.strokeRect(x,y,tile,tile);for(const o of this.obstacles)this.drawObstacle(c,o);for(const o of this.orbs){c.fillStyle='#9a70ff';c.shadowColor='#c094ff';c.shadowBlur=14;c.beginPath();c.arc(o.x,o.y,7,0,7);c.fill();c.shadowBlur=0}for(const o of this.coins){c.fillStyle='#ffd65d';c.beginPath();c.arc(o.x,o.y,7,0,7);c.fill()}for(const o of this.chests){c.font='32px sans-serif';c.fillText('📦',o.x-16,o.y+12)}for(const b of this.bullets){c.fillStyle=this.skin.id==='moon'?'#bce6ff':'#ff7fbd';c.shadowColor=c.fillStyle;c.shadowBlur=15;c.beginPath();c.arc(b.x,b.y,b.r,0,7);c.fill();c.shadowBlur=0}for(const e of this.enemies){c.fillStyle=e.type==='blue'?'#64a8ff':e.type==='pink'?'#ff70b2':'#78ce6b';c.beginPath();c.ellipse(e.x,e.y,e.r,e.r*.8,0,0,7);c.fill();c.fillStyle='#17111d';c.beginPath();c.arc(e.x-7,e.y-3,3,0,7);c.arc(e.x+7,e.y-3,3,0,7);c.fill()}c.fillStyle=this.p.inv>0?'#fff':'#ff9dce';c.shadowColor='#ff73b7';c.shadowBlur=18;c.beginPath();c.arc(this.p.x,this.p.y,22,0,7);c.fill();c.shadowBlur=0;c.font='26px sans-serif';c.fillText(this.skin.icon,this.p.x-15,this.p.y+9);for(const f of this.fx){c.strokeStyle=f.c;c.lineWidth=4;c.beginPath();c.arc(f.x,f.y,24*(1-f.t/.2),0,7);c.stroke()}c.restore()}drawObstacle(c,o){if(o.type==='tree'){c.fillStyle='#6d3c2c';c.fillRect(o.x-9,o.y-4,18,o.r);c.fillStyle='#327b43';c.beginPath();c.arc(o.x,o.y-o.r*.25,o.r,0,7);c.fill()}else if(o.type==='bush'){c.fillStyle='#40844a';c.beginPath();c.arc(o.x,o.y,o.r,0,7);c.fill()}else if(o.type==='rock'){c.fillStyle='#77818b';c.beginPath();c.arc(o.x,o.y,o.r*.7,0,7);c.fill()}else{c.fillStyle='#ff9ec7';c.font='22px serif';c.fillText('✿',o.x,o.y)}}}
+class CherriftGame {
+  constructor(canvas, input, save) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext("2d");
+    this.input = input;
+    this.save = save;
+    this.mode = "menu";
+    this.dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    this.w = 0; this.h = 0;
+    this.last = performance.now();
+    this.camera = { x:0, y:0 };
+    this.t = 0;
+    this.resize();
+    window.addEventListener("resize", () => this.resize());
+    requestAnimationFrame(n => this.loop(n));
+  }
+
+  resize() {
+    const r = this.canvas.getBoundingClientRect();
+    this.w = Math.max(320, r.width || innerWidth);
+    this.h = Math.max(240, r.height || innerHeight);
+    this.canvas.width = Math.floor(this.w * this.dpr);
+    this.canvas.height = Math.floor(this.h * this.dpr);
+    this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
+  }
+
+  start() {
+    const skin = CHERRIFT_DATA.skins.find(s => s.id === this.save.selectedSkin) || CHERRIFT_DATA.skins[0];
+    const gear = UI.totalGearStats(this.save);
+    this.mode = "playing";
+    this.runCoins = 0;
+    this.time = 0; this.kills = 0;
+    this.player = {
+      x:0,y:0,r:18,hp:100+(gear.maxHp||0),maxHp:100+(gear.maxHp||0),
+      speed:235+(skin.stats.speed||0)+(gear.moveSpeed||0),
+      damage:20+(skin.stats.damage||0)+(gear.damage||0),
+      fireInterval: Math.max(.18, .42 / (1+(gear.attackSpeed||0)/100)),
+      fireTimer:0, bulletSpeed:560, pickup:110+(gear.pickup||0),
+      crit:.05+(gear.crit||0)/100, critDamage:1.5+(gear.critDamage||0)/100,
+      armor: gear.armor || 0, regen: gear.regen || 0,
+      level:1, xp:0, xpNext:18, skillTimer:0, skillCooldown:8,
+      skin: skin.id, skillBuff:0, lastDir:"down"
+    };
+    this.enemies=[]; this.bullets=[]; this.pickups=[]; this.effects=[];
+    this.obstacles=this.generateMap();
+    this.spawnTimer=0; this.camera={x:0,y:0};
+    UI.showGame();
+  }
+
+  generateMap() {
+    const obs = [];
+    const add = (kind, count, r, solid=true) => {
+      for (let i=0;i<count;i++) {
+        let x,y,ok=false;
+        for (let t=0;t<80 && !ok;t++) {
+          x=(Math.random()-.5)*3400; y=(Math.random()-.5)*3400;
+          ok=Math.hypot(x,y)>260 && obs.every(o=>Math.hypot(o.x-x,o.y-y)>o.r+r+35);
+        }
+        if (ok) obs.push({kind,x,y,r,solid,phase:Math.random()*9});
+      }
+    };
+    add("treeBig",9,74,true); add("treeSmall",13,54,true); add("log",14,48,true);
+    add("bush",20,42,true); add("rock",18,34,true); add("flowers",38,22,false);
+    return obs;
+  }
+
+  loop(now) {
+    const dt = Math.min(.033, (now-this.last)/1000 || 0);
+    this.last=now; this.t += dt;
+    if (this.mode === "playing") this.update(dt);
+    this.render();
+    requestAnimationFrame(n=>this.loop(n));
+  }
+
+  update(dt) {
+    const p=this.player;
+    this.time += dt;
+    p.fireTimer -= dt;
+    p.skillTimer = Math.max(0, p.skillTimer-dt);
+    p.skillBuff = Math.max(0, (p.skillBuff||0)-dt);
+    if (p.regen) p.hp = Math.min(p.maxHp, p.hp + p.regen*dt);
+
+    const mv=this.input.getMoveVector();
+    this.movePlayer(mv, dt);
+    if (mv.x||mv.y) p.lastDir = Math.abs(mv.x)>Math.abs(mv.y) ? (mv.x<0?"left":"right") : (mv.y<0?"up":"down");
+    if (this.input.consumeSkill()) this.skill();
+
+    this.spawn(dt);
+    this.autoFire();
+    this.updateBullets(dt);
+    this.updateEnemies(dt);
+    this.updatePickups(dt);
+    this.effects.forEach(e=>e.t+=dt);
+    this.effects=this.effects.filter(e=>e.t<e.life);
+
+    this.camera.x += (p.x-this.camera.x)*Math.min(1,dt*8);
+    this.camera.y += (p.y-this.camera.y)*Math.min(1,dt*8);
+    UI.updateHUD(this);
+
+    if (p.hp<=0) this.gameOver();
+  }
+
+  movePlayer(mv, dt) {
+    const p=this.player, half=1900;
+    const tryMove=(dx,dy)=>{
+      p.x=Math.max(-half,Math.min(half,p.x+dx));
+      p.y=Math.max(-half,Math.min(half,p.y+dy));
+      if (this.hitObstacle()) { p.x-=dx; p.y-=dy; }
+    };
+    tryMove(mv.x*p.speed*dt,0);
+    tryMove(0,mv.y*p.speed*dt);
+  }
+  hitObstacle() {
+    const p=this.player;
+    return this.obstacles.some(o=>o.solid && Math.hypot(p.x-o.x,p.y-o.y)<p.r+o.r*.62);
+  }
+
+  spawn(dt) {
+    this.spawnTimer -= dt;
+    const max = 22 + Math.floor(this.time/10);
+    if (this.spawnTimer<=0 && this.enemies.length<max) {
+      this.spawnTimer = Math.max(.24, 1.18/(1+this.time/80));
+      const count = 1 + Math.floor(this.time/45);
+      for (let i=0;i<count;i++) this.spawnEnemy();
+    }
+  }
+  spawnEnemy() {
+    const a=Math.random()*Math.PI*2, d=Math.max(this.w,this.h)*.68+120;
+    const roll=Math.random();
+    const type = roll<.62 ? "green" : roll<.86 ? "blue" : "pink";
+    const spec = type==="green" ? {hp:40, speed:70, r:22, xp:3} : type==="blue" ? {hp:65, speed:58, r:26, xp:5} : {hp:34, speed:105, r:20, xp:4};
+    const scale=1+this.time/120;
+    this.enemies.push({
+      type, x:this.player.x+Math.cos(a)*d, y:this.player.y+Math.sin(a)*d,
+      r:spec.r, hp:spec.hp*scale, maxHp:spec.hp*scale, speed:spec.speed*(1+this.time/240),
+      xp:spec.xp, hit:0, phase:Math.random()*9
+    });
+  }
+
+  nearest(range=720) {
+    let best=null, bd=range;
+    for (const e of this.enemies) {
+      const d=Math.hypot(e.x-this.player.x,e.y-this.player.y);
+      if (d<bd) {bd=d; best=e;}
+    }
+    return best;
+  }
+
+  autoFire() {
+    const p=this.player;
+    let interval = p.fireInterval * (p.skillBuff>0 ? .55 : 1);
+    if (p.fireTimer>0) return;
+    const e=this.nearest();
+    if (!e) return;
+    p.fireTimer=interval;
+    const dx=e.x-p.x, dy=e.y-p.y, l=Math.hypot(dx,dy)||1;
+    const style = p.skin==="sakura_cherry" ? "petal" : p.skin==="bunny_rare" ? "bolt" : "orb";
+    this.bullets.push({
+      x:p.x, y:p.y-10, vx:dx/l*p.bulletSpeed, vy:dy/l*p.bulletSpeed,
+      r:style==="bolt"?5:style==="petal"?8:7, dmg:p.damage, life:1.45, style
+    });
+  }
+
+  updateBullets(dt) {
+    for (const b of this.bullets) { b.x+=b.vx*dt; b.y+=b.vy*dt; b.life-=dt; }
+    for (const b of this.bullets) {
+      if (b.dead) continue;
+      for (const e of this.enemies) {
+        if (Math.hypot(b.x-e.x,b.y-e.y)<b.r+e.r) {
+          b.dead=true;
+          let dmg=b.dmg;
+          if (Math.random()<this.player.crit) { dmg*=this.player.critDamage; this.effects.push({type:"crit",x:e.x,y:e.y,t:0,life:.35}); }
+          this.damageEnemy(e,dmg);
+          this.effects.push({type:"hit",x:b.x,y:b.y,t:0,life:.18, style:b.style});
+          break;
+        }
+      }
+    }
+    this.bullets=this.bullets.filter(b=>!b.dead && b.life>0);
+  }
+
+  damageEnemy(e,dmg) {
+    e.hp -= dmg; e.hit=.08;
+    if (e.hp<=0 && !e.dead) {
+      e.dead=true; this.kills++;
+      this.pickups.push({type:"xp",x:e.x,y:e.y,value:e.xp,r:e.xp>=5?13:10});
+      if (Math.random()<.18) this.pickups.push({type:"coin",x:e.x+(Math.random()-.5)*24,y:e.y+(Math.random()-.5)*24,value:1,r:8});
+      if (Math.random()<.018) this.pickups.push({type:"key",x:e.x,y:e.y,value:1,r:11});
+      this.effects.push({type:"death",x:e.x,y:e.y,t:0,life:.34});
+    }
+  }
+
+  updateEnemies(dt) {
+    const p=this.player;
+    for (const e of this.enemies) {
+      if (e.dead) continue;
+      e.hit=Math.max(0,e.hit-dt);
+      const dx=p.x-e.x, dy=p.y-e.y, l=Math.hypot(dx,dy)||1;
+      e.x += dx/l*e.speed*dt; e.y += dy/l*e.speed*dt;
+      if (l<e.r+p.r) {
+        const raw=16*dt;
+        p.hp -= Math.max(2*dt, raw*(100/(100+p.armor*4)));
+      }
+    }
+    this.enemies=this.enemies.filter(e=>!e.dead);
+  }
+
+  updatePickups(dt) {
+    const p=this.player;
+    for (const o of this.pickups) {
+      const d=Math.hypot(o.x-p.x,o.y-p.y);
+      if (d<p.pickup) {
+        const sp=260+(1-d/p.pickup)*520;
+        o.x += (p.x-o.x)/(d||1)*sp*dt;
+        o.y += (p.y-o.y)/(d||1)*sp*dt;
+      }
+      if (d<p.r+o.r+6) {
+        o.dead=true;
+        if (o.type==="xp") this.gainXp(o.value);
+        if (o.type==="coin") { this.runCoins+=o.value; this.save.coins+=o.value; UI.toast("+1 coin"); }
+        if (o.type==="key") { this.save.keys+=1; UI.toast("+1 chest key"); }
+      }
+    }
+    this.pickups=this.pickups.filter(o=>!o.dead);
+  }
+
+  gainXp(v) {
+    const p=this.player;
+    p.xp += v;
+    while (p.xp>=p.xpNext) {
+      p.xp-=p.xpNext; p.level++; p.xpNext=Math.floor(p.xpNext*1.22+9);
+      this.mode="level"; UI.showLevelUp(this);
+    }
+  }
+
+  applyUpgrade(up) {
+    up.apply(this.player);
+    this.mode="playing";
+    UI.hideLevelUp();
+  }
+
+  skill() {
+    const p=this.player;
+    if (p.skillTimer>0) return;
+    p.skillTimer=p.skillCooldown;
+    if (p.skin==="sakura_cherry") {
+      for (let i=0;i<18;i++) {
+        const a=i/18*Math.PI*2;
+        this.bullets.push({x:p.x,y:p.y,vx:Math.cos(a)*520,vy:Math.sin(a)*520,r:8,dmg:p.damage*.72,life:.7,style:"petal"});
+      }
+      this.effects.push({type:"burst",x:p.x,y:p.y,t:0,life:.45});
+    } else if (p.skin==="bunny_rare") {
+      p.skillBuff=5.2; this.effects.push({type:"haste",x:p.x,y:p.y,t:0,life:5.2});
+      UI.toast("Haste Bloom!");
+    } else {
+      const mv = this.input.getMoveVector();
+      const dx = (mv.x || (p.lastDir==="left"?-1:p.lastDir==="right"?1:0));
+      const dy = (mv.y || (p.lastDir==="up"?-1:p.lastDir==="down"?1:0));
+      p.x += dx*165; p.y += dy*165;
+      this.effects.push({type:"dash",x:p.x,y:p.y,t:0,life:.32});
+      for (const e of this.enemies) if (Math.hypot(e.x-p.x,e.y-p.y)<105) this.damageEnemy(e,p.damage*1.3);
+    }
+  }
+
+  gameOver() {
+    this.mode="gameover";
+    if (this.time > this.save.best.time) this.save.best.time=this.time;
+    if (this.kills > this.save.best.kills) this.save.best.kills=this.kills;
+    CherriftStorage.save(this.save);
+    UI.showGameOver(this);
+  }
+
+  sx(x){ return x-this.camera.x+this.w/2; }
+  sy(y){ return y-this.camera.y+this.h/2; }
+
+  render() {
+    const c=this.ctx;
+    c.clearRect(0,0,this.w,this.h);
+    if (this.mode==="menu" || this.mode==="level" || this.mode==="gameover" || this.mode==="playing") this.drawWorld(c);
+  }
+
+  drawWorld(c) {
+    c.fillStyle="#1f7d45"; c.fillRect(0,0,this.w,this.h);
+    c.save();
+    c.translate(-this.camera.x+this.w/2, -this.camera.y+this.h/2);
+    this.drawGround(c);
+    const drawables=[...this.obstacles, ...this.pickups, ...this.enemies, ...(this.player?[this.player]:[]), ...this.bullets, ...this.effects];
+    drawables.sort((a,b)=>(a.y||0)-(b.y||0));
+    for (const o of drawables) this.drawObj(c,o);
+    c.restore();
+
+    if (this.mode==="menu") {
+      c.fillStyle="rgba(5,3,11,.50)";
+      c.fillRect(0,0,this.w,this.h);
+    }
+  }
+
+  drawGround(c) {
+    const size=96, startX=Math.floor((this.camera.x-this.w/2)/size)-1, endX=Math.floor((this.camera.x+this.w/2)/size)+1;
+    const startY=Math.floor((this.camera.y-this.h/2)/size)-1, endY=Math.floor((this.camera.y+this.h/2)/size)+1;
+    for(let gx=startX; gx<=endX; gx++) for(let gy=startY; gy<=endY; gy++) {
+      const x=gx*size,y=gy*size;
+      c.fillStyle=(gx+gy)%2===0?"#2f9d55":"#2a934f"; c.fillRect(x,y,size,size);
+      c.fillStyle="rgba(255,255,255,.05)";
+      for(let i=0;i<3;i++) c.fillRect(x+15+i*27,y+20+((gx*gy+i*13)%47),12,3);
+    }
+  }
+
+  drawObj(c,o) {
+    if (o===this.player) return this.drawPlayer(c,o);
+    if (o.kind) return this.drawObstacle(c,o);
+    if (o.type==="xp" || o.type==="coin" || o.type==="key") return this.drawPickup(c,o);
+    if (o.style) return this.drawBullet(c,o);
+    if (o.hp !== undefined) return this.drawEnemy(c,o);
+    if (o.type) return this.drawEffect(c,o);
+  }
+
+  drawObstacle(c,o) {
+    const x=o.x,y=o.y;
+    if (o.kind==="treeBig" || o.kind==="treeSmall") {
+      const s=o.kind==="treeBig"?1.25:.86;
+      c.fillStyle="#8a542a"; c.beginPath(); c.roundRect(x-18*s,y-12*s,36*s,86*s,10*s); c.fill();
+      c.fillStyle="#5b341d"; c.fillRect(x-4*s,y+2*s,8*s,62*s);
+      this.leafBlob(c,x,y-30*s,62*s);
+      this.leafBlob(c,x-38*s,y-4*s,38*s); this.leafBlob(c,x+40*s,y-3*s,38*s);
+    } else if (o.kind==="bush") {
+      this.leafBlob(c,x,y,42);
+    } else if (o.kind==="log") {
+      c.save(); c.translate(x,y); c.rotate(.08);
+      c.fillStyle="#9f602f"; c.beginPath(); c.roundRect(-58,-18,116,36,17); c.fill();
+      c.strokeStyle="#62361e"; c.lineWidth=5; c.strokeRect(-48,-16,86,32);
+      c.fillStyle="#f1c27c"; c.beginPath(); c.arc(-55,0,19,0,Math.PI*2); c.fill();
+      c.restore();
+    } else if (o.kind==="rock") {
+      c.fillStyle="#8792a2"; c.beginPath(); c.ellipse(x,y,32,24,.2,0,Math.PI*2); c.fill();
+      c.fillStyle="rgba(255,255,255,.18)"; c.beginPath(); c.ellipse(x-8,y-8,12,6,-.3,0,Math.PI*2); c.fill();
+    } else if (o.kind==="flowers") {
+      c.fillStyle="#ff9cc8";
+      for(let i=0;i<5;i++){ const a=i/5*Math.PI*2; c.beginPath(); c.ellipse(x+Math.cos(a)*8,y+Math.sin(a)*8,6,10,a,0,Math.PI*2); c.fill(); }
+      c.fillStyle="#ffe28a"; c.beginPath(); c.arc(x,y,5,0,Math.PI*2); c.fill();
+    }
+  }
+  leafBlob(c,x,y,r) {
+    c.fillStyle="#184f37"; c.beginPath(); c.arc(x,y+8,r*.86,0,Math.PI*2); c.fill();
+    c.fillStyle="#55b747"; c.beginPath(); c.arc(x,y,r,0,Math.PI*2); c.fill();
+    c.fillStyle="#9ee957";
+    for(let i=0;i<11;i++){ const a=i/11*Math.PI*2+this.t*.06; c.beginPath(); c.ellipse(x+Math.cos(a)*r*.45,y+Math.sin(a)*r*.32,r*.18,r*.11,a,0,Math.PI*2); c.fill(); }
+  }
+
+  drawPlayer(c,p) {
+    const x=p.x,y=p.y;
+    const skin=CHERRIFT_DATA.skins.find(s=>s.id===p.skin);
+    c.fillStyle="rgba(0,0,0,.25)"; c.beginPath(); c.ellipse(x,y+24,28,10,0,0,Math.PI*2); c.fill();
+    c.fillStyle=p.skin==="bunny_rare"?"#fff2fb":p.skin==="sakura_cherry"?"#ffd6eb":"#ffc1dc";
+    c.beginPath(); c.arc(x,y,24,0,Math.PI*2); c.fill();
+    c.fillStyle="#ff77b9"; c.beginPath(); c.ellipse(x-11,y-28,8,24,-.35,0,Math.PI*2); c.ellipse(x+11,y-28,8,24,.35,0,Math.PI*2); c.fill();
+    c.fillStyle="#2c2033"; c.beginPath(); c.arc(x-8,y-2,3,0,Math.PI*2); c.arc(x+8,y-2,3,0,Math.PI*2); c.fill();
+    c.fillStyle="#fff"; c.font="18px system-ui"; c.textAlign="center"; c.fillText(skin?.emoji||"🐰",x,y+42);
+  }
+
+  drawEnemy(c,e) {
+    const x=e.x,y=e.y;
+    c.fillStyle="rgba(0,0,0,.25)"; c.beginPath(); c.ellipse(x,y+18,e.r,8,0,0,Math.PI*2); c.fill();
+    c.fillStyle=e.type==="green"?"#7ee65e":e.type==="blue"?"#62d9ff":"#ff79bf";
+    if (e.hit>0) c.fillStyle="#fff";
+    c.beginPath(); c.ellipse(x,y,e.r*1.1,e.r*.82,0,0,Math.PI*2); c.fill();
+    c.fillStyle="rgba(255,255,255,.42)"; c.beginPath(); c.ellipse(x-e.r*.3,y-e.r*.26,e.r*.28,e.r*.16,-.4,0,Math.PI*2); c.fill();
+    c.fillStyle="#1f2530"; c.beginPath(); c.arc(x-7,y,2.5,0,Math.PI*2); c.arc(x+7,y,2.5,0,Math.PI*2); c.fill();
+  }
+
+  drawBullet(c,b) {
+    c.save(); c.translate(b.x,b.y);
+    if (b.style==="petal") { c.fillStyle="#ff8fc7"; c.rotate(Math.atan2(b.vy,b.vx)); c.beginPath(); c.ellipse(0,0,12,6,0,0,Math.PI*2); c.fill(); }
+    else if (b.style==="bolt") { c.fillStyle="#fef9ff"; c.shadowColor="#ff5db3"; c.shadowBlur=14; c.beginPath(); c.arc(0,0,6,0,Math.PI*2); c.fill(); }
+    else { c.fillStyle="#ff65b4"; c.shadowColor="#ff65b4"; c.shadowBlur=16; c.beginPath(); c.arc(0,0,8,0,Math.PI*2); c.fill(); }
+    c.restore();
+  }
+
+  drawPickup(c,o) {
+    c.save(); c.translate(o.x,o.y);
+    if (o.type==="xp") { c.fillStyle="#ff90d0"; c.shadowColor="#ff90d0"; c.shadowBlur=14; c.beginPath(); c.arc(0,0,o.r,0,Math.PI*2); c.fill(); }
+    if (o.type==="coin") { c.fillStyle="#ffd65c"; c.beginPath(); c.arc(0,0,9,0,Math.PI*2); c.fill(); c.fillStyle="#9b6a00"; c.fillText("c",-3,4); }
+    if (o.type==="key") { c.fillStyle="#d19b65"; c.font="20px system-ui"; c.fillText("📦",-10,7); }
+    c.restore();
+  }
+
+  drawEffect(c,e) {
+    const a=1-e.t/e.life, x=e.x,y=e.y;
+    c.save(); c.globalAlpha=Math.max(0,a);
+    if (["hit","death","crit","burst","dash"].includes(e.type)) {
+      c.strokeStyle=e.type==="crit"?"#fff176":"#ff8ccc"; c.lineWidth=4;
+      c.beginPath(); c.arc(x,y,(1-a)*55+8,0,Math.PI*2); c.stroke();
+    }
+    if (e.type==="haste") {
+      c.strokeStyle="#8fffd2"; c.lineWidth=3; c.beginPath(); c.arc(x,y,52+Math.sin(this.t*8)*5,0,Math.PI*2); c.stroke();
+    }
+    c.restore();
+  }
+}
+window.CherriftGame = CherriftGame;

@@ -1,2 +1,14 @@
-Save.load();const canvas=document.getElementById('game');const InputSystem=new Input(canvas);window.Game=new CherriftGame(canvas,InputSystem);UI.refresh();
-document.getElementById('playBtn').onclick=()=>Game.start();document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>UI.showPanel(b.dataset.open));document.querySelectorAll('.back').forEach(b=>b.onclick=()=>UI.menu());document.getElementById('openChest').onclick=()=>UI.openChest();document.getElementById('skill').onpointerdown=e=>{e.preventDefault();InputSystem.skill=true};document.getElementById('pause').onclick=()=>{Game.mode='paused';document.getElementById('pauseModal').classList.remove('hidden')};document.getElementById('resume').onclick=()=>{document.getElementById('pauseModal').classList.add('hidden');Game.mode='playing'};document.getElementById('quit').onclick=()=>{document.getElementById('pauseModal').classList.add('hidden');UI.menu()};document.getElementById('retry').onclick=()=>{document.getElementById('gameOver').classList.add('hidden');Game.start()};document.getElementById('toMenu').onclick=()=>{document.getElementById('gameOver').classList.add('hidden');UI.menu()};document.getElementById('volume').oninput=e=>{Save.data.settings.volume=+e.target.value;Save.save()};document.getElementById('touchMode').onchange=e=>{Save.data.settings.touchMode=e.target.checked;Save.save()};document.getElementById('fullscreen').onclick=async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(e){UI.toast('Fullscreen is not supported here.')}};
+window.addEventListener("DOMContentLoaded", () => {
+  const save = CherriftStorage.load();
+  if (!save.inventory.length) {
+    const starter = [
+      {id:"starter_1",slot:"Weapon",type:"Crimson",rarity:"Common",stats:{damage:4}},
+      {id:"starter_2",slot:"Armor",type:"Azure",rarity:"Common",stats:{maxHp:18,armor:2}},
+      {id:"starter_3",slot:"Boots",type:"Verdant",rarity:"Common",stats:{moveSpeed:7}}
+    ];
+    save.inventory.push(...starter);
+  }
+  const input = new CherriftInput();
+  const game = new CherriftGame(document.getElementById("game"), input, save);
+  UI.init(save, game);
+});
