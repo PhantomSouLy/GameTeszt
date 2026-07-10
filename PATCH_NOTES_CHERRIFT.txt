@@ -1,38 +1,51 @@
-CHERRIFT v0.3.4 Early Build Patch Notes
+CHERRIFT v0.3.6 Real Texture Assets Patch
 
 [Added]
-- Pause / Settings polish update.
-- New pause button: SETTINGS.
-- You can now open Settings while a run is paused.
-- Settings now has quick actions:
-  - BACK / BACK TO PAUSE
-  - RESUME RUN
-- Added more settings controls:
-  - UI scale
-  - View zoom (More Map / Balanced / Closer)
-  - Compact objective HUD toggle
-  - Damage numbers toggle
-  - Fullscreen toggle from Settings
-- Added src/pause_settings_polish_v034.js
+- Real map texture support for the new assets in assets/map.
+- Night stages now use grass_tile02.png instead of procedural placeholder ground.
+- Flowers now use flower1.png / flower2.png instead of procedural flower drawing.
+- Mushrooms are now added as decorative map props.
+- Map props are explicitly drawn from real textures when available:
+  - bush_01.png
+  - bush_02.png
+  - flower1.png
+  - flower2.png
+  - grass_tile.png
+  - grass_tile02.png
+  - log.png
+  - mushroom.png
+  - rock_big.png
+  - rock_small.png
+  - tree_big.png
+  - tree_small.png
 
-[Changed]
-- Pause modal layout is cleaner and more readable.
-- Settings layout is more mobile-friendly.
-- Settings can now behave differently depending on where it was opened from:
-  - main menu -> back returns to menu
-  - pause menu -> back returns to pause
-- UI scale now affects the HUD and skill button.
-- View zoom now has a user-facing control to adjust how close the gameplay camera feels.
+[Fixed]
+- World Select splash paths now use lowercase:
+  - assets/map/world1.png
+  - assets/map/world2.png
 
-[Kept]
-- CHERRIFT branding only.
-- v0.3.3 combat/HUD/upgrade prep remains included.
-- In-game fullscreen support remains included.
-- World Select flow remains:
-  Main Play -> World Select -> Play -> Loading -> Stage
+[Confirmed Real Assets]
+- XP orb textures are used:
+  - assets/pickups/xp_small.png
+  - assets/pickups/xp_big.png
+- Hit effects are used:
+  - assets/effects/base_hit_effect_01.png
+  - assets/effects/base_hit_effect_02.png
+  - assets/effects/base_hit_effect_03.png
+- Pink slime now prefers the real slime sprite sheet instead of the procedural placeholder.
+
+[Still Placeholder]
+- Enemies that do not have provided textures yet remain procedural:
+  - blue slime / big slime variants
+  - spider
+  - beetle
+  - moth
+  - crawler
+  - bosses
 
 [Files changed]
 - index.html
 - menu_v031.css
-- src/pause_settings_polish_v034.js
+- src/texture_splash_patch_v035.js
+- src/real_texture_assets_patch_v036.js
 - PATCH_NOTES_CHERRIFT.txt
