@@ -1,47 +1,38 @@
-CHERRIFT v0.3.3 Early Build Patch Notes
+CHERRIFT v0.3.4 Early Build Patch Notes
 
 [Added]
-- Combat-feel patch file: src/combat_hud_upgrade_patch_v033.js
-- Generalized upgrade system prep.
-- New upgrades are not skin-specific. They adapt by combat style.
-- Multi Strike:
-  - Ranged skins: +1 projectile.
-  - Melee skins: +18% melee range.
-- Combat Arc:
-  - Ranged skins: wider projectile spread.
-  - Melee skins: wider melee cone.
-- Skill Flow: lower skill cooldown.
-- Thorn Aura: nearby enemies take slow aura damage.
-- Damage numbers on enemy hit.
-- Death pop effect on enemy kill.
-- Raid warning banner.
-- Mini boss HP bar.
-- Stage Clear screen polish.
-- World Select button added to Stage Clear actions.
+- Pause / Settings polish update.
+- New pause button: SETTINGS.
+- You can now open Settings while a run is paused.
+- Settings now has quick actions:
+  - BACK / BACK TO PAUSE
+  - RESUME RUN
+- Added more settings controls:
+  - UI scale
+  - View zoom (More Map / Balanced / Closer)
+  - Compact objective HUD toggle
+  - Damage numbers toggle
+  - Fullscreen toggle from Settings
+- Added src/pause_settings_polish_v034.js
 
 [Changed]
-- HUD cleaned up.
-- Duplicate kill text next to the timer is hidden.
-- Stage objective is now the main kill tracker: World x-y · kills/goal.
-- Stage objective no longer uses the heavy glass background.
-- Raid info no longer uses the small glass box; raid now appears as a clear center warning.
-- Version display updated to v0.3.3 EARLY BUILD.
+- Pause modal layout is cleaner and more readable.
+- Settings layout is more mobile-friendly.
+- Settings can now behave differently depending on where it was opened from:
+  - main menu -> back returns to menu
+  - pause menu -> back returns to pause
+- UI scale now affects the HUD and skill button.
+- View zoom now has a user-facing control to adjust how close the gameplay camera feels.
 
 [Kept]
 - CHERRIFT branding only.
-- World Select flow: Main Play -> World Select -> Play -> Loading -> Stage.
-- Loading freeze fix remains included.
-- Level-up freeze fix remains included.
-- In-game fullscreen button remains in Pause menu.
-- Progression numbers from v0.3.2 remain included.
-
-[Design Rule]
-- Common/Rare/Epic skins use universal and combat-style upgrades only.
-- Legendary+ skins can later add unique skin-specific upgrades.
-- This prevents every skin from needing a separate upgrade tree too early.
+- v0.3.3 combat/HUD/upgrade prep remains included.
+- In-game fullscreen support remains included.
+- World Select flow remains:
+  Main Play -> World Select -> Play -> Loading -> Stage
 
 [Files changed]
 - index.html
 - menu_v031.css
-- src/combat_hud_upgrade_patch_v033.js
+- src/pause_settings_polish_v034.js
 - PATCH_NOTES_CHERRIFT.txt

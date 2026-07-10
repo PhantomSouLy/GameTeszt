@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>CHERRIFT v0.3.3 EARLY BUILD</title>
+  <title>CHERRIFT v0.3.4 EARLY BUILD</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="menu_v031.css" />
 </head>
@@ -285,7 +285,7 @@
         </div>
       </header>
 
-      <div class="settings-grid">
+      <div class="settings-grid settings-grid-v034">
         <div class="settings-card glass">
           <h3>Audio</h3>
           <label class="setting-row">
@@ -300,7 +300,11 @@
             <input id="touchMode" type="checkbox" checked />
             <span>Full-screen touch movement</span>
           </label>
-          <p class="hint">Játék közben a képernyő üres részén húzással mozogsz.</p>
+          <label class="setting-row">
+            <span>UI scale</span>
+            <input id="uiScale" type="range" min="85" max="125" step="5" value="100" />
+          </label>
+          <p class="hint">A HUD és skill gomb méretét állítja mobilon és PC-n is.</p>
         </div>
 
         <div class="settings-card glass">
@@ -312,12 +316,42 @@
               <option value="60">60 FPS</option>
             </select>
           </label>
-          <p class="hint">Ha lassúnak érzed mobilon vagy böngészőben, tedd 30 FPS-re. PC-n maradhat 60 FPS.</p>
+          <label class="setting-row">
+            <span>View zoom</span>
+            <select id="viewZoom" class="fps-select">
+              <option value="0.90">More Map</option>
+              <option value="1.00">Balanced</option>
+              <option value="1.10">Closer</option>
+            </select>
+          </label>
+          <p class="hint">Balanced az ajánlott alap. More Map több pályát mutat, Closer közelebb hozza Cherry-t.</p>
         </div>
 
         <div class="settings-card glass">
           <h3>Display</h3>
           <button id="fullscreen" class="fullscreen-btn">⛶ FULLSCREEN</button>
+          <button id="settingsFullscreen" class="fullscreen-btn alt">↻ TOGGLE FULLSCREEN</button>
+        </div>
+
+        <div class="settings-card glass">
+          <h3>Gameplay UI</h3>
+          <label class="setting-row check">
+            <input id="compactHud" type="checkbox" checked />
+            <span>Compact objective HUD</span>
+          </label>
+          <label class="setting-row check">
+            <input id="damageNumbersToggle" type="checkbox" checked />
+            <span>Show damage numbers</span>
+          </label>
+        </div>
+
+        <div class="settings-card glass">
+          <h3>Quick Actions</h3>
+          <div class="settings-quick-actions">
+            <button id="settingsBackAction" class="menu-btn center">BACK</button>
+            <button id="settingsResumeAction" class="menu-btn primary center">RESUME RUN</button>
+          </div>
+          <p class="hint">Játék közben innen visszaléphetsz Pause-ba vagy közvetlenül folytathatod a run-t.</p>
         </div>
       </div>
     </section>
@@ -362,6 +396,7 @@
       <div class="modal-card">
         <h2>PAUSE</h2>
         <button id="resume" class="menu-btn primary center">RESUME</button>
+        <button id="pauseSettings" class="menu-btn center">⚙ SETTINGS</button>
         <button id="pauseFullscreen" class="menu-btn center">⛶ FULLSCREEN</button>
         <button id="quit" class="menu-btn center">MAIN MENU</button>
       </div>
@@ -430,6 +465,7 @@
   <script src="src/levelup_freeze_fix_v031.js"></script>
   <script src="src/progression_fullscreen_patch_v032.js"></script>
   <script src="src/combat_hud_upgrade_patch_v033.js"></script>
+  <script src="src/pause_settings_polish_v034.js"></script>
   <script src="src/main.js"></script>
 </body>
 </html>
