@@ -229,22 +229,53 @@
 
     
 
-    <section id="worlds" class="panel hidden">
-      <header class="panel-head">
+    <section id="worlds" class="panel hidden world-select-panel">
+      <header class="panel-head world-select-head">
         <button class="back">←</button>
         <div>
-          <h2>Worlds & Stages</h2>
-          <p>Clear stages to unlock the next one. Raid bursts and first-clear rewards are active in v0.3.1.</p>
+          <h2>World Select</h2>
+          <p>Válassz pályát lapozással, majd lent nyomj Play-t.</p>
         </div>
       </header>
 
-      <div class="world-layout">
-        <div class="world-overview">
-          <div class="world-summary-card glass"><h3>Unlocked</h3><p id="worldUnlockedCount">1 unlocked</p></div>
-          <div class="world-summary-card glass"><h3>Cleared</h3><p id="worldClearCount">0 cleared</p></div>
-          <div class="world-summary-card glass"><h3>Current</h3><p id="worldCurrentStage">World 1-1</p></div>
-        </div>
-        <div id="worldGroups" class="world-stage-groups"></div>
+      <div class="world-carousel-shell">
+        <button id="worldPrevBtn" class="world-arrow left" aria-label="Previous stage">‹</button>
+
+        <article class="world-carousel-card glass">
+          <div class="world-card-top">
+            <span id="carouselWorldLabel" class="world-pill">World 1</span>
+            <span id="carouselStageState" class="world-state-pill">Unlocked</span>
+          </div>
+
+          <div id="carouselStageImage" class="world-stage-image" aria-hidden="true">
+            <div class="world-mini-map">
+              <span class="tile t1"></span>
+              <span class="tile t2"></span>
+              <span class="tile t3"></span>
+              <span class="tile t4"></span>
+              <span class="stage-glow"></span>
+            </div>
+          </div>
+
+          <div class="world-card-info">
+            <h3 id="carouselStageName">World 1-1</h3>
+            <h4 id="carouselStageTitle">Blooming Meadow</h4>
+            <p id="carouselStageDesc">Clear enemies and survive raids.</p>
+
+            <div class="world-card-meta">
+              <div><span>Objective</span><b id="carouselStageObjective">28 enemies</b></div>
+              <div><span>Reward</span><b id="carouselStageReward">+14 coins</b></div>
+              <div><span>First Clear</span><b id="carouselStageFirstReward">+28 coins · +1 key</b></div>
+            </div>
+          </div>
+        </article>
+
+        <button id="worldNextBtn" class="world-arrow right" aria-label="Next stage">›</button>
+      </div>
+
+      <div class="world-select-actions glass">
+        <button id="worldBackBtn" class="menu-btn center">BACK</button>
+        <button id="worldLaunchBtn" class="menu-btn primary center">PLAY</button>
       </div>
     </section>
 
@@ -386,6 +417,7 @@
   <script src="src/beastclaw.js"></script>
   <script src="src/ui.js"></script>
   <script src="src/progression_v031.js"></script>
+  <script src="src/world_select_carousel_v031.js"></script>
   <script src="src/main.js"></script>
 </body>
 </html>
