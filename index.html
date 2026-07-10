@@ -1,21 +1,177 @@
-<!doctype html><html lang="hu"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>CHERRIFT v0.2</title><link rel="stylesheet" href="style.css"></head><body>
-<canvas id="game"></canvas>
-<div id="app">
-<section id="menu" class="screen">
-  <div class="hero"><div class="version">v0.2.0</div><h1>CHERRIFT</h1><p>SURVIVE. EVOLVE. BLOOM.</p>
-  <button id="playBtn" class="primary">PLAY</button><button data-open="skins">CHARACTERS & SKINS</button><button data-open="gear">GEAR</button><button data-open="chests">CHESTS</button><button data-open="settings">SETTINGS</button></div>
-  <aside><div class="card profile"><div class="avatar">🐰</div><div><b>Guest</b><small>Local save</small></div></div><div class="card"><h3>Resources</h3><p>🪙 <b id="menuCoins">0</b> coins</p><p>📦 <b id="menuKeys">3</b> chest keys</p></div><div class="card"><h3>Best Run</h3><p id="bestRun">00:00 · 0 kills</p></div></aside>
-</section>
-<section id="skins" class="panel hidden"><header><button class="back">←</button><h2>Characters & Skins</h2></header><div id="skinGrid" class="grid"></div></section>
-<section id="gear" class="panel hidden"><header><button class="back">←</button><h2>Gear</h2></header><div class="gear-layout"><div><h3>Equipped</h3><div id="equipped" class="slots"></div><div id="totalStats" class="card"></div></div><div><h3>Inventory</h3><div id="inventory" class="grid compact"></div></div></div></section>
-<section id="chests" class="panel hidden"><header><button class="back">←</button><h2>Chests</h2></header><div class="chest-wrap"><div class="chest">📦</div><h3>Bloom Chest</h3><p>Gear drop guaranteed. Small chance for a Common or Rare skin.</p><button id="openChest" class="primary">OPEN · 1 KEY</button><div id="chestResult" class="result"></div></div></section>
-<section id="settings" class="panel hidden"><header><button class="back">←</button><h2>Settings</h2></header><div class="settings-card"><label>Master volume <input id="volume" type="range" min="0" max="100"></label><label class="toggle"><input id="touchMode" type="checkbox"> Full-screen touch movement</label><button id="fullscreen" class="fullscreen">⛶ FULLSCREEN</button><p>Mobilon a képernyő bal oldali, nagy területén húzd az ujjad bármely irányba. Nincs szükség látható joystickra.</p></div></section>
-<section id="hud" class="hidden"><div class="bars"><div class="bar hp"><i id="hpFill"></i><span id="hpText"></span></div><div class="bar xp"><i id="xpFill"></i><span id="xpText"></span></div></div><div class="run"><b id="timer">00:00</b><small id="kills">0 kills</small><small>🪙 <span id="runCoins">0</span></small></div><button id="pause">Ⅱ</button></section>
-<div id="skill" class="hidden"><span>✦</span><small id="cooldown"></small></div>
-<section id="levelModal" class="modal hidden"><div class="modal-card"><h2>LEVEL UP!</h2><div id="upgrades" class="upgrade-list"></div></div></section>
-<section id="pauseModal" class="modal hidden"><div class="modal-card"><h2>PAUSE</h2><button id="resume" class="primary">RESUME</button><button id="quit">MAIN MENU</button></div></section>
-<section id="gameOver" class="modal hidden"><div class="modal-card"><h2>RUN COMPLETE</h2><div id="runResult"></div><button id="retry" class="primary">RETRY</button><button id="toMenu">MAIN MENU</button></div></section>
-<div id="toast"></div>
-</div>
-<script src="src/data.js"></script><script src="src/storage.js"></script><script src="src/input.js"></script><script src="src/game.js"></script><script src="src/ui.js"></script><script src="src/main.js"></script>
-</body></html>
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>CHERRIFT v0.2.1</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="app">
+    <section id="menu" class="screen menu-screen">
+      <div class="menu-bg-orb"></div>
+
+      <main class="menu-left">
+        <div class="version">v0.2.1 FIXED</div>
+        <h1>CHERRIFT</h1>
+        <p class="tagline">SURVIVE. EVOLVE. BLOOM.</p>
+
+        <div class="menu-buttons">
+          <button id="playBtn" class="menu-btn primary"><span>⌖</span> PLAY <b>›</b></button>
+          <button data-open="skins" class="menu-btn"><span>🐰</span> CHARACTERS & SKINS <b>›</b></button>
+          <button data-open="gear" class="menu-btn"><span>⚔</span> GEAR <b>›</b></button>
+          <button data-open="chests" class="menu-btn"><span>📦</span> CHESTS <b>›</b></button>
+          <button data-open="settings" class="menu-btn"><span>⚙</span> SETTINGS <b>›</b></button>
+        </div>
+      </main>
+
+      <aside class="menu-right">
+        <div class="glass profile">
+          <div class="avatar">🐰</div>
+          <div>
+            <strong>Guest</strong>
+            <p>Local save</p>
+          </div>
+        </div>
+
+        <div class="glass">
+          <h3>Resources</h3>
+          <p>🪙 <b id="menuCoins">0</b> coins</p>
+          <p>📦 <b id="menuKeys">3</b> chest keys</p>
+        </div>
+
+        <div class="glass">
+          <h3>Selected Skin</h3>
+          <p id="selectedSkinText">Cherry</p>
+        </div>
+
+        <div class="glass">
+          <h3>Best Run</h3>
+          <p id="bestRun">00:00 · 0 kills</p>
+        </div>
+      </aside>
+    </section>
+
+    <section id="skins" class="panel hidden">
+      <header class="panel-head">
+        <button class="back">←</button>
+        <div>
+          <h2>Characters & Skins</h2>
+          <p>Skin = kinézet + lövés + aktív skill. Gear csak statot ad.</p>
+        </div>
+      </header>
+      <div id="skinGrid" class="card-grid"></div>
+    </section>
+
+    <section id="gear" class="panel hidden">
+      <header class="panel-head">
+        <button class="back">←</button>
+        <div>
+          <h2>Gear</h2>
+          <p>Crimson = offenzív, Azure = defenzív, Verdant = hybrid.</p>
+        </div>
+      </header>
+      <div class="gear-layout">
+        <div class="glass">
+          <h3>Equipped</h3>
+          <div id="equipped" class="slots"></div>
+          <div id="totalStats" class="stats-box"></div>
+        </div>
+        <div class="glass">
+          <h3>Inventory</h3>
+          <div id="inventory" class="card-grid compact"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="chests" class="panel hidden">
+      <header class="panel-head">
+        <button class="back">←</button>
+        <div>
+          <h2>Chests</h2>
+          <p>Gear garantált. Kis eséllyel skin is eshet.</p>
+        </div>
+      </header>
+      <div class="chest-wrap glass">
+        <div class="chest-visual">📦</div>
+        <h3>Bloom Chest</h3>
+        <p>Common / Uncommon / Rare gear. Ritkán Common vagy Rare skin.</p>
+        <button id="openChest" class="menu-btn primary center">OPEN · 1 KEY</button>
+        <div id="chestResult" class="result"></div>
+      </div>
+    </section>
+
+    <section id="settings" class="panel hidden">
+      <header class="panel-head">
+        <button class="back">←</button>
+        <div>
+          <h2>Settings</h2>
+          <p>Mobilon nincs látható joystick. A bal oldali nagy terület érzékeli a mozgást.</p>
+        </div>
+      </header>
+      <div class="settings-card glass">
+        <label class="setting-row">
+          Master volume
+          <input id="volume" type="range" min="0" max="100" value="60" />
+        </label>
+        <label class="setting-row check">
+          <input id="touchMode" type="checkbox" checked />
+          Full-screen touch movement
+        </label>
+        <button id="fullscreen" class="fullscreen-btn">⛶ FULLSCREEN</button>
+      </div>
+    </section>
+
+    <section id="hud" class="hud hidden">
+      <div class="hud-bars">
+        <div class="bar hp"><i id="hpFill"></i><span id="hpText">HP</span></div>
+        <div class="bar xp"><i id="xpFill"></i><span id="xpText">LV 1</span></div>
+      </div>
+      <div class="run-box">
+        <b id="timer">00:00</b>
+        <small id="kills">0 kills</small>
+        <small>🪙 <span id="runCoins">0</span></small>
+      </div>
+      <button id="pause" class="pause-btn">Ⅱ</button>
+    </section>
+
+    <button id="skill" class="skill hidden"><span>✦</span><small id="cooldown"></small></button>
+
+    <section id="levelModal" class="modal hidden">
+      <div class="modal-card">
+        <h2>LEVEL UP!</h2>
+        <p>Válassz egy fejlesztést:</p>
+        <div id="upgrades" class="upgrade-list"></div>
+      </div>
+    </section>
+
+    <section id="pauseModal" class="modal hidden">
+      <div class="modal-card">
+        <h2>PAUSE</h2>
+        <button id="resume" class="menu-btn primary center">RESUME</button>
+        <button id="quit" class="menu-btn center">MAIN MENU</button>
+      </div>
+    </section>
+
+    <section id="gameOver" class="modal hidden">
+      <div class="modal-card">
+        <h2>RUN COMPLETE</h2>
+        <div id="runResult"></div>
+        <button id="retry" class="menu-btn primary center">RETRY</button>
+        <button id="toMenu" class="menu-btn center">MAIN MENU</button>
+      </div>
+    </section>
+
+    <div id="toast"></div>
+  </div>
+
+  <script src="src/data.js"></script>
+  <script src="src/storage.js"></script>
+  <script src="src/input.js"></script>
+  <script src="src/game.js"></script>
+  <script src="src/ui.js"></script>
+  <script src="src/main.js"></script>
+</body>
+</html>
