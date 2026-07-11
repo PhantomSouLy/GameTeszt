@@ -1,38 +1,23 @@
-CHERRIFT v0.3.8 Stability Consolidation Patch
-
-[Why]
-- The repo had many patch scripts stacked after each other.
-- Several scripts patched UI.bind / UI.open / renderGear / renderWorldPanel repeatedly.
-- This caused duplicate event listeners, overwritten button handlers, and unstable UI behavior.
+CHERRIFT v0.3.9 Sprite Scale Normalizer
 
 [Fixed]
-- Added a final stability layer loaded last before main.js.
-- Key buttons are cloned and rebound cleanly after UI.init:
-  - Play / Mobile Play
-  - Skin prev / next / equip
-  - Gear interactions
-  - World Select prev / next / play / back
-  - Pause / resume / fullscreen / settings
-  - Stage clear buttons
-  - Back buttons and data-open menu buttons
-- Gear is now rendered through one stable renderer.
-- Gear drag no longer uses native HTML drag.
-- Gear drag uses pointer events with movement threshold.
-- Gear item ghost clears on pointerup, pointercancel, blur, and tab hidden.
-- World Select always uses the full 10-stage list.
-- World Select stage dots are rebuilt from the same full stage list.
-- Skin panel is rendered from current CHERRIFT_DATA skin each time.
-- Skin splash path/cache logic is preserved.
-- Base/Fairy/Beastclaw skill info is no longer copied wrong between skins.
+- Cherry appeared to visually grow when switching from idle to walk.
+- This was caused by inconsistent visual scale / empty padding between sprite sheet states.
+- Walk frames are now drawn slightly smaller to match idle frames.
+- Attack and skill frames are also slightly normalized.
+- Feet/ground anchor is kept stable so the character does not pop upward/downward during animation changes.
+- Fairy right-walk flip fix remains included.
 
-[Kept]
-- v0.3.7 preloader remains.
-- v0.3.6 map texture fixes remain.
-- CHERRIFT branding remains.
-- Splash art fixes remain.
+[Technical]
+- Added src/sprite_scale_normalizer_v039.js
+- This final drawPlayer patch normalizes state rendering without editing PNG files.
+- State scale defaults:
+  - idle: 1.00
+  - walk: 0.90
+  - attack: 0.94
+  - skill: 0.94
 
 [Files changed]
 - index.html
-- menu_v031.css
-- src/stability_consolidation_v038.js
+- src/sprite_scale_normalizer_v039.js
 - PATCH_NOTES_CHERRIFT.txt
