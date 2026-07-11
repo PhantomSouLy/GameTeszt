@@ -1,35 +1,85 @@
 (() => {
   if (!window.UI || !window.CherriftGame) return;
 
-  const VERSION = "0.3.6a-ui-texture-hotfix";
+  const VERSION = "0.3.6b-button-skin-repair";
   if (window.CHERRIFT_CONFIG) CHERRIFT_CONFIG.version = VERSION;
   if (window.CHERRIFT_DATA) CHERRIFT_DATA.version = VERSION;
 
-  const SKIN_SPLASH = {
-    cherry_default: "assets/player/skins/base_cherry/cherry_splash_art.png",
-    base_cherry: "assets/player/skins/base_cherry/cherry_splash_art.png",
-    fairy_cherry: "assets/player/skins/fairy_cherry/fairy_cherry_splash_art.png",
-    beastclaw_cherry: "assets/player/skins/beastclaw_cherry/beastclaw_cherry_splash_art.png"
+  const SKIN_SPLASH_CANDIDATES = {
+    cherry_default: [
+      "assets/player/skins/base_cherry/cherry_splash_art.png",
+      "assets/player/skins/base_cherry/base_cherry_splash_art.png",
+      "assets/player/skins/base_cherry/splash_art.png"
+    ],
+    base_cherry: [
+      "assets/player/skins/base_cherry/cherry_splash_art.png",
+      "assets/player/skins/base_cherry/base_cherry_splash_art.png",
+      "assets/player/skins/base_cherry/splash_art.png"
+    ],
+    fairy_cherry: [
+      "assets/player/skins/fairy_cherry/fairy_cherry_splash_art.png",
+      "assets/player/skins/fairy_cherry/splash_art.png"
+    ],
+    beastclaw_cherry: [
+      "assets/player/skins/beastclaw_cherry/beastclaw_cherry_splash_art.png",
+      "assets/player/skins/beastclaw_cherry/splash_art.png"
+    ]
   };
 
   const splashCache = {};
-  const splashState = {};
+  const splashBad = {};
   let splashToken = 0;
 
-  function preloadSplashArt() {
-    Object.entries(SKIN_SPLASH).forEach(([id, src]) => {
-      if (splashState[id]) return;
-      splashState[id] = "loading";
+  const q = sel => document.querySelector(sel);
+  const byId = id => document.getElementById(id);
+
+  function candidatesForSkin(skin) {
+    if (!skin) return [];
+    const fromMap = SKIN_SPLASH_CANDIDATES[skin.id] || [];
+    const folder = CHERRIFT_CONFIG?.player?.skins?.[skin.id]?.folder || skin.id;
+    return [
+      ...fromMap,
+      `assets/player/skins/${folder}/${skin.id}_splash_art.png`,
+      `assets/player/skins/${folder}/splash_art.png`
+    ].filter((v, i, a) => v && a.indexOf(v) === i);
+  }
+
+  function loadFirstWorking(urls, skinId, done) {
+    if (splashCache[skinId]) return done(splashCache[skinId]);
+    const list = urls.filter(u => !splashBad[u]);
+    let i = 0;
+
+    const next = () => {
+      const url = list[i++];
+      if (!url) return done(null);
+
       const img = new Image();
-      img.onload = () => { splashCache[id] = src; splashState[id] = "ready"; };
-      img.onerror = () => { splashState[id] = "error"; };
+      img.onload = () => {
+        splashCache[skinId] = url;
+        done(url);
+      };
+      img.onerror = () => {
+        splashBad[url] = true;
+        next();
+      };
       img.decoding = "async";
-      img.src = src;
+      img.src = url;
+    };
+
+    next();
+  }
+
+  function preloadSplashArt() {
+    (CHERRIFT_DATA?.skins || []).forEach(skin => {
+      loadFirstWorking(candidatesForSkin(skin), skin.id, () => {});
     });
   }
 
   function currentSkin() {
-    return CHERRIFT_DATA?.skins?.[UI.skinIndex] || CHERRIFT_DATA?.skins?.find(s => s.id === UI.save?.selectedSkin);
+    const skins = CHERRIFT_DATA?.skins || [];
+    if (!skins.length) return null;
+    if (UI.skinIndex < 0 || UI.skinIndex >= skins.length) UI.skinIndex = 0;
+    return skins[UI.skinIndex] || skins.find(s => s.id === UI.save?.selectedSkin) || skins[0];
   }
 
   function combatTypeForSkin(skin) {
@@ -46,113 +96,220 @@
     return "Gyors dash előre, rövid sérthetetlenséggel és ütközési sebzéssel.";
   }
 
-  function applySplashCached() {
-    const skin = currentSkin();
-    const splash = document.getElementById("skinSplash");
-    const portrait = document.getElementById("skinPortrait");
-    if (!skin || !splash) return;
+  function applySkinSplash(skin) {
+    const splash = byId("skinSplash");
+    const portrait = byId("skinPortrait");
+    if (!splash || !skin) return;
 
     const token = ++splashToken;
-    const src = SKIN_SPLASH[skin.id] || `assets/player/skins/${skin.id}/${skin.id}_splash_art.png`;
+    splash.classList.add("splash-loading");
 
-    const finish = ok => {
+    loadFirstWorking(candidatesForSkin(skin), skin.id, url => {
       if (token !== splashToken) return;
       splash.classList.remove("splash-loading");
-      if (ok) {
+
+      if (url) {
         splash.classList.add("has-splash-art");
         splash.classList.remove("no-splash-art");
-        splash.style.backgroundImage = `linear-gradient(180deg, rgba(5,3,12,.04), rgba(5,3,12,.28)), url("${src}")`;
-        if (portrait) {
-          portrait.innerHTML = "";
-          portrait.textContent = "";
-        }
+        splash.style.backgroundImage = `linear-gradient(180deg, rgba(5,3,12,.02), rgba(5,3,12,.24)), url("${url}")`;
+        if (portrait) portrait.textContent = "";
       } else {
         splash.classList.remove("has-splash-art");
         splash.classList.add("no-splash-art");
         splash.style.backgroundImage = "";
         if (portrait) portrait.textContent = skin.emoji || "🐰";
       }
-    };
-
-    if (splashCache[skin.id] || splashCache[src]) return finish(true);
-
-    splash.classList.add("splash-loading");
-    const img = new Image();
-    img.onload = () => {
-      splashCache[skin.id] = src;
-      splashCache[src] = src;
-      finish(true);
-    };
-    img.onerror = () => finish(false);
-    img.decoding = "async";
-    img.src = src;
+    });
   }
 
-  function cleanupSkinPanel() {
+  function renderSkinPanel() {
+    const skins = CHERRIFT_DATA?.skins || [];
     const skin = currentSkin();
     if (!skin) return;
 
-    const info = document.querySelector("#skins .skin-info");
-    const rarity = document.getElementById("skinRarity");
-    const kit = document.querySelector("#skins .skin-kit");
-    const weapon = document.getElementById("skinWeapon");
-    const skill = document.getElementById("skinSkill");
+    const unlocked = (UI.save?.unlockedSkins || []).includes(skin.id);
+    const selected = UI.save?.selectedSkin === skin.id;
 
-    if (rarity && !document.getElementById("skinCombatPillV036a")) {
-      const row = document.createElement("div");
-      row.className = "skin-meta-row-v036a";
-      row.id = "skinMetaRowV036a";
-      const combat = document.createElement("span");
-      combat.id = "skinCombatPillV036a";
-      combat.className = "combat-pill-v036a";
-      combat.textContent = combatTypeForSkin(skin);
-      rarity.insertAdjacentElement("afterend", row);
-      row.appendChild(rarity);
-      row.appendChild(combat);
+    const rarity = byId("skinRarity");
+    const name = byId("skinName");
+    const desc = byId("skinDesc");
+    const mini = byId("skinMini");
+    const kit = q("#skins .skin-kit");
+    const equip = byId("skinEquip");
+
+    if (rarity) {
+      rarity.textContent = skin.rarity + (unlocked ? "" : " · LOCKED");
+      rarity.className = `rarity-pill rarity-${String(skin.rarity || "Common").toLowerCase()}`;
     }
+    if (name) name.textContent = skin.name || skin.id;
+    if (desc) desc.textContent = "";
+    if (mini) mini.textContent = "";
 
-    const combat = document.getElementById("skinCombatPillV036a");
+    let meta = byId("skinMetaRowV036b");
+    if (!meta && rarity) {
+      meta = document.createElement("div");
+      meta.id = "skinMetaRowV036b";
+      meta.className = "skin-meta-row-v036b";
+      rarity.insertAdjacentElement("afterend", meta);
+      meta.appendChild(rarity);
+      const combat = document.createElement("span");
+      combat.id = "skinCombatPillV036b";
+      combat.className = "combat-pill-v036b";
+      meta.appendChild(combat);
+    }
+    const combat = byId("skinCombatPillV036b");
     if (combat) combat.textContent = combatTypeForSkin(skin);
 
     if (kit) {
-      kit.classList.add("skin-kit-clean");
-      const skillName = skin.skill || skill?.textContent || "Skill";
+      kit.className = "skin-kit skin-kit-v036b";
       kit.innerHTML = `
-        <div id="skillLineV036a" class="skill-line-v036a">
+        <div class="skill-line-v036b" id="skillLineV036b">
           <span>Skill</span>
-          <b><i class="skill-icon-v036a">✦</i><span id="skinSkill">${skillName}</span></b>
-          <p id="skillBubbleV036a" class="skill-bubble-v036a hidden">${skillInfoForSkin(skin)}</p>
+          <b><i class="skill-icon-v036b">✦</i><span id="skinSkill">${skin.skill || "Skill"}</span></b>
+          <p id="skillBubbleV036b" class="skill-bubble-v036b hidden">${skillInfoForSkin(skin)}</p>
         </div>`;
-      const line = document.getElementById("skillLineV036a");
-      const bubble = document.getElementById("skillBubbleV036a");
-      line?.addEventListener("click", () => bubble?.classList.toggle("hidden"));
+      const line = byId("skillLineV036b");
+      const bubble = byId("skillBubbleV036b");
+      line?.addEventListener("click", e => {
+        e.preventDefault();
+        bubble?.classList.toggle("hidden");
+      });
     }
 
-    const desc = document.getElementById("skinDesc");
-    if (desc) desc.textContent = "";
-    if (weapon) weapon.textContent = skin.weapon || "";
+    if (equip) {
+      equip.disabled = !unlocked;
+      equip.textContent = selected ? "EQUIPPED" : unlocked ? "EQUIP" : "LOCKED";
+    }
+
+    applySkinSplash(skin);
   }
 
-  const oldRenderSkinCarousel = UI.renderSkinCarousel?.bind(UI);
-  if (oldRenderSkinCarousel && !UI.__v036aSkinPatched) {
-    UI.renderSkinCarousel = function v036aRenderSkinCarousel(...args) {
-      const result = oldRenderSkinCarousel(...args);
-      cleanupSkinPanel();
-      applySplashCached();
-      return result;
+  function openWorldSelect(e) {
+    e?.preventDefault?.();
+    document.body.classList.remove("is-playing", "is-loading-stage");
+    byId("stageLoading")?.classList.add("hidden");
+    ["hud", "skill", "stageHud", "pauseModal", "gameOver", "levelModal", "stageClearModal"].forEach(id => byId(id)?.classList.add("hidden"));
+    if (typeof UI.openWorldSelect === "function") UI.openWorldSelect();
+    else UI.open?.("worlds");
+  }
+
+  function repairStaticButtons() {
+    const bindId = (id, fn) => {
+      const el = byId(id);
+      if (!el) return;
+      el.onclick = null;
+      el.addEventListener("click", fn, { once:false });
     };
-    UI.__v036aSkinPatched = true;
+
+    bindId("playBtn", openWorldSelect);
+    bindId("mobilePlayBtn", openWorldSelect);
+
+    bindId("skinPrev", e => {
+      e.preventDefault();
+      const skins = CHERRIFT_DATA?.skins || [];
+      if (!skins.length) return;
+      UI.skinIndex = (UI.skinIndex - 1 + skins.length) % skins.length;
+      renderSkinPanel();
+    });
+
+    bindId("skinNext", e => {
+      e.preventDefault();
+      const skins = CHERRIFT_DATA?.skins || [];
+      if (!skins.length) return;
+      UI.skinIndex = (UI.skinIndex + 1) % skins.length;
+      renderSkinPanel();
+    });
+
+    bindId("skinEquip", e => {
+      e.preventDefault();
+      const skin = currentSkin();
+      if (!skin) return;
+      if (!(UI.save?.unlockedSkins || []).includes(skin.id)) {
+        UI.toast?.("Skin locked");
+        return;
+      }
+      UI.save.selectedSkin = skin.id;
+      try { CherriftStorage.save(UI.save); } catch (_) {}
+      UI.refreshMenu?.();
+      renderSkinPanel();
+      UI.toast?.(`${skin.name} equipped`);
+    });
+
+    bindId("openChest", e => { e.preventDefault(); UI.openChest?.(); });
+    bindId("pause", e => { e.preventDefault(); UI.pause?.(); });
+    bindId("resume", e => { e.preventDefault(); UI.resume?.(); });
+    bindId("quit", e => { e.preventDefault(); UI.quit?.(); });
+    bindId("retry", e => { e.preventDefault(); UI.game?.start?.(); });
+    bindId("toMenu", e => { e.preventDefault(); UI.quit?.(); });
+    bindId("fullscreen", e => { e.preventDefault(); UI.fullscreen?.(); });
+    bindId("pauseFullscreen", e => { e.preventDefault(); UI.fullscreen?.(); });
+    bindId("pauseSettings", e => {
+      e.preventDefault();
+      document.body.classList.add("settings-from-pause");
+      byId("pauseModal")?.classList.add("hidden");
+      UI.open?.("settings");
+    });
+
+    bindId("worldPrevBtn", e => { e.preventDefault(); UI.moveWorldCarousel?.(-1); });
+    bindId("worldNextBtn", e => { e.preventDefault(); UI.moveWorldCarousel?.(1); });
+    bindId("worldBackBtn", e => { e.preventDefault(); UI.open?.("menu"); });
+    bindId("worldLaunchBtn", e => {
+      e.preventDefault();
+      if (typeof UI.launchSelectedWorld === "function") UI.launchSelectedWorld(e);
+      else UI.game?.start?.();
+    });
+
+    bindId("nextStageBtn", e => {
+      e.preventDefault();
+      UI.hideStageClear?.();
+      UI.game?.start?.();
+    });
+    bindId("replayStageBtn", e => {
+      e.preventDefault();
+      UI.hideStageClear?.();
+      UI.game?.start?.();
+    });
+    bindId("stageClearToMenuBtn", e => {
+      e.preventDefault();
+      UI.hideStageClear?.();
+      UI.quit?.();
+    });
+
+    document.querySelectorAll("[data-open]").forEach(btn => {
+      if (btn.__v036bOpenBound) return;
+      btn.__v036bOpenBound = true;
+      btn.addEventListener("click", e => {
+        e.preventDefault();
+        const id = btn.dataset.open;
+        if (id === "worlds") openWorldSelect(e);
+        else UI.open?.(id);
+      });
+    });
+
+    document.querySelectorAll(".back").forEach(btn => {
+      if (btn.__v036bBackBound) return;
+      btn.__v036bBackBound = true;
+      btn.addEventListener("click", e => {
+        e.preventDefault();
+        if (document.body.classList.contains("settings-from-pause") && byId("settings") && !byId("settings").classList.contains("hidden")) {
+          byId("settings").classList.add("hidden");
+          byId("pauseModal")?.classList.remove("hidden");
+          return;
+        }
+        UI.open?.("menu");
+      });
+    });
   }
 
-  function isGroundDecor(o) {
-    return !!o && (o.kind === "flowers" || o.kind === "mushroom");
+  function installButtonPressCssOnly() {
+    // intentionally no event listener here; CSS :active handles feedback safely
   }
 
+  // rendering and draw fixes that must remain from 0.3.6a
   const proto = CherriftGame.prototype;
 
-  // Fix draw order: enemies have a "style" too, so hp must be checked before bullet style.
-  if (!proto.__v036aDrawObjPatched) {
-    proto.drawObj = function v036aDrawObj(c, o) {
+  if (!proto.__v036bDrawObjPatched) {
+    proto.drawObj = function v036bDrawObj(c, o) {
       if (o === this.player) return this.drawPlayer(c, o);
       if (o?.kind) return this.drawObstacle(c, o);
       if (o?.type === "xp" || o?.type === "coin" || o?.type === "key") return this.drawPickup(c, o);
@@ -160,32 +317,29 @@
       if (o?.style) return this.drawBullet(c, o);
       if (o?.type) return this.drawEffect(c, o);
     };
-    proto.__v036aDrawObjPatched = true;
+    proto.__v036bDrawObjPatched = true;
   }
 
-  // Draw ground decor under Cherry/enemies, not above them.
-  if (!proto.__v036aDrawWorldPatched) {
-    proto.drawWorld = function v036aDrawWorld(c) {
+  function isGroundDecor(o) {
+    return !!o && (o.kind === "flowers" || o.kind === "mushroom");
+  }
+
+  if (!proto.__v036bDrawWorldPatched) {
+    proto.drawWorld = function v036bDrawWorld(c) {
       c.fillStyle = "#1f7d45";
       c.fillRect(0, 0, this.w, this.h);
-
       const zoom = this.zoom || CHERRIFT_CONFIG.performance?.cameraZoom || 1;
-
       c.save();
       c.translate(this.w / 2, this.h / 2);
       c.scale(zoom, zoom);
       c.translate(-this.camera.x, -this.camera.y);
-
       this.drawGround(c, zoom);
 
       const obstacles = this.obstacles || [];
-      const groundDecor = obstacles.filter(isGroundDecor);
-      const upperObstacles = obstacles.filter(o => !isGroundDecor(o));
-
-      for (const o of groundDecor) this.drawObstacle(c, o);
+      obstacles.filter(isGroundDecor).forEach(o => this.drawObstacle(c, o));
 
       const drawables = [
-        ...upperObstacles,
+        ...obstacles.filter(o => !isGroundDecor(o)),
         ...(this.pickups || []),
         ...(this.enemies || []),
         ...(this.player ? [this.player] : []),
@@ -194,17 +348,15 @@
       ];
 
       drawables.sort((a, b) => (a.y || 0) - (b.y || 0));
-      for (const o of drawables) this.drawObj(c, o);
-
+      drawables.forEach(o => this.drawObj(c, o));
       c.restore();
     };
-    proto.__v036aDrawWorldPatched = true;
+    proto.__v036bDrawWorldPatched = true;
   }
 
-  // Bigger visible small rock so collision feels fair.
   const oldDrawObstacle = proto.drawObstacle;
-  if (oldDrawObstacle && !proto.__v036aRockPatched) {
-    proto.drawObstacle = function v036aDrawObstacle(c, o) {
+  if (oldDrawObstacle && !proto.__v036bRockPatched) {
+    proto.drawObstacle = function v036bDrawObstacle(c, o) {
       if (o?.kind === "rockSmall") {
         const img = this.assets?.get?.("rockSmall");
         if (img) {
@@ -214,13 +366,12 @@
       }
       return oldDrawObstacle.call(this, c, o);
     };
-    proto.__v036aRockPatched = true;
+    proto.__v036bRockPatched = true;
   }
 
-  // Pink slime: now that drawObj is fixed, use the real slime sprite sheet. Fallback stays procedural.
   const oldDrawEnemy = proto.drawEnemy;
-  if (oldDrawEnemy && !proto.__v036aPinkSlimePatched) {
-    proto.drawEnemy = function v036aDrawEnemy(c, e) {
+  if (oldDrawEnemy && !proto.__v036bPinkPatched) {
+    proto.drawEnemy = function v036bDrawEnemy(c, e) {
       if (e?.enemyType === "pink_slime") {
         const img = this.assets?.get?.("slime");
         if (img) {
@@ -232,7 +383,6 @@
           const frame = Math.floor((this.t + (e.phase || 0)) * 7) % columns;
           const dw = cfg.displayWidth || 76;
           const dh = cfg.displayHeight || 76;
-
           c.save();
           if (e.hit > 0) c.globalAlpha = .65;
           c.drawImage(img, frame * fw, row * fh, fw, fh, e.x - dw / 2, e.y - dh / 2, dw, dh);
@@ -242,13 +392,12 @@
       }
       return oldDrawEnemy.call(this, c, e);
     };
-    proto.__v036aPinkSlimePatched = true;
+    proto.__v036bPinkPatched = true;
   }
 
-  // Fairy right-walk fix: flip the right walk sprite horizontally.
   const oldDrawPlayer = proto.drawPlayer;
-  if (oldDrawPlayer && !proto.__v036aFairyRightPatched) {
-    proto.drawPlayer = function v036aDrawPlayer(c, p) {
+  if (oldDrawPlayer && !proto.__v036bFairyRightPatched) {
+    proto.drawPlayer = function v036bDrawPlayer(c, p) {
       const skin = this.activeSkinConfig?.();
       const skillActive = (p.skillCastTimer || 0) > 0;
       const dir = skillActive ? (p.skillDir || p.lastDir || "down") : (p.lastDir || "down");
@@ -266,83 +415,63 @@
           const dh = cfg.displayHeight || 116;
           const dx = Math.round(p.x - dw / 2);
           const dy = Math.round(p.y - dh + 34);
-
           c.save();
           c.translate(dx + dw / 2, 0);
           c.scale(-1, 1);
-          c.drawImage(
-            img,
-            frame * cfg.frameWidth, 0,
-            cfg.frameWidth, cfg.frameHeight,
-            -dw / 2,
-            dy,
-            dw, dh
-          );
+          c.drawImage(img, frame * cfg.frameWidth, 0, cfg.frameWidth, cfg.frameHeight, -dw / 2, dy, dw, dh);
           c.restore();
           return;
         }
       }
-
       return oldDrawPlayer.call(this, c, p);
     };
-    proto.__v036aFairyRightPatched = true;
+    proto.__v036bFairyRightPatched = true;
   }
 
-  // Button press feedback for most interactive buttons.
-  function installButtonFeedback(root = document) {
-    root.querySelectorAll("button, .menu-btn, .carousel-arrow, .world-arrow, .fullscreen-btn, .upgrade-card, .inv-item, .gear-slot").forEach(btn => {
-      if (btn.__v036aFeedback) return;
-      btn.__v036aFeedback = true;
+  const oldRenderSkinCarousel = UI.renderSkinCarousel?.bind(UI);
+  UI.renderSkinCarousel = function v036bRenderSkinCarousel(...args) {
+    if (oldRenderSkinCarousel) oldRenderSkinCarousel(...args);
+    renderSkinPanel();
+  };
 
-      const on = () => {
-        btn.classList.add("btn-press-v036a");
-        clearTimeout(btn.__v036aFeedbackTimer);
-      };
-      const off = () => {
-        clearTimeout(btn.__v036aFeedbackTimer);
-        btn.__v036aFeedbackTimer = setTimeout(() => btn.classList.remove("btn-press-v036a"), 90);
-      };
-
-      btn.addEventListener("pointerdown", on, { passive:true });
-      btn.addEventListener("pointerup", off, { passive:true });
-      btn.addEventListener("pointercancel", off, { passive:true });
-      btn.addEventListener("pointerleave", off, { passive:true });
-      btn.addEventListener("click", off, { passive:true });
-    });
+  const oldRefreshMenu = UI.refreshMenu?.bind(UI);
+  if (oldRefreshMenu) {
+    UI.refreshMenu = function v036bRefreshMenu(...args) {
+      const result = oldRefreshMenu(...args);
+      const build = byId("menuBuildVersion");
+      if (build) build.textContent = "v0.3.6b REPAIR";
+      setTimeout(repairStaticButtons, 0);
+      return result;
+    };
   }
 
   const oldBind = UI.bind?.bind(UI);
-  if (oldBind && !UI.__v036aBindPatched) {
-    UI.bind = function v036aBind(...args) {
-      const result = oldBind(...args);
-      preloadSplashArt();
-      cleanupSkinPanel();
-      applySplashCached();
-      installButtonFeedback();
+  UI.bind = function v036bBind(...args) {
+    const result = oldBind ? oldBind(...args) : undefined;
+    preloadSplashArt();
+    renderSkinPanel();
+    repairStaticButtons();
+    installButtonPressCssOnly();
+    setTimeout(repairStaticButtons, 0);
+    setTimeout(renderSkinPanel, 80);
+    return result;
+  };
+
+  const oldOpen = UI.open?.bind(UI);
+  if (oldOpen) {
+    UI.open = function v036bOpen(id, ...args) {
+      const result = oldOpen(id, ...args);
+      setTimeout(() => {
+        repairStaticButtons();
+        if (id === "skins") renderSkinPanel();
+      }, 0);
       return result;
     };
-    UI.__v036aBindPatched = true;
   }
-
-  const oldRefreshMenu = UI.refreshMenu?.bind(UI);
-  if (oldRefreshMenu && !UI.__v036aRefreshPatched) {
-    UI.refreshMenu = function v036aRefresh(...args) {
-      const result = oldRefreshMenu(...args);
-      const build = document.getElementById("menuBuildVersion");
-      if (build) build.textContent = "v0.3.6a HOTFIX";
-      installButtonFeedback();
-      return result;
-    };
-    UI.__v036aRefreshPatched = true;
-  }
-
-  const mo = new MutationObserver(() => installButtonFeedback());
-  mo.observe(document.documentElement, { childList:true, subtree:true });
 
   preloadSplashArt();
   setTimeout(() => {
-    cleanupSkinPanel();
-    applySplashCached();
-    installButtonFeedback();
+    repairStaticButtons();
+    renderSkinPanel();
   }, 0);
 })();
