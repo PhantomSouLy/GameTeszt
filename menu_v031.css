@@ -1691,3 +1691,137 @@ button.btn-press-v036a,
 body.is-playing canvas {
   image-rendering: auto;
 }
+
+
+/* CHERRIFT v0.3.6b - button + skin selector repair */
+button,
+.menu-btn,
+.carousel-arrow,
+.world-arrow,
+.fullscreen-btn,
+.upgrade-card,
+.inv-item,
+.gear-slot {
+  touch-action: manipulation;
+}
+
+button:active,
+.menu-btn:active,
+.carousel-arrow:active,
+.world-arrow:active,
+.fullscreen-btn:active,
+.upgrade-card:active,
+.inv-item:active,
+.gear-slot:active {
+  transform: scale(.965);
+  filter: brightness(1.1);
+}
+
+.skin-splash {
+  background-position: center center !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-color: rgba(255,91,172,.10);
+}
+.skin-splash.has-splash-art .skin-portrait {
+  opacity: 0 !important;
+}
+.skin-splash.no-splash-art .skin-portrait {
+  opacity: 1 !important;
+}
+.skin-splash.splash-loading::after {
+  content: "Loading art...";
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  z-index: 4;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.45);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+}
+#skins .skin-info #skinDesc,
+#skins .ingame-preview {
+  display: none !important;
+}
+.skin-meta-row-v036b {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 14px;
+}
+.skin-meta-row-v036b .combat-pill-v036b,
+.skin-meta-row-v036b .rarity-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.08);
+  font-weight: 1000;
+}
+.skin-kit.skin-kit-v036b {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 18px 0;
+}
+.skin-kit.skin-kit-v036b > div {
+  min-height: 76px;
+  padding: 14px 16px;
+}
+.skill-line-v036b {
+  cursor: pointer;
+}
+.skill-line-v036b b {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+}
+.skill-icon-v036b {
+  width: 34px;
+  height: 34px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255,91,172,.95), rgba(255,210,233,.44));
+  border: 1px solid rgba(255,255,255,.25);
+}
+.skill-bubble-v036b {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.13);
+  color: rgba(255,245,251,.92);
+  font-weight: 750;
+  line-height: 1.35;
+}
+.skill-bubble-v036b.hidden {
+  display: none !important;
+}
+
+body.is-playing .stage-hud {
+  top: max(150px, calc(env(safe-area-inset-top) + 150px)) !important;
+  left: 22px !important;
+  right: auto !important;
+  transform: none !important;
+  max-width: calc(100vw - 44px) !important;
+}
+body.is-playing .stage-box {
+  justify-content: flex-start !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  padding: 0 !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,.7);
+}
+body.is-playing .stage-box b,
+body.is-playing .stage-box small {
+  font-size: 11px !important;
+}

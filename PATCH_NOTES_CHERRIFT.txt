@@ -1,40 +1,40 @@
-CHERRIFT v0.3.6a UI / Texture Hotfix
+CHERRIFT v0.3.6b Button + Skin Repair
 
 [Fixed]
-- Skin splash art now preloads and uses cache.
-- Skin splash art no longer starts a fresh image load every time you change skin.
-- Stale splash loads no longer overwrite the currently selected skin.
-- Ground decoration layer fixed:
-  - flowers
-  - flower1 / flower2
-  - mushroom
-  These now draw under Cherry/enemies instead of above them.
-- Small rock visual size increased to better match collision.
-- Pink slime visibility fixed.
-  Important technical fix: enemies with `style` were being drawn as bullets because drawObj checked `style` before `hp`.
-- Fairy Cherry right-walk direction fixed by flipping the right walk animation.
-- Stage objective HUD moved down/left on mobile so it no longer overlaps HP/XP/timer.
-
-[Changed]
-- Skin selector simplified.
-- Removed long skin description.
-- Removed weapon/info card clutter from the visible layout.
-- Removed in-game preview section.
+- Repaired menu buttons after v0.3.6a.
+- Removed the unsafe JS-based button feedback behavior and switched to safe CSS :active feedback.
+- Rebound core menu controls:
+  - Play
+  - mobile Play
+  - data-open menu buttons
+  - back buttons
+  - skin prev/next/equip
+  - pause/resume/fullscreen/settings
+  - world select controls
+  - stage clear controls
+- Skin carousel now renders from the active CHERRIFT_DATA skin every time.
+- Skin info no longer repeats the wrong description.
 - Skin selector now focuses on:
   - rarity
   - combat type
   - skill name
-- Skill row can be tapped to show a small info bubble.
+  - tap skill for info bubble
+- Splash art loader now tries multiple candidate paths and caches the first working one.
 
-[Added]
-- Button press feedback for most UI buttons.
-- Small press/glow effect added to:
-  - menu buttons
-  - carousel arrows
-  - world arrows
-  - fullscreen buttons
-  - upgrade cards
-  - inventory / gear buttons
+[Kept from v0.3.6a]
+- Map decor lower layer fix.
+- Small rock visual size fix.
+- Pink slime draw order / sprite fix.
+- Fairy Cherry right-walk flip fix.
+- Stage objective HUD reposition.
+- Button press feedback, now safely CSS-only.
+
+[Important]
+- If Base/Fairy splash art still does not appear, the image files are likely not present at the expected repo paths yet.
+- Expected preferred paths:
+  assets/player/skins/base_cherry/cherry_splash_art.png
+  assets/player/skins/fairy_cherry/fairy_cherry_splash_art.png
+  assets/player/skins/beastclaw_cherry/beastclaw_cherry_splash_art.png
 
 [Files changed]
 - index.html
