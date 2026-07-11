@@ -2227,3 +2227,94 @@ body.is-playing .raid-box{display:none!important}
   .raid-warning-v040{top:20%;padding:13px 14px}
   .stage-clear-actions{grid-template-columns:1fr}
 }
+
+
+/* ============================================================
+   CHERRIFT v0.4.0a HOTFIX
+   PC skin layout, PC/mobile zoom tuning, stable gear drag
+   ============================================================ */
+
+@media (min-width: 1000px) {
+  #skins .panel-body,
+  #skins .skin-panel,
+  #skins .skin-card {
+    overflow: hidden !important;
+  }
+
+  #skins .skin-carousel,
+  #skins .skin-showcase,
+  #skins .skin-card,
+  #skins .skin-content {
+    align-items: center !important;
+  }
+
+  #skins .skin-splash {
+    width: min(43vw, 720px) !important;
+    max-width: 720px !important;
+    height: min(58vh, 620px) !important;
+    min-height: 430px !important;
+    max-height: 620px !important;
+    background-size: contain !important;
+    background-color: rgba(255,255,255,.035) !important;
+    border-radius: 24px !important;
+  }
+
+  #skins .skin-info,
+  #skins .skin-details,
+  #skins .skin-copy {
+    max-width: 720px !important;
+  }
+
+  #skins .carousel-arrow,
+  #skins #skinPrev,
+  #skins #skinNext {
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+  }
+
+  #skins #skinEquip {
+    max-width: 360px !important;
+  }
+}
+
+.drag-ghost-v040a {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 72px;
+  height: 72px;
+  z-index: 100000;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.24);
+  background: rgba(22, 14, 30, .86);
+  box-shadow: 0 18px 44px rgba(0,0,0,.42), 0 0 26px rgba(255,91,172,.28);
+  transform: translate(-9999px, -9999px);
+}
+.drag-ghost-v040a span {
+  font-size: 34px;
+}
+body.gear-dragging-v040a {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  touch-action: none !important;
+}
+body.gear-dragging-v040a #gear {
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+}
+#gear .gear-slot.drag-eligible {
+  border-color: rgba(255, 143, 203, .95) !important;
+  box-shadow: 0 0 24px rgba(255, 91, 172, .42) !important;
+}
+#gear .gear-slot.drag-disabled {
+  opacity: .34 !important;
+  filter: grayscale(.5) !important;
+}
+#inventory.drag-target-v040a {
+  outline: 2px dashed rgba(255, 143, 203, .55);
+  outline-offset: 8px;
+  border-radius: 18px;
+}

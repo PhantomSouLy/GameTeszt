@@ -22,3 +22,22 @@ CHERRIFT v0.4.0 Clean Build
 
 [Cleanup]
 - See CLEANUP_DELETE_LIST.txt for old files that can be deleted from GitHub.
+
+
+CHERRIFT v0.4.0a Hotfix
+
+[Fixed]
+- PC skin selector splash art no longer overflows/crops awkwardly.
+- PC gameplay zoom increased so Cherry is not tiny and less of the map is visible.
+- Mobile gameplay zoom reduced because phone view was too close.
+- Gear drag returned with a clean pointer-based system:
+  - tap item = Details panel
+  - drag inventory item to matching slot = Equip
+  - drag equipped item to inventory = Unequip
+  - wrong target = no action
+  - pointercancel/blur/tab hide clears the ghost
+
+[Changed]
+- Gear still keeps the Details panel workflow.
+- Gear drag is now additive and does not use native HTML drag/drop.
+- Version label: v0.4.0a HOTFIX
