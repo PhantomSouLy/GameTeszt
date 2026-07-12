@@ -1482,3 +1482,246 @@
     window.CHERRIFT_V040.world1GrassTiles = WORLD1_TILES_V040E;
   }
 })();
+
+
+/* ============================================================
+   CHERRIFT v0.4.0f WORLD 1 STRONGER MIX + WORLD 2 NIGHT + TEST UNLOCK
+   - Stronger visible World 1 grass variation
+   - Better World 2 night rendering
+   - Force-unlock World 2-1 for testing
+   ============================================================ */
+(() => {
+  "use strict";
+
+  if (!window.CHERRIFT_CONFIG || !window.CherriftGame) return;
+
+  const WORLD1_F = {
+    grass1: "assets/map/world1/world1_grass1.png",
+    grass2: "assets/map/world1/world1_grass2.png",
+    rock: "assets/map/world1/world1_grass_rock.png",
+    flower: "assets/map/world1/world1_grass_flower.png"
+  };
+
+  CHERRIFT_CONFIG.version = "0.4.0f-world1mix-night-unlock";
+  if (window.CHERRIFT_DATA) CHERRIFT_DATA.version = "0.4.0f-world1mix-night-unlock";
+  if (window.CHERRIFT_V040) window.CHERRIFT_V040.version = "0.4.0f-world1mix-night-unlock";
+
+  Object.assign(CHERRIFT_CONFIG.map, {
+    world1Grass1: WORLD1_F.grass1,
+    world1Grass2: WORLD1_F.grass2,
+    world1GrassRock: WORLD1_F.rock,
+    world1GrassFlower: WORLD1_F.flower,
+    grass: WORLD1_F.grass1
+  });
+
+  function normalizeUnlockedV040f(save) {
+    if (!save || typeof save !== "object") return save;
+    if (!Array.isArray(save.unlockedStages)) save.unlockedStages = ["world_1_1"];
+    if (!save.unlockedStages.includes("world_1_1")) save.unlockedStages.push("world_1_1");
+    if (!save.unlockedStages.includes("world_2_1")) save.unlockedStages.push("world_2_1");
+    return save;
+  }
+
+  if (window.CherriftStorage && !CherriftStorage.__v040fWorld21Unlocked) {
+    const prevDefaults = CherriftStorage.defaults?.bind(CherriftStorage);
+    if (prevDefaults) {
+      CherriftStorage.defaults = function defaultsV040f() {
+        return normalizeUnlockedV040f(prevDefaults());
+      };
+    }
+    const prevLoad = CherriftStorage.load?.bind(CherriftStorage);
+    if (prevLoad) {
+      CherriftStorage.load = function loadV040f() {
+        return normalizeUnlockedV040f(prevLoad());
+      };
+    }
+    CherriftStorage.__v040fWorld21Unlocked = true;
+  }
+
+  if (window.UI && UI.save) {
+    normalizeUnlockedV040f(UI.save);
+    try { window.CherriftStorage?.save?.(UI.save); } catch (_) {}
+  }
+
+  // extra robust loading for the 4 world1 grass tiles
+  if (window.ImageAssets && !ImageAssets.prototype.__v040fGrassBoost) {
+    const oldLoadAllF = ImageAssets.prototype.loadAll;
+    ImageAssets.prototype.loadAll = async function loadAllV040f() {
+      await oldLoadAllF.call(this);
+      const entries = {
+        w1Grass1: WORLD1_F.grass1,
+        w1Grass2: WORLD1_F.grass2,
+        w1GrassRock: WORLD1_F.rock,
+        w1GrassFlower: WORLD1_F.flower
+      };
+      await Promise.all(Object.entries(entries).map(async ([key, src]) => {
+        try {
+          await this.loadImage(key, src);
+        } catch (err) {
+          console.warn("[CHERRIFT v0.4.0f] optional ground tile missing:", key, src, err);
+        }
+      }));
+      this.ready = true;
+    };
+    ImageAssets.prototype.__v040fGrassBoost = true;
+  }
+
+  function hashV040f(x, y, seed = 0) {
+    let h = (((x + 911) * 374761393) ^ ((y - 131) * 668265263) ^ ((seed + 71) * 2246822519)) >>> 0;
+    h = (h ^ (h >> 13)) >>> 0;
+    h = Math.imul(h, 1274126177) >>> 0;
+    return ((h ^ (h >> 16)) >>> 0) / 4294967295;
+  }
+
+  function tileImg(game, key, fallback = "grass") {
+    return game.assets?.get?.(key) || game.assets?.get?.("w1Grass1") || game.assets?.get?.(fallback) || null;
+  }
+
+  function drawCover(c, img, x, y, size, alpha = 1) {
+    if (!img) {
+      c.save();
+      c.globalAlpha = alpha;
+      c.fillStyle = "#6cae38";
+      c.fillRect(x, y, size + 1, size + 1);
+      c.restore();
+      return;
+    }
+    const sw = img.naturalWidth || img.width || size;
+    const sh = img.naturalHeight || img.height || size;
+    const side = Math.min(sw, sh);
+    const sx = Math.max(0, Math.floor((sw - side) * 0.5));
+    const sy = Math.max(0, Math.floor((sh - side) * 0.5));
+    c.save();
+    c.globalAlpha = alpha;
+    c.drawImage(img, sx, sy, side, side, x, y, size + 1, size + 1);
+    c.restore();
+  }
+
+  function pickGrassKeyV040f(gx, gy) {
+    const zone = hashV040f(Math.floor(gx / 2), Math.floor(gy / 2), 4);
+    const local = hashV040f(gx, gy, 9);
+
+    // stronger visible balance than 0.4.0e
+    if (zone < 0.22) {
+      if (local < 0.46) return "w1GrassRock";
+      if (local < 0.74) return "w1Grass2";
+      return "w1Grass1";
+    }
+    if (zone < 0.46) {
+      if (local < 0.45) return "w1GrassFlower";
+      if (local < 0.72) return "w1Grass1";
+      return "w1Grass2";
+    }
+    if (zone < 0.72) {
+      if (local < 0.38) return "w1Grass2";
+      if (local < 0.70) return "w1Grass1";
+      return "w1GrassRock";
+    }
+    if (local < 0.35) return "w1Grass1";
+    if (local < 0.60) return "w1Grass2";
+    if (local < 0.80) return "w1GrassFlower";
+    return "w1GrassRock";
+  }
+
+  function pickBlendKeyV040f(primary, gx, gy) {
+    const order = ["w1Grass1", "w1Grass2", "w1GrassFlower", "w1GrassRock"];
+    const candidates = order.filter(k => k !== primary);
+    return candidates[Math.floor(hashV040f(gx, gy, 17) * candidates.length)] || "w1Grass1";
+  }
+
+  function drawWorld1CellV040f(game, c, gx, gy, x, y, size) {
+    const primaryKey = pickGrassKeyV040f(gx, gy);
+    drawCover(c, tileImg(game, primaryKey), x, y, size, 1);
+
+    // more visible secondary blend, but still soft
+    const blendRoll = hashV040f(gx, gy, 21);
+    if (blendRoll > 0.36) {
+      const overlayKey = pickBlendKeyV040f(primaryKey, gx, gy);
+      const alpha = blendRoll > 0.82 ? 0.28 : blendRoll > 0.62 ? 0.20 : 0.13;
+      drawCover(c, tileImg(game, overlayKey), x, y, size, alpha);
+    }
+
+    // subtle tone variation
+    const tone = hashV040f(gx, gy, 29);
+    if (tone > 0.72) {
+      c.save();
+      c.globalAlpha = tone > 0.88 ? 0.05 : 0.028;
+      c.fillStyle = tone > 0.88 ? "#f1efbf" : "#1d5725";
+      c.fillRect(x, y, size + 1, size + 1);
+      c.restore();
+    }
+  }
+
+  function drawWorld2CellV040f(game, c, gx, gy, x, y, size) {
+    drawWorld1CellV040f(game, c, gx, gy, x, y, size);
+
+    c.save();
+    c.globalAlpha = 0.54;
+    c.fillStyle = "#081129";
+    c.fillRect(x, y, size + 1, size + 1);
+
+    // cold moon tint clusters
+    if (hashV040f(gx, gy, 51) > 0.62) {
+      c.globalAlpha = 0.10;
+      c.fillStyle = hashV040f(gx, gy, 52) > 0.5 ? "#84a6ff" : "#7bd8ff";
+      c.beginPath();
+      c.ellipse(
+        x + size * (0.18 + hashV040f(gx, gy, 53) * 0.64),
+        y + size * (0.18 + hashV040f(gx, gy, 54) * 0.64),
+        size * (0.14 + hashV040f(gx, gy, 55) * 0.18),
+        size * (0.08 + hashV040f(gx, gy, 56) * 0.14),
+        0,
+        0,
+        Math.PI * 2
+      );
+      c.fill();
+    }
+
+    // tiny star/firefly style dots
+    if (hashV040f(gx, gy, 61) > 0.82) {
+      c.globalAlpha = 0.18;
+      c.fillStyle = hashV040f(gx, gy, 62) > 0.6 ? "#dbe6ff" : "#b9ccff";
+      for (let i = 0; i < 2; i++) {
+        const px = x + size * hashV040f(gx, gy, 63 + i * 2);
+        const py = y + size * hashV040f(gx, gy, 64 + i * 2);
+        c.beginPath();
+        c.arc(px, py, 1.6 + hashV040f(gx, gy, 70 + i) * 1.8, 0, Math.PI * 2);
+        c.fill();
+      }
+    }
+    c.restore();
+  }
+
+  CherriftGame.prototype.drawGround = function drawGroundV040f(c, zoom = 1) {
+    const stage = this.stage || this.getSelectedStage?.();
+    const size = 128;
+    const viewW = this.w / zoom;
+    const viewH = this.h / zoom;
+    const startX = Math.floor((this.camera.x - viewW / 2) / size) - 1;
+    const endX = Math.floor((this.camera.x + viewW / 2) / size) + 1;
+    const startY = Math.floor((this.camera.y - viewH / 2) / size) - 1;
+    const endY = Math.floor((this.camera.y + viewH / 2) / size) + 1;
+    const night = stage?.world === 2 || stage?.theme === "forest_night";
+
+    for (let gx = startX; gx <= endX; gx++) {
+      for (let gy = startY; gy <= endY; gy++) {
+        const x = gx * size;
+        const y = gy * size;
+        if (night) drawWorld2CellV040f(this, c, gx, gy, x, y, size);
+        else drawWorld1CellV040f(this, c, gx, gy, x, y, size);
+      }
+    }
+  };
+
+  // ensure world select reflects unlocked test stage immediately
+  if (window.UI) {
+    const oldOpenWorldSelect = UI.openWorldSelect?.bind(UI);
+    if (oldOpenWorldSelect && !UI.__v040fOpenWorldSelectPatched) {
+      UI.openWorldSelect = function openWorldSelectV040f() {
+        if (this.save) normalizeUnlockedV040f(this.save);
+        return oldOpenWorldSelect();
+      };
+      UI.__v040fOpenWorldSelectPatched = true;
+    }
+  }
+})();

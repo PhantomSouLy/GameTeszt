@@ -115,3 +115,11 @@ assets/map/world1/
 - World 2 still uses the same four grass tiles as fallback.
 - It gets a dark blue/purple night overlay.
 - Later it can be switched to assets/map/world2/ when separate night tiles exist.
+
+
+CHERRIFT v0.4.0f
+- Stronger World 1 four-grass randomization
+- More visible grass2 / rock / flower variation
+- Improved World 2 night ground shading and moonlit details
+- World 2-1 unlocked by default for testing
+- Extra safe loading for world1 grass tile variants
