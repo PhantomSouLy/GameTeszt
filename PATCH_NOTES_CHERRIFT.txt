@@ -117,3 +117,27 @@ World 2-5: shadow_bat, angry_mushroom, tank_blue_slime
 
 [Cache]
 - index.html now uses src/cherrift_v040.js?v=041
+
+
+CHERRIFT v0.4.1b Bugfix
+
+[Enemy sprites]
+- Direct Image() loader for all 5 new enemy sheets.
+- New enemies no longer draw old colored blob placeholders.
+- If a sprite is still loading/missing, only a tiny shadow is drawn instead of a fake blob mob.
+
+[Night FPS]
+- Ground rendering now uses cached canvas pattern where possible.
+- World 2 night overlay is a cheap global overlay + one gradient, no per-tile night effects.
+
+[Stage objective count]
+- Total spawned enemies is capped to goalKills.
+- At 119/120, only 1 enemy remains alive.
+- Existing over-spawned runs are trimmed safely.
+
+[Mobile menu taps]
+- Larger bottom nav/menu hitboxes.
+- Added pointer fallback if mobile tap coordinates are slightly offset.
+
+[Cache]
+- index.html now uses ?v=041b for JS/CSS.
