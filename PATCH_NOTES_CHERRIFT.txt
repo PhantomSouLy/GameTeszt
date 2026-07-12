@@ -145,3 +145,16 @@ CHERRIFT v0.4.0g World Fix
 [World 2 Night]
 - Stronger dark blue night overlay.
 - Blue/lilac moonlight haze patches.
+
+
+[0.4.0h SEAMLESS GROUND OVERRIDE]
+- World 1 and World 2 ground now both use only assets/map/world1_grass_seamless.png
+- World 2 remains in night mode using a dark blue overlay and subtle moonlit highlights
+- Ground drawing now uses a repeating canvas pattern fill to avoid visible square tile blocks
+- Does not change World 2 splash art; only the in-game ground rendering
+
+
+CHERRIFT v0.4.0h seamless ground folder fix
+- World 1 ground now uses only assets/map/world1/world1_grass_seamless.png
+- World 2 ground also uses the same seamless texture with night dark/cool overlay
+- Added assets/map/world1/world1_grass_seamless.png to this ZIP

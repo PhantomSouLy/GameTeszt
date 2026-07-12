@@ -2060,3 +2060,123 @@
     return oldLaunchSelectedWorld ? oldLaunchSelectedWorld(...args) : undefined;
   };
 })();
+
+
+/* ============================================================
+   CHERRIFT v0.4.0h SEAMLESS GROUND OVERRIDE
+   - Shared seamless ground for World 1 and World 2
+   - World 2 keeps night mode via dark/cool overlay
+   - Removes visible tile squares by using a repeating pattern fill
+   ============================================================ */
+(() => {
+  "use strict";
+
+  if (!window.CHERRIFT_CONFIG || !window.CherriftGame) return;
+
+  const SHARED_GROUND = "assets/map/world1/world1_grass_seamless.png";
+
+  CHERRIFT_CONFIG.version = "0.4.0h-seamless-ground-world1folder";
+  CHERRIFT_CONFIG.map.grass = SHARED_GROUND;
+  CHERRIFT_CONFIG.map.grassNight = SHARED_GROUND;
+  CHERRIFT_CONFIG.map.world1GrassSeamless = SHARED_GROUND;
+  if (window.CHERRIFT_DATA) CHERRIFT_DATA.version = "0.4.0h-seamless-ground-world1folder";
+  if (window.CHERRIFT_V040) {
+    CHERRIFT_V040.version = "0.4.0h-seamless-ground-world1folder";
+    CHERRIFT_V040.sharedGround = SHARED_GROUND;
+  }
+
+  const standalone = new Image();
+  let standaloneReady = false;
+  standalone.decoding = "async";
+  standalone.onload = () => { standaloneReady = true; };
+  standalone.onerror = () => { console.warn("[CHERRIFT v0.4.0h] seamless ground missing:", SHARED_GROUND); };
+  standalone.src = SHARED_GROUND + "?v=040h";
+
+  if (window.ImageAssets && !ImageAssets.prototype.__v040hSharedGroundLoad) {
+    const oldLoadAll = ImageAssets.prototype.loadAll;
+    ImageAssets.prototype.loadAll = async function loadAllV040h() {
+      await oldLoadAll.call(this);
+      await Promise.all([
+        this.loadImage("sharedGround", SHARED_GROUND).catch(() => null),
+        this.loadImage("grass", SHARED_GROUND).catch(() => null),
+        this.loadImage("grassNight", SHARED_GROUND).catch(() => null)
+      ]);
+      this.ready = true;
+    };
+    ImageAssets.prototype.__v040hSharedGroundLoad = true;
+  }
+
+  function getGroundImage(game) {
+    return game?.assets?.get?.("sharedGround") || game?.assets?.get?.("grass") || (standaloneReady ? standalone : null);
+  }
+
+  function getPattern(game, c, night = false) {
+    const img = getGroundImage(game);
+    if (!img) return null;
+    const key = night ? "__sharedGroundPatternNight" : "__sharedGroundPatternDay";
+    const cacheKey = night ? "__sharedGroundPatternNightSrc" : "__sharedGroundPatternDaySrc";
+    const src = img.currentSrc || img.src || "inline";
+    if (!game[key] || game[cacheKey] !== src) {
+      game[key] = c.createPattern(img, "repeat");
+      game[cacheKey] = src;
+    }
+    return game[key];
+  }
+
+  function drawNightMood(c, startX, startY, width, height) {
+    c.save();
+    c.globalAlpha = 0.56;
+    c.fillStyle = "#07122b";
+    c.fillRect(startX, startY, width, height);
+
+    c.globalAlpha = 0.08;
+    c.fillStyle = "#7da9ff";
+    for (let i = 0; i < 10; i++) {
+      const px = startX + (width * ((i * 137) % 100) / 100);
+      const py = startY + (height * ((i * 173 + 31) % 100) / 100);
+      c.beginPath();
+      c.ellipse(px, py, 42 + (i % 4) * 10, 22 + (i % 3) * 7, 0, 0, Math.PI * 2);
+      c.fill();
+    }
+
+    c.globalAlpha = 0.05;
+    c.fillStyle = "#cfe0ff";
+    for (let i = 0; i < 80; i++) {
+      const px = startX + (width * ((i * 57 + 11) % 100) / 100);
+      const py = startY + (height * ((i * 83 + 19) % 100) / 100);
+      c.beginPath();
+      c.arc(px, py, 1.2 + (i % 3) * 0.4, 0, Math.PI * 2);
+      c.fill();
+    }
+    c.restore();
+  }
+
+  CherriftGame.prototype.drawGround = function drawGroundV040h(c, zoom = 1) {
+    const stage = this.stage || this.getSelectedStage?.();
+    const size = 128;
+    const viewW = this.w / zoom;
+    const viewH = this.h / zoom;
+    const startX = Math.floor((this.camera.x - viewW / 2) / size) * size - size;
+    const startY = Math.floor((this.camera.y - viewH / 2) / size) * size - size;
+    const endX = Math.floor((this.camera.x + viewW / 2) / size) * size + size * 2;
+    const endY = Math.floor((this.camera.y + viewH / 2) / size) * size + size * 2;
+    const width = endX - startX;
+    const height = endY - startY;
+    const night = stage?.world === 2 || stage?.theme === "forest_night";
+
+    const pattern = getPattern(this, c, night);
+    if (pattern) {
+      c.save();
+      c.fillStyle = pattern;
+      c.fillRect(startX, startY, width, height);
+      c.restore();
+    } else {
+      c.save();
+      c.fillStyle = night ? "#2d3f2f" : "#73b141";
+      c.fillRect(startX, startY, width, height);
+      c.restore();
+    }
+
+    if (night) drawNightMood(c, startX, startY, width, height);
+  };
+})();
