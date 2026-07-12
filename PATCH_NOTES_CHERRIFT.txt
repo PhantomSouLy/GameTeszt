@@ -77,3 +77,43 @@ CHERRIFT v0.4.0l Embedded Ground Fix
 - index.html cache bust -> ?v=040l
 - src/cherrift_v040.js includes embedded fallback
 - assets/map/world1/world1_grass_seamless.png still included
+
+
+CHERRIFT v0.4.1 Enemy Expansion
+
+[New required files]
+Put these files in assets/enemies/:
+
+- shadow_bat_sprite_sheet.png
+- blue_slime_sprite_sheet.png
+- tank_blue_slime_sprite_sheet.png
+- ghost_slime_sprite_sheet.png
+- angry_mushroom_sprite_sheet.png
+
+[New enemies]
+- Shadow Bat: World 2 basic mob, similar role to Pink Slime.
+- Blue Slime: slightly more HP and faster than Pink Slime.
+- Tank Blue Slime: much tankier, slower.
+- Ghost Slime: fast, low HP.
+- Angry Mushroom: ranged enemy that walks toward Cherry and slowly fires projectiles from range.
+
+[Stage pools]
+World 1-1: pink_slime
+World 1-2: pink_slime, blue_slime
+World 1-3: pink_slime, blue_slime, ghost_slime
+World 1-4: blue_slime, ghost_slime, tank_blue_slime
+World 1-5: blue_slime, tank_blue_slime, angry_mushroom
+
+World 2-1: shadow_bat, ghost_slime
+World 2-2: shadow_bat, ghost_slime, angry_mushroom
+World 2-3: shadow_bat, angry_mushroom, tank_blue_slime
+World 2-4: shadow_bat, ghost_slime, angry_mushroom, tank_blue_slime
+World 2-5: shadow_bat, angry_mushroom, tank_blue_slime
+
+[Animation assumptions]
+- Most sheets: 4 columns x 3 rows
+- Tank Blue Slime: 4 columns x 4 rows
+- Move animation uses row 2 visually, indexed as row 1 in code.
+
+[Cache]
+- index.html now uses src/cherrift_v040.js?v=041
