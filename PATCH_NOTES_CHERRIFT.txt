@@ -56,3 +56,24 @@ CHERRIFT v0.4.0k Ground Asset Fix
 - index.html now uses:
   menu_v040.css?v=040k
   src/cherrift_v040.js?v=040k
+
+
+CHERRIFT v0.4.0l Embedded Ground Fix
+
+[Why]
+- If assets/map/world1/world1_grass_seamless.png is not actually committed to GitHub,
+  the game shows a flat fallback color.
+- v0.4.0l embeds the same PNG inside src/cherrift_v040.js as a final fallback.
+
+[Ground]
+- External path remains:
+  assets/map/world1/world1_grass_seamless.png
+- If external PNG loads, the game uses it.
+- If external PNG fails, the embedded data URL PNG is used automatically.
+- World 1 and World 2 both use the same seamless ground.
+- World 2 keeps night overlay.
+
+[Files]
+- index.html cache bust -> ?v=040l
+- src/cherrift_v040.js includes embedded fallback
+- assets/map/world1/world1_grass_seamless.png still included
