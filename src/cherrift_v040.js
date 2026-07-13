@@ -284,7 +284,7 @@
 
     UI.refreshMenu = function(){
       normalizeSave(this.save);
-      setText("menuBuildVersion","v0.4.1e PERF FIX");
+      setText("menuBuildVersion","v0.4.1f FPS FIX");
       setText("menuCoins", this.save.coins); setText("menuKeys", this.save.keys);
       setText("mobileCoinsValue", this.save.coins); setText("mobileKeysValue", this.save.keys); setText("mobileEnergyValue", "5");
       const skin=CHERRIFT_DATA.skins.find(s=>s.id===this.save.selectedSkin)||CHERRIFT_DATA.skins[0];
@@ -611,7 +611,7 @@
 
 
 /* ============================================================
-   CHERRIFT v0.4.1e PERF FIX + NIGHT FIX
+   CHERRIFT v0.4.1f FPS FIX + NIGHT FIX
    Clean replacement for old v0.4.0d/e/f/g/h world patches.
 
    Final world rules:
@@ -726,7 +726,7 @@
   standaloneGround.decoding = "async";
   standaloneGround.onload = () => { standaloneReady = true; };
   standaloneGround.onerror = () => console.warn("[CHERRIFT v0.4.1] Missing seamless ground:", SHARED_GROUND);
-  standaloneGround.src = `${SHARED_GROUND}?v=041eec`;
+  standaloneGround.src = `${SHARED_GROUND}?v=041fec`;
 
   function currentStageV040i(save = UI.save) {
     normalizeSaveV040i(save);
@@ -850,7 +850,7 @@
     const stage = currentStageV040i(this.save);
 
     const build = id("menuBuildVersion");
-    if (build) build.textContent = "v0.4.1e PERF FIX";
+    if (build) build.textContent = "v0.4.1f FPS FIX";
 
     const desktop = id("selectedStageDesktop");
     if (desktop && stage) desktop.textContent = stage.name;
@@ -860,7 +860,7 @@
       const night = stage.world === 2 || stage.theme === "forest_night";
       art.classList.add("has-world-art");
       art.classList.toggle("night", night);
-      art.style.backgroundImage = `linear-gradient(180deg, rgba(5,3,12,.06), rgba(5,3,12,.42)), url("${night ? WORLD2_SPLASH : WORLD1_SPLASH}?v=041eec")`;
+      art.style.backgroundImage = `linear-gradient(180deg, rgba(5,3,12,.06), rgba(5,3,12,.42)), url("${night ? WORLD2_SPLASH : WORLD1_SPLASH}?v=041fec")`;
     }
 
     try { CherriftStorage.save(this.save); } catch (_) {}
@@ -896,7 +896,7 @@
     if (img) {
       img.classList.add("has-world-art");
       img.classList.toggle("night", night);
-      img.style.backgroundImage = `linear-gradient(180deg, rgba(5,3,12,.04), rgba(5,3,12,.36)), url("${night ? WORLD2_SPLASH : WORLD1_SPLASH}?v=041eec")`;
+      img.style.backgroundImage = `linear-gradient(180deg, rgba(5,3,12,.04), rgba(5,3,12,.36)), url("${night ? WORLD2_SPLASH : WORLD1_SPLASH}?v=041fec")`;
     }
 
     const launch = id("worldLaunchBtn");
@@ -1036,7 +1036,7 @@
     if (this.save) normalizeSaveJ(this.save);
     const result = oldRefreshMenu ? oldRefreshMenu(...args) : undefined;
     const build = id("menuBuildVersion");
-    if (build) build.textContent = "v0.4.1e PERF FIX";
+    if (build) build.textContent = "v0.4.1f FPS FIX";
     const stage = selectedStage(this.save);
     const art = id("mobileStageArt");
     if (art && stage) {
@@ -1090,18 +1090,18 @@
   groundImage.decoding = "async";
   groundImage.onload = () => { groundReady = true; };
   groundImage.onerror = () => console.warn("[CHERRIFT v0.4.1] Missing seamless ground:", SHARED_GROUND);
-  groundImage.src = `${SHARED_GROUND}?v=041eec`;
+  groundImage.src = `${SHARED_GROUND}?v=041fec`;
 
   if (window.ImageAssets && !ImageAssets.prototype.__v041AssetPatch) {
     const oldLoadAll = ImageAssets.prototype.loadAll;
     ImageAssets.prototype.loadAll = async function loadAllV041() {
       await oldLoadAll.call(this);
       await Promise.all([
-        this.loadImage("sharedGround", `${SHARED_GROUND}?v=041eec`).catch(() => false),
-        this.loadImage("grass", `${SHARED_GROUND}?v=041eec`).catch(() => false),
-        this.loadImage("grassNight", `${SHARED_GROUND}?v=041eec`).catch(() => false),
-        this.loadImage("world1", `${WORLD1_SPLASH}?v=041eec`).catch(() => false),
-        this.loadImage("world2", `${WORLD2_SPLASH}?v=041eec`).catch(() => false)
+        this.loadImage("sharedGround", `${SHARED_GROUND}?v=041fec`).catch(() => false),
+        this.loadImage("grass", `${SHARED_GROUND}?v=041fec`).catch(() => false),
+        this.loadImage("grassNight", `${SHARED_GROUND}?v=041fec`).catch(() => false),
+        this.loadImage("world1", `${WORLD1_SPLASH}?v=041fec`).catch(() => false),
+        this.loadImage("world2", `${WORLD2_SPLASH}?v=041fec`).catch(() => false)
       ]);
       this.ready = true;
     };
@@ -1291,7 +1291,7 @@
   groundK.onload = () => { groundKReady = true; console.info("[CHERRIFT v0.4.1] seamless ground loaded:", SHARED_GROUND_K); };
   groundK.onerror = () => { console.warn("[CHERRIFT v0.4.1] seamless ground missing:", SHARED_GROUND_K); };
   groundK.decoding = "async";
-  groundK.src = SHARED_GROUND_K + "?v=041eec";
+  groundK.src = SHARED_GROUND_K + "?v=041fec";
 
   function isNight(stage) {
     return !!stage && (stage.world === 2 || stage.theme === "forest_night");
@@ -1472,7 +1472,7 @@
       img.onerror = () => { enemyStates[id] = "missing"; console.warn("[CHERRIFT v0.4.1c] enemy sprite missing:", id, sheet.src); resolve(false); };
     });
     img.decoding = "async";
-    img.src = `${sheet.src}?v=041ee`;
+    img.src = `${sheet.src}?v=041fe`;
     enemyPromises.push(p);
   }
 
@@ -1486,7 +1486,7 @@
     const oldLoadAll = ImageAssets.prototype.loadAll;
     ImageAssets.prototype.loadAll = async function loadAllV041c() {
       await oldLoadAll.call(this);
-      await Promise.all(Object.entries(ENEMY_SHEETS).map(([id, s]) => this.loadImage(s.key, `${s.src}?v=041ee`).catch(() => false)));
+      await Promise.all(Object.entries(ENEMY_SHEETS).map(([id, s]) => this.loadImage(s.key, `${s.src}?v=041fe`).catch(() => false)));
       this.ready = true;
     };
     ImageAssets.prototype.__v041cEnemyAssets = true;
@@ -1822,7 +1822,7 @@
   UI.refreshMenu = function refreshMenuV041c(...args) {
     const result = oldRefreshMenu ? oldRefreshMenu(...args) : undefined;
     const build = document.getElementById("menuBuildVersion");
-    if (build) build.textContent = "v0.4.1e PERF FIX";
+    if (build) build.textContent = "v0.4.1f FPS FIX";
     initMobileTapFix();
     return result;
   };
@@ -1844,7 +1844,7 @@
 
   if (!window.CherriftGame || !window.CHERRIFT_CONFIG || !window.UI) return;
 
-  const VERSION = "0.4.1e-perf-enemy-ground";
+  const VERSION = "0.4.1f-fps-finish-fix";
   CHERRIFT_CONFIG.version = VERSION;
   if (window.CHERRIFT_DATA) CHERRIFT_DATA.version = VERSION;
   if (window.CHERRIFT_V040) CHERRIFT_V040.version = VERSION;
@@ -1932,7 +1932,7 @@
     img.onload = () => { directEnemyImages[sheetId] = img; enemyReady[sheetId] = "ok"; };
     img.onerror = () => { enemyReady[sheetId] = "missing"; console.warn("[CHERRIFT v0.4.1e] enemy sprite missing:", sheetId, sheet.src); };
     img.decoding = "async";
-    img.src = `${sheet.src}?v=041e`;
+    img.src = `${sheet.src}?v=041f`;
   }
   Object.entries(ENEMY_SHEETS).forEach(([id, sheet]) => loadDirectEnemy(id, sheet));
 
@@ -1940,7 +1940,7 @@
     const oldLoadAll = ImageAssets.prototype.loadAll;
     ImageAssets.prototype.loadAll = async function loadAllV041e() {
       await oldLoadAll.call(this);
-      await Promise.all(Object.entries(ENEMY_SHEETS).map(([id, s]) => this.loadImage(s.key, `${s.src}?v=041e`).catch(() => false)));
+      await Promise.all(Object.entries(ENEMY_SHEETS).map(([id, s]) => this.loadImage(s.key, `${s.src}?v=041f`).catch(() => false)));
       this.ready = true;
     };
     ImageAssets.prototype.__v041eEnemyLoad = true;
@@ -2249,14 +2249,14 @@
   groundImg.decoding = "async";
   groundImg.onload = () => { groundReady = true; console.info("[CHERRIFT v0.4.1e] ground loaded:", GROUND_SRC); };
   groundImg.onerror = () => { console.warn("[CHERRIFT v0.4.1e] ground missing:", GROUND_SRC); };
-  groundImg.src = `${GROUND_SRC}?v=041e`;
+  groundImg.src = `${GROUND_SRC}?v=041f`;
 
   if (window.ImageAssets && !ImageAssets.prototype.__v041eGroundLoad) {
     const oldLoadAll2 = ImageAssets.prototype.loadAll;
     ImageAssets.prototype.loadAll = async function loadAllV041eGround() {
       await oldLoadAll2.call(this);
-      try { await this.loadImage("sharedGround", `${GROUND_SRC}?v=041e`); } catch (_) {}
-      try { await this.loadImage("grass", `${GROUND_SRC}?v=041e`); } catch (_) {}
+      try { await this.loadImage("sharedGround", `${GROUND_SRC}?v=041f`); } catch (_) {}
+      try { await this.loadImage("grass", `${GROUND_SRC}?v=041f`); } catch (_) {}
       this.ready = true;
     };
     ImageAssets.prototype.__v041eGroundLoad = true;
@@ -2400,9 +2400,228 @@
   UI.refreshMenu = function refreshMenuV041e(...args) {
     const result = oldRefreshMenu ? oldRefreshMenu(...args) : undefined;
     const build = document.getElementById("menuBuildVersion");
-    if (build) build.textContent = "v0.4.1e PERF FIX";
+    if (build) build.textContent = "v0.4.1f FPS FIX";
     return result;
   };
 
   console.info("[CHERRIFT v0.4.1e] loaded", { enemyReady });
+})();
+
+
+/* ============================================================
+   CHERRIFT v0.4.1f WORLD 2 FPS + FINAL ENEMY FAILSAFE
+   - World 2 no longer draws a full-screen dark overlay every frame.
+   - Night ground is pre-tinted once into a cached tile pattern.
+   - If stage is near the end and the last enemy is missing/far away, it is respawned/pulled near Cherry.
+   ============================================================ */
+(() => {
+  "use strict";
+
+  if (!window.CherriftGame || !window.CHERRIFT_CONFIG || !window.UI) return;
+
+  const VERSION = "0.4.1f-fps-finish-fix";
+  CHERRIFT_CONFIG.version = VERSION;
+  if (window.CHERRIFT_DATA) CHERRIFT_DATA.version = VERSION;
+  if (window.CHERRIFT_V040) CHERRIFT_V040.version = VERSION;
+
+  const proto = CherriftGame.prototype;
+
+  const GROUND_SRC = "assets/map/world1/world1_grass_seamless.png";
+  CHERRIFT_CONFIG.map.grass = GROUND_SRC;
+  CHERRIFT_CONFIG.map.grassNight = GROUND_SRC;
+  CHERRIFT_CONFIG.map.world1GrassSeamless = GROUND_SRC;
+
+  const groundImg = new Image();
+  let groundReady = false;
+  groundImg.decoding = "async";
+  groundImg.onload = () => { groundReady = true; console.info("[CHERRIFT v0.4.1f] ground loaded:", GROUND_SRC); };
+  groundImg.onerror = () => { console.warn("[CHERRIFT v0.4.1f] ground missing:", GROUND_SRC); };
+  groundImg.src = `${GROUND_SRC}?v=041f`;
+
+  if (window.ImageAssets && !ImageAssets.prototype.__v041fGroundLoad) {
+    const oldLoadAll = ImageAssets.prototype.loadAll;
+    ImageAssets.prototype.loadAll = async function loadAllV041f() {
+      await oldLoadAll.call(this);
+      try { await this.loadImage("sharedGround", `${GROUND_SRC}?v=041f`); } catch (_) {}
+      try { await this.loadImage("grass", `${GROUND_SRC}?v=041f`); } catch (_) {}
+      this.ready = true;
+    };
+    ImageAssets.prototype.__v041fGroundLoad = true;
+  }
+
+  function imgReady(img) {
+    return !!img && (img.complete || img.naturalWidth || img.width) && ((img.naturalWidth || img.width) > 0);
+  }
+
+  function bestGround(game) {
+    const a = game?.assets?.get?.("sharedGround");
+    const b = game?.assets?.get?.("grass");
+    return imgReady(a) ? a : imgReady(b) ? b : (groundReady ? groundImg : null);
+  }
+
+  function isNight(stage) {
+    return !!stage && (stage.world === 2 || stage.theme === "forest_night");
+  }
+
+  let daySource = null;
+  let dayPattern = null;
+  let nightSource = null;
+  let nightPattern = null;
+
+  function makeTile(img, night) {
+    const sw = img.naturalWidth || img.width;
+    const sh = img.naturalHeight || img.height;
+    const side = Math.min(sw, sh);
+    const sx = Math.max(0, Math.floor((sw - side) / 2));
+    const sy = Math.max(0, Math.floor((sh - side) / 2));
+
+    const size = 512;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const cx = canvas.getContext("2d", { alpha: false });
+    cx.imageSmoothingEnabled = true;
+    cx.imageSmoothingQuality = "low";
+    cx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
+
+    if (night) {
+      // Pre-tint once. This replaces the expensive per-frame full-screen overlay.
+      cx.globalAlpha = .48;
+      cx.fillStyle = "#061229";
+      cx.fillRect(0, 0, size, size);
+
+      // Tiny cool tint baked into tile. No radial gradient every frame.
+      cx.globalAlpha = .06;
+      cx.fillStyle = "#6f86d8";
+      cx.fillRect(0, 0, size, size);
+      cx.globalAlpha = 1;
+    }
+
+    return canvas;
+  }
+
+  function getPattern(c, img, night) {
+    if (!imgReady(img)) return null;
+
+    if (night) {
+      if (nightSource !== img || !nightPattern) {
+        nightSource = img;
+        const tile = makeTile(img, true);
+        try { nightPattern = c.createPattern(tile, "repeat"); }
+        catch (_) { nightPattern = null; }
+      }
+      return nightPattern;
+    }
+
+    if (daySource !== img || !dayPattern) {
+      daySource = img;
+      const tile = makeTile(img, false);
+      try { dayPattern = c.createPattern(tile, "repeat"); }
+      catch (_) { dayPattern = null; }
+    }
+    return dayPattern;
+  }
+
+  proto.drawGround = function drawGroundV041f(c, zoom = 1) {
+    const stage = this.stage || this.getSelectedStage?.();
+    const viewW = this.w / zoom;
+    const viewH = this.h / zoom;
+    const pad = 64;
+    const startX = this.camera.x - viewW / 2 - pad;
+    const startY = this.camera.y - viewH / 2 - pad;
+    const width = viewW + pad * 2;
+    const height = viewH + pad * 2;
+    const night = isNight(stage);
+    const img = bestGround(this);
+    const pat = getPattern(c, img, night);
+
+    c.save();
+    if (pat) {
+      c.fillStyle = pat;
+      c.fillRect(startX, startY, width, height);
+    } else {
+      c.fillStyle = night ? "#1b2f27" : "#6caf3e";
+      c.fillRect(startX, startY, width, height);
+    }
+    c.restore();
+  };
+
+  // ------------------------------------------------------------
+  // Final stage enemy failsafe
+  // ------------------------------------------------------------
+  function goal(game) {
+    const s = game.stage || game.getSelectedStage?.();
+    return Math.max(1, +(s?.goalKills || s?.objectiveKills || 120));
+  }
+
+  function spawnState(game) {
+    game.stageState = game.stageState || {};
+    if (!Number.isFinite(game.stageState.spawnedCount)) {
+      game.stageState.spawnedCount = Math.max(0, game.kills || 0) + (game.enemies?.length || 0);
+    }
+    if (!Number.isFinite(game.stageState.spawnTimer)) game.stageState.spawnTimer = .1;
+    return game.stageState;
+  }
+
+  function forceSpawnMissingFinalEnemies(game) {
+    if (!game.stage || !game.player || game.mode !== "playing") return;
+    const g = goal(game);
+    const kills = game.kills || 0;
+    const remaining = Math.max(0, g - kills);
+    if (remaining <= 0) return;
+
+    // Remove impossible dead entries from the alive list.
+    game.enemies = (game.enemies || []).filter(e => e && !e.dead && e.hp > 0);
+
+    const st = spawnState(game);
+
+    // If tracking says we are done spawning but the objective is not reachable,
+    // repair spawnedCount so exactly the missing enemies can still spawn.
+    if (kills + game.enemies.length < g && st.spawnedCount >= g) {
+      st.spawnedCount = kills + game.enemies.length;
+    }
+
+    // Near the end, never leave the player waiting for a missing/hidden enemy.
+    if (remaining <= 3 && game.enemies.length < remaining) {
+      st.spawnedCount = Math.min(st.spawnedCount, kills + game.enemies.length);
+      while (game.enemies.length < remaining && st.spawnedCount < g) {
+        if (!game.spawnEnemy()) break;
+      }
+    }
+
+    // Pull final enemies into the visible area if they are too far away.
+    if (remaining <= 3) {
+      const p = game.player;
+      game.enemies.forEach((e, i) => {
+        const dist = Math.hypot(e.x - p.x, e.y - p.y);
+        if (dist > 520) {
+          const a = (Math.PI * 2 / Math.max(1, game.enemies.length)) * i + game.t;
+          e.x = p.x + Math.cos(a) * 310;
+          e.y = p.y + Math.sin(a) * 310;
+        }
+      });
+    }
+  }
+
+  const oldSpawn = proto.spawn;
+  proto.spawn = function spawnV041f(dt) {
+    oldSpawn.call(this, dt);
+    forceSpawnMissingFinalEnemies(this);
+  };
+
+  const oldUpdate = proto.update;
+  proto.update = function updateV041f(dt) {
+    oldUpdate.call(this, dt);
+    forceSpawnMissingFinalEnemies(this);
+  };
+
+  const oldRefreshMenu = UI.refreshMenu?.bind(UI);
+  UI.refreshMenu = function refreshMenuV041f(...args) {
+    const result = oldRefreshMenu ? oldRefreshMenu(...args) : undefined;
+    const build = document.getElementById("menuBuildVersion");
+    if (build) build.textContent = "v0.4.1f FPS FIX";
+    return result;
+  };
+
+  console.info("[CHERRIFT v0.4.1f] world2 fps + final enemy failsafe loaded.");
 })();
