@@ -262,3 +262,9 @@ body.is-loading-stage #stageLoading:not(.hidden){display:grid!important;}
   from { opacity: 0; transform: scale(.96); }
   to { opacity: 1; transform: scale(1); }
 }
+
+
+/* ============================================================
+   CHERRIFT v0.4.1f FPS FINISH FIX
+   World 2 pre-tinted ground + final enemy finish failsafe.
+   ============================================================ */

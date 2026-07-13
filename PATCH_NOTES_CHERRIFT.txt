@@ -204,3 +204,26 @@ CHERRIFT v0.4.1e Performance + Enemy + Ground Fix
 - index.html now uses:
   menu_v040.css?v=041e
   src/cherrift_v040.js?v=041e
+
+
+CHERRIFT v0.4.1f World 2 FPS + Final Enemy Fix
+
+[World 2 FPS]
+- Removed per-frame night overlay drawing.
+- World 2 now uses a pre-tinted cached night tile pattern.
+- No radial gradient / full-screen tint every frame.
+- This should help mobile performance heavily.
+
+[Final enemy failsafe]
+- If the stage is near the end and an enemy is missing/offscreen, the game repairs the spawn count.
+- If 154/155 happens and no enemy is reachable, it spawns/pulls the final enemy near Cherry.
+- The exact stage goal still stays exact.
+
+[Enemy sprites]
+- Enemy sprite system from v0.4.1e is preserved.
+- No changes to working enemy animation setup.
+
+[Cache]
+- index.html now uses:
+  menu_v040.css?v=041f
+  src/cherrift_v040.js?v=041f
