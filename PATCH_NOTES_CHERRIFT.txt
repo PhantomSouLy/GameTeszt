@@ -166,3 +166,29 @@ assets/enemies/angry_mushroom_sprite_sheet.png
 
 [Note]
 If angry_mushroom_sprite_sheet.png is empty or corrupted on GitHub, mushroom will not show until that PNG is reuploaded.
+
+
+CHERRIFT v0.4.1d Ground + FPS + Victory Fix
+
+[Ground]
+- Final ground renderer uses:
+  assets/map/world1/world1_grass_seamless.png
+- If the external file fails, it reuses the embedded PNG from the previous embedded-ground patch.
+- The huge source image is converted once into a 512px cached canvas tile.
+- World 1 and World 2 both use the same seamless tile.
+- World 2 keeps night overlay.
+
+[World 2 FPS]
+- Enemy sprite drawing now uses cached per-frame mini canvases.
+- This avoids cropping huge sprite sheets every frame for every enemy.
+- Night ground overlay is cheaper.
+
+[Stage Clear]
+- Stage clear modal is delayed by 3.4 seconds.
+- A VICTORY splash appears first.
+- Enemies/projectiles are cleared during the victory delay.
+
+[Cache]
+- index.html now uses:
+  menu_v040.css?v=041d
+  src/cherrift_v040.js?v=041d

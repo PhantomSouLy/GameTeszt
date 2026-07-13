@@ -215,3 +215,50 @@ body.is-loading-stage #stageLoading:not(.hidden){display:grid!important;}
   #menu .menu-btn{min-height:58px!important;}
   #mobilePlayBtn{min-height:68px!important;}
 }
+
+
+/* ============================================================
+   CHERRIFT v0.4.1d GROUND FPS + VICTORY FIX
+   ============================================================ */
+
+.victory-splash-v041d {
+  position: fixed;
+  inset: 0;
+  z-index: 90000;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 45%, rgba(255, 91, 172, .20), rgba(4, 2, 10, 0) 42%);
+  animation: victorySplashIn041d .24s ease-out both;
+}
+
+.victory-card-v041d {
+  min-width: min(520px, calc(100vw - 42px));
+  padding: 26px 30px;
+  border-radius: 26px;
+  text-align: center;
+  border: 1px solid rgba(255, 230, 246, .36);
+  background: linear-gradient(135deg, rgba(18, 9, 30, .88), rgba(55, 18, 48, .72));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .38), 0 0 46px rgba(255, 91, 172, .28);
+  backdrop-filter: blur(12px);
+}
+
+.victory-card-v041d h2 {
+  margin: 0;
+  font-size: clamp(38px, 7vw, 76px);
+  line-height: .95;
+  color: #fff;
+  text-shadow: 0 0 22px rgba(255, 160, 210, .88);
+  letter-spacing: -1px;
+}
+
+.victory-card-v041d p {
+  margin: 10px 0 0;
+  color: rgba(255, 225, 242, .92);
+  font-weight: 900;
+}
+
+@keyframes victorySplashIn041d {
+  from { opacity: 0; transform: scale(.96); }
+  to { opacity: 1; transform: scale(1); }
+}
