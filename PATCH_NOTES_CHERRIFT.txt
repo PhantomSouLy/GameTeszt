@@ -227,3 +227,25 @@ CHERRIFT v0.4.1f World 2 FPS + Final Enemy Fix
 - index.html now uses:
   menu_v040.css?v=041f
   src/cherrift_v040.js?v=041f
+
+
+CHERRIFT v0.4.1g World 2 Ultra Performance Fix
+
+[World 2 FPS]
+- Keeps enemy sprites/animations as they were in v0.4.1e.
+- Lowers canvas DPR to 1 only when playing World 2 on mobile.
+- Draws only visible objects instead of sorting/drawing the full map object list every frame.
+- Uses a smaller 256px pre-tinted night ground tile.
+- Removes all runtime full-screen night overlay.
+- Reduces World 2 simultaneous enemy pressure:
+  maxEnemies capped around 14, raidCount around 5.
+- Trims World 2 effects/pickups if they build up.
+
+[154/155 failsafe]
+- Keeps the final enemy repair:
+  if the last enemy is missing/offscreen, it spawns or pulls it near Cherry.
+
+[Cache]
+- index.html now uses:
+  menu_v040.css?v=041g
+  src/cherrift_v040.js?v=041g

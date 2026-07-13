@@ -268,3 +268,9 @@ body.is-loading-stage #stageLoading:not(.hidden){display:grid!important;}
    CHERRIFT v0.4.1f FPS FINISH FIX
    World 2 pre-tinted ground + final enemy finish failsafe.
    ============================================================ */
+
+
+/* ============================================================
+   CHERRIFT v0.4.1g WORLD2 PERF
+   Camera culling + mobile DPR reduction for World 2.
+   ============================================================ */
