@@ -26,7 +26,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   await loadScript("src/cherrift_v0553.js?v=0553","v0.5.5.3");
   await loadScript("src/cherrift_v0554.js?v=0554","v0.5.5.4");
   await loadScript("src/cherrift_v0555.js?v=0555","v0.5.5.5");
-  await loadScript("src/cherrift_v0556.js?v=0556","v0.5.5.6 Succubus fix");
+  await loadScript("src/cherrift_v0556.js?v=0556","v0.5.5.6");
+  await loadScript("src/cherrift_v0557.js?v=0557","v0.5.5.7 Warrior/UI");
 
   const save = CherriftStorage.load();
   const input = new CherriftInput();

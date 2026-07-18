@@ -1,0 +1,50 @@
+{
+  "skin": "base_cherry",
+  "display_name": "Default / Basic Cherry",
+  "format": "RGBA PNG",
+  "transparent_background": true,
+  "cell": {
+    "width": 192,
+    "height": 192
+  },
+  "pivot": {
+    "x": 96,
+    "ground_y": 184
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "suggested_fps": 3,
+      "sheet_size": [768, 192]
+    },
+    "walk": {
+      "frames": 6,
+      "suggested_fps": 8,
+      "sheet_size": [1152, 192]
+    },
+    "ranged": {
+      "frames": 6,
+      "suggested_fps": 16,
+      "sheet_size": [1152, 192],
+      "vfx_baked_in": false,
+      "cherrift_alias": "attack"
+    },
+    "dash": {
+      "frames": 6,
+      "suggested_fps": 18,
+      "sheet_size": [1152, 192],
+      "vfx_baked_in": false,
+      "cherrift_alias": "skill_dash"
+    }
+  },
+  "directions": ["down", "up", "left", "right"],
+  "horizontal_mirroring": "left_is_per_cell_mirror_of_right",
+  "eye_detail": {
+    "iris": "deep warm brown with amber lower gradient",
+    "catchlight": "3x3 px pale-pink mini-heart"
+  },
+  "canonical_file_count": 16,
+  "validation": "base_cherry_validation.json",
+  "preview": "preview.png",
+  "eye_detail_preview": "eye_detail_preview.png"
+}
