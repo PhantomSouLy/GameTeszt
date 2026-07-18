@@ -1,0 +1,1240 @@
+{
+  "skin": "wuxia_sakura_cherry",
+  "cell_size": [
+    192,
+    192
+  ],
+  "pivot": [
+    96,
+    184
+  ],
+  "canonical_files": 16,
+  "missing": [],
+  "valid": true,
+  "files": [
+    {
+      "file": "wuxia_sakura_cherry_idle_down.png",
+      "frames": 4,
+      "size": [
+        768,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            24,
+            6,
+            169,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            24,
+            6,
+            169,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            24,
+            6,
+            169,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            24,
+            6,
+            168,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_idle_up.png",
+      "frames": 4,
+      "size": [
+        768,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            22,
+            6,
+            171,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            22,
+            6,
+            171,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            21,
+            6,
+            171,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            22,
+            6,
+            170,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_idle_left.png",
+      "frames": 4,
+      "size": [
+        768,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            16,
+            6,
+            177,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            14,
+            6,
+            179,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            14,
+            6,
+            177,
+            184
+          ],
+          "center_x": 95.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            14,
+            6,
+            177,
+            184
+          ],
+          "center_x": 95.5,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_idle_right.png",
+      "frames": 4,
+      "size": [
+        768,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            7,
+            6,
+            185,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            4,
+            9,
+            188,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            6,
+            6,
+            186,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            6,
+            6,
+            187,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_walk_down.png",
+      "frames": 6,
+      "size": [
+        1152,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            22,
+            7,
+            170,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            26,
+            6,
+            166,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            20,
+            6,
+            171,
+            184
+          ],
+          "center_x": 95.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            22,
+            7,
+            170,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 5,
+          "alpha_bbox": [
+            23,
+            7,
+            169,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 6,
+          "alpha_bbox": [
+            22,
+            7,
+            170,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_walk_up.png",
+      "frames": 6,
+      "size": [
+        1152,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            16,
+            6,
+            176,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            17,
+            6,
+            175,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            16,
+            6,
+            176,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            16,
+            6,
+            175,
+            184
+          ],
+          "center_x": 95.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 5,
+          "alpha_bbox": [
+            15,
+            6,
+            178,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 6,
+          "alpha_bbox": [
+            16,
+            7,
+            176,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_walk_left.png",
+      "frames": 6,
+      "size": [
+        1152,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            13,
+            6,
+            179,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            12,
+            6,
+            179,
+            184
+          ],
+          "center_x": 95.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            10,
+            6,
+            182,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            13,
+            6,
+            179,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 5,
+          "alpha_bbox": [
+            12,
+            6,
+            180,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 6,
+          "alpha_bbox": [
+            13,
+            6,
+            179,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_walk_right.png",
+      "frames": 6,
+      "size": [
+        1152,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            8,
+            6,
+            185,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            6,
+            6,
+            187,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            7,
+            6,
+            185,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            7,
+            6,
+            185,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 5,
+          "alpha_bbox": [
+            6,
+            6,
+            185,
+            184
+          ],
+          "center_x": 95.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 6,
+          "alpha_bbox": [
+            7,
+            6,
+            185,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_attack_down.png",
+      "frames": 6,
+      "size": [
+        1152,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            22,
+            6,
+            171,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            6,
+            6,
+            187,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            21,
+            6,
+            172,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            12,
+            6,
+            180,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 5,
+          "alpha_bbox": [
+            35,
+            6,
+            158,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 6,
+          "alpha_bbox": [
+            22,
+            6,
+            171,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_attack_up.png",
+      "frames": 6,
+      "size": [
+        1152,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            22,
+            6,
+            170,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            6,
+            6,
+            186,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            5,
+            6,
+            188,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            10,
+            6,
+            183,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 5,
+          "alpha_bbox": [
+            39,
+            6,
+            153,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 6,
+          "alpha_bbox": [
+            22,
+            6,
+            170,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_attack_left.png",
+      "frames": 6,
+      "size": [
+        1152,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            12,
+            6,
+            179,
+            184
+          ],
+          "center_x": 95.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            10,
+            6,
+            181,
+            184
+          ],
+          "center_x": 95.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            4,
+            19,
+            188,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            4,
+            24,
+            188,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 5,
+          "alpha_bbox": [
+            20,
+            6,
+            172,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 6,
+          "alpha_bbox": [
+            12,
+            6,
+            179,
+            184
+          ],
+          "center_x": 95.5,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_attack_right.png",
+      "frames": 6,
+      "size": [
+        1152,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            13,
+            6,
+            180,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            11,
+            6,
+            182,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            4,
+            19,
+            188,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            4,
+            24,
+            188,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 5,
+          "alpha_bbox": [
+            20,
+            6,
+            172,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 6,
+          "alpha_bbox": [
+            13,
+            6,
+            180,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_skill_down.png",
+      "frames": 6,
+      "size": [
+        1152,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            17,
+            7,
+            175,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            24,
+            7,
+            167,
+            184
+          ],
+          "center_x": 95.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            4,
+            8,
+            188,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            4,
+            14,
+            188,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 5,
+          "alpha_bbox": [
+            18,
+            6,
+            175,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 6,
+          "alpha_bbox": [
+            18,
+            8,
+            173,
+            184
+          ],
+          "center_x": 95.5,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_skill_up.png",
+      "frames": 6,
+      "size": [
+        1152,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            13,
+            6,
+            179,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            18,
+            6,
+            174,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            9,
+            6,
+            183,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            4,
+            32,
+            188,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 5,
+          "alpha_bbox": [
+            16,
+            6,
+            176,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 6,
+          "alpha_bbox": [
+            14,
+            6,
+            177,
+            184
+          ],
+          "center_x": 95.5,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_skill_left.png",
+      "frames": 6,
+      "size": [
+        1152,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            11,
+            6,
+            181,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            10,
+            6,
+            181,
+            184
+          ],
+          "center_x": 95.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            5,
+            26,
+            188,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            4,
+            39,
+            188,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 5,
+          "alpha_bbox": [
+            4,
+            6,
+            187,
+            184
+          ],
+          "center_x": 95.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 6,
+          "alpha_bbox": [
+            12,
+            6,
+            180,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        }
+      ]
+    },
+    {
+      "file": "wuxia_sakura_cherry_skill_right.png",
+      "frames": 6,
+      "size": [
+        1152,
+        192
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "errors": [],
+      "frame_details": [
+        {
+          "frame": 1,
+          "alpha_bbox": [
+            11,
+            7,
+            181,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 2,
+          "alpha_bbox": [
+            4,
+            6,
+            188,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 3,
+          "alpha_bbox": [
+            4,
+            22,
+            188,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 4,
+          "alpha_bbox": [
+            4,
+            41,
+            188,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        },
+        {
+          "frame": 5,
+          "alpha_bbox": [
+            5,
+            16,
+            188,
+            184
+          ],
+          "center_x": 96.5,
+          "ground_y": 184
+        },
+        {
+          "frame": 6,
+          "alpha_bbox": [
+            11,
+            7,
+            181,
+            184
+          ],
+          "center_x": 96.0,
+          "ground_y": 184
+        }
+      ]
+    }
+  ]
+}
