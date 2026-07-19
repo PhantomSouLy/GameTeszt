@@ -1,0 +1,64 @@
+{
+  "skin": "mage_cherry",
+  "display_name": "Mage Cherry",
+  "format": "RGBA PNG",
+  "transparent_background": true,
+  "cell": {
+    "width": 192,
+    "height": 192
+  },
+  "pivot": {
+    "x": 96,
+    "ground_y": 184
+  },
+  "passive": {
+    "type": "hp_recovery_bonus",
+    "value": 0.05,
+    "display": "+5% HP recovery"
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "suggested_fps": 3,
+      "sheet_size": [768, 192]
+    },
+    "walk": {
+      "frames": 6,
+      "suggested_fps": 8,
+      "sheet_size": [1152, 192]
+    },
+    "ranged": {
+      "frames": 6,
+      "suggested_fps": 15,
+      "sheet_size": [1152, 192],
+      "type": "single_magic_orb_staff_shot",
+      "projectile_count": 1,
+      "release_frame": 5
+    },
+    "skill": {
+      "name": "Magical Shot",
+      "frames": 6,
+      "suggested_fps": 16,
+      "sheet_size": [1152, 192],
+      "type": "five_magic_orb_cone",
+      "projectile_count": 5,
+      "release_frame": 5,
+      "spread": "symmetric fan/cone",
+      "targeting": {
+        "multiple_enemies": "distribute or home across valid enemies",
+        "single_enemy": "all five home to the same enemy",
+        "no_enemy": "continue along initial fan vectors"
+      },
+      "released_orbs_visible_in_sheet": true
+    }
+  },
+  "directions": ["down", "up", "left", "right"],
+  "horizontal_mirroring": "left_is_exact_per_cell_mirror_of_right",
+  "canonical_file_count": 16,
+  "compatibility_aliases": {
+    "attack": "ranged"
+  },
+  "validation": "mage_cherry_validation.json",
+  "preview": "preview.png",
+  "generation_prompts": "generation_prompts.md"
+}
