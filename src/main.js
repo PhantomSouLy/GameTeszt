@@ -56,7 +56,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   await loadScript("src/cherrift_v0560.js?v=0560","v0.5.6.0 Gear redesign");
   await loadScript("src/cherrift_v0561.js?v=0561","v0.5.6.1 Wuxia Sakura");
   await loadScript("src/cherrift_v0563.js?v=0563","v0.5.6.3 Warrior VFX fix");
-  await loadScript("src/cherrift_v060.js?v=060","v0.6.0 Bloom UI");
+  await loadScript("src/cherrift_v060.js?v=0601","v0.6.0 Bloom UI hotfix");
 
   try {
     const save = CherriftStorage.load();

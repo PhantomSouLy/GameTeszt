@@ -98,6 +98,21 @@ function imageMarkup(source, alt, className = "") {
   return `<img class="${className}" src="${escapeHtml(source)}" alt="${escapeHtml(alt)}" draggable="false">`;
 }
 
+function updateImageMarkup(holder, source, alt, className = "") {
+  if (!holder || !source) return false;
+  const image = holder.firstElementChild;
+  const unchanged =
+    holder.childNodes.length === 1 &&
+    image?.tagName === "IMG" &&
+    image.getAttribute("class") === className &&
+    image.getAttribute("src") === source &&
+    image.getAttribute("alt") === String(alt ?? "") &&
+    image.getAttribute("draggable") === "false";
+  if (unchanged) return false;
+  holder.innerHTML = imageMarkup(source, alt, className);
+  return true;
+}
+
 function ensureGlobalRail() {
   if (id("globalRailV060")) return;
   const rail = document.createElement("aside");
@@ -648,7 +663,7 @@ function decorateProfiles() {
   ].filter(Boolean);
   for (const holder of holders) {
     holder.classList.add("profile-skin-icon-v060");
-    holder.innerHTML = imageMarkup(skin?.icon, skin?.name || "Cherry");
+    updateImageMarkup(holder, skin?.icon, skin?.name || "Cherry");
   }
 
   const cards = qa("#libraryBodyV0551 .v0551-collect");
@@ -658,7 +673,7 @@ function decorateProfiles() {
       const holder = q("span", card);
       if (!holder || !skinData?.icon || card.classList.contains("unknown")) return;
       holder.classList.add("skin-collection-icon-v060");
-      holder.innerHTML = imageMarkup(skinData.icon, skinData.name);
+      updateImageMarkup(holder, skinData.icon, skinData.name);
     });
   }
 }
@@ -706,14 +721,20 @@ function patchUiLifecycle() {
 }
 
 function observeDynamicPanels() {
+  const root = id("app") || document.body;
+  const options = { childList: true, subtree: true };
   const observer = new MutationObserver(mutations => {
-    if (mutations.some(mutation => mutation.type === "childList")) {
+    if (!mutations.some(mutation => mutation.type === "childList")) return;
+    observer.disconnect();
+    try {
       if (!id("upgradePreviewV060")) ensureUpgradePreview();
       if (!id("gearCherryStableV060")) ensureGearPreview();
       decorateProfiles();
+    } finally {
+      observer.observe(root, options);
     }
   });
-  observer.observe(id("app") || document.body, { childList: true, subtree: true });
+  observer.observe(root, options);
 }
 
 function preloadImage(source) {
