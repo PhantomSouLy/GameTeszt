@@ -36,7 +36,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   updateBoot(5, "Loading game systems…");
-  await loadScript("src/cherrift_v042_completion.js?v=042","v0.4 completion");
+  await loadScript("src/cherrift_v042_completion.js?v=061","v0.4 completion");
   await loadScript("src/cherrift_v050.js?v=050","v0.5");
   await loadScript("src/cherrift_mobile_v051.js?v=051","v0.5.1");
   await loadScript("src/cherrift_v052.js?v=052","v0.5.2");
@@ -56,7 +56,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   await loadScript("src/cherrift_v0560.js?v=0560","v0.5.6.0 Gear redesign");
   await loadScript("src/cherrift_v0561.js?v=0561","v0.5.6.1 Wuxia Sakura");
   await loadScript("src/cherrift_v0563.js?v=0563","v0.5.6.3 Warrior VFX fix");
-  await loadScript("src/cherrift_v060.js?v=0601","v0.6.0 Bloom UI hotfix");
+  await loadScript("src/cherrift_v060.js?v=061","v0.6.1 Bloom UI hotfix");
 
   try {
     const save = CherriftStorage.load();
