@@ -108,3 +108,20 @@ A jelenlegi játék ezekre van optimalizálva:
   - Row 2: Death
 
 A sprite sheetek valódi RGBA PNG-k, fekete háttér eltávolítva.
+
+## 0.6.0 skin UI asset szabály
+
+Minden skin külön `icon` és `splashart` fájlt használ. Ezeket nem szabad egymással felcserélni:
+
+- `*_icon.png` → profil, Library, mobil navigáció, kis kártyák.
+- `*_splashart.png` vagy `*_splashart.jpg` → Characters & Skins nagyméretű háttér.
+- `*_idle_down.png` → Gear és Player Upgrade animált előnézet.
+
+A Warrior Cherry kanonikus képei:
+
+```text
+assets/player/skins/warrior_cherry/warrior_cherry_icon.png
+assets/player/skins/warrior_cherry/warrior_cherry_splashart.png
+```
+
+Az előnézeti idle stripe-ok képkockái azonos cellaméretűek legyenek. A v0.6 futásidőben az átlátszó képhatár alapján egységes közép- és talajpontra igazítja őket.

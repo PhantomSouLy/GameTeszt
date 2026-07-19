@@ -32,7 +32,7 @@ const PATHS = {
   },
   beast: {
     splash:"assets/player/skins/beastclaw_cherry/beastclaw_cherry_splashart.png",
-    icon:"assets/player/skins/beastclaw_cherry/beatclaw_cherry_icon.png"
+    icon:"assets/player/skins/beastclaw_cherry/beastclaw_cherry_icon.png"
   },
   ninja: {
     splash:"assets/player/skins/ninja_cherry/ninja_cherry_splashart.png",
@@ -43,7 +43,7 @@ const PATHS = {
     icon:"assets/player/skins/succubus_cherry/succubus_cherry_icon.png"
   },
   warrior: {
-    splash:"assets/player/skins/warrior_cherry/warrior_cherry_icon.png",
+    splash:"assets/player/skins/warrior_cherry/warrior_cherry_splashart.png",
     icon:"assets/player/skins/warrior_cherry/warrior_cherry_icon.png"
   }
 };

@@ -1,18 +1,41 @@
 window.addEventListener("DOMContentLoaded", async () => {
+  const patchCount = 21;
+  let loadedPatches = 0;
+
+  function updateBoot(percent, message) {
+    const value = Math.max(3, Math.min(100, Math.round(percent)));
+    const fill = document.getElementById("bootFillV060");
+    const text = document.getElementById("bootTextV060");
+    const label = document.getElementById("bootPercentV060");
+    if (fill) fill.style.width = `${value}%`;
+    if (text && message) text.textContent = message;
+    if (label) label.textContent = `${value}%`;
+  }
+
   async function loadScript(src,label){
     try{
       await new Promise((resolve,reject)=>{
         const script=document.createElement("script");
         script.src=src;
-        script.onload=resolve;
-        script.onerror=reject;
+        const timeout=window.setTimeout(()=>{
+          script.onload=null;
+          script.onerror=null;
+          script.remove();
+          reject(new Error(`${label} timed out`));
+        },10000);
+        script.onload=()=>{window.clearTimeout(timeout);resolve();};
+        script.onerror=error=>{window.clearTimeout(timeout);reject(error);};
         document.head.appendChild(script);
       });
     }catch(error){
       console.error(`[CHERRIFT] ${label} failed:`,error);
+    }finally{
+      loadedPatches++;
+      updateBoot(5 + loadedPatches / patchCount * 40, `Loading ${label}…`);
     }
   }
 
+  updateBoot(5, "Loading game systems…");
   await loadScript("src/cherrift_v042_completion.js?v=042","v0.4 completion");
   await loadScript("src/cherrift_v050.js?v=050","v0.5");
   await loadScript("src/cherrift_mobile_v051.js?v=051","v0.5.1");
@@ -33,13 +56,37 @@ window.addEventListener("DOMContentLoaded", async () => {
   await loadScript("src/cherrift_v0560.js?v=0560","v0.5.6.0 Gear redesign");
   await loadScript("src/cherrift_v0561.js?v=0561","v0.5.6.1 Wuxia Sakura");
   await loadScript("src/cherrift_v0563.js?v=0563","v0.5.6.3 Warrior VFX fix");
+  await loadScript("src/cherrift_v060.js?v=060","v0.6.0 Bloom UI");
 
-  const save = CherriftStorage.load();
-  const input = new CherriftInput();
-  const game = new CherriftGame(
-    document.getElementById("game"),
-    input,
-    save
-  );
-  UI.init(save, game);
+  try {
+    const save = CherriftStorage.load();
+    updateBoot(46, "Reading local progress…");
+
+    if (window.CHERRIFT_V060?.preload) {
+      const preloadResult = await window.CHERRIFT_V060.preload(save, (done, total, message) => {
+        const ratio = total ? done / total : 0;
+        updateBoot(46 + ratio * 47, message);
+      });
+      if (preloadResult.failures.length) {
+        console.warn("[CHERRIFT] Some optional artwork could not be preloaded:", preloadResult.failures);
+      }
+    }
+
+    updateBoot(95, "Preparing the menu…");
+    const input = new CherriftInput();
+    const game = new CherriftGame(
+      document.getElementById("game"),
+      input,
+      save
+    );
+    UI.init(save, game);
+    window.CHERRIFT_V060?.initAfterUI?.(save, game);
+    updateBoot(99, "Finalizing interface…");
+    window.CHERRIFT_V060?.finishBoot?.();
+  } catch (error) {
+    console.error("[CHERRIFT] Startup failed:", error);
+    updateBoot(100, "Loading completed with a fallback");
+    document.body.classList.remove("v060-booting");
+    document.getElementById("bootV060")?.classList.add("done");
+  }
 });

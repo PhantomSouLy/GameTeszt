@@ -1,3 +1,44 @@
+CHERRIFT v0.6.0 — BLOOM UI PATCH
+
+[Menu]
+- Egységes, sötét-rózsaszín CHERRIFT oldalsó navigáció az asztali menükben.
+- A korábbi hosszú és duplikált főmenü helyett hat elsődleges cél + külön Settings/Profile rész.
+- Színesebb főképernyő, aktív Cherry kártya és gyorsműveletek.
+- Telefonon öt nagy, biztonságosan érinthető alsó navigációs cél.
+
+[Settings]
+- Hét rendezett fül: General, Audio, Display, Controls, Gameplay UI, Accessibility, Account.
+- Az Account fül elő van készítve a későbbi belépéshez és felhőmentéshez.
+- Új artwork preload, reduced motion és high contrast beállítás.
+
+[Gacha]
+- A Collection/Bloom Chest képernyő Gacha lett.
+- A nyitás tárgya Bloom Key; új kulcs-, kör-, szirom- és reward-reveal animáció.
+- Skip gomb és csökkentett animációs mód.
+
+[Cherry assets]
+- Az emoji skinjelölések helyett a saját skin ikonok jelennek meg.
+- A Warrior Cherry külön splash artot használ; nem az ikont nagyítja fel.
+- A Player Profile, Library, mobil navigáció és skinválasztó ugyanazt a kanonikus assetlistát használja.
+
+[Sprite preview]
+- Gear és Player Upgrade oldalon az aktív skin idle animációja látható.
+- Képkockánként mért átlátszó határ, egységes középpont és talajpont akadályozza meg az oldalirányú ugrálást.
+
+[Loading]
+- A régi menü többé nem villan fel a frissített UI előtt.
+- A patchfájlok, főmenü, skin ikonok, splash artok és aktív idle sheet valódi folyamatjelzővel töltődnek.
+- A többi idle sheet háttérben, böngésző-idle időben kerül a cache-be.
+
+[Notifications]
+- Piros pont jelzi az új geart, új skint és az olvasatlan patchinformációt.
+- A jelzések megnyitás után eltűnnek, állapotuk helyben mentődik.
+
+[Compatibility]
+- Külön reszponzív szabályok 1440px, 1180px, 860px és 520px környezethez.
+- 58px-es mobil navigációs érintési célok, safe-area támogatás és reduced-motion fallback.
+
+
 CHERRIFT v0.4.0i Clean World + Night Fix
 
 [Cleanup]
