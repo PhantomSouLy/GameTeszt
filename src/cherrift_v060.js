@@ -4,6 +4,40 @@
 const VERSION = "0.6.1-bloom-hotfix";
 const MOBILE_BREAKPOINT = 860;
 const NOTICE_KEY = "cherrift.v060.notices";
+const CLICK_SOUND_PATH = "assets/audio/click.wav?v=0612";
+const CLICK_SOUND_VOLUME = .42;
+const CLICK_SOUND_SELECTOR = [
+  "button",
+  "a[href]",
+  "summary",
+  "select",
+  "input[type='button']",
+  "input[type='submit']",
+  "input[type='reset']",
+  "input[type='checkbox']",
+  "input[type='radio']",
+  "input[type='range']",
+  "[role='button']",
+  "[role='menuitem']",
+  "[role='switch']",
+  "[data-open]",
+  "[data-action]",
+  "[data-v052-open]",
+  "[data-v053-node]",
+  "[data-node]",
+  "[data-v053-achievement]",
+  "[data-ach]",
+  "[data-v055-open]",
+  "[data-v0551-library]",
+  "[data-library-tab]",
+  "[data-col-tab]",
+  "[data-v0560-open]",
+  "[data-v0560-library]",
+  "[data-v060-open]",
+  "[data-v060-settings]",
+  "[data-v061-upgrade-tab]",
+  "[data-v061-gear-tab]"
+].join(",");
 const id = name => document.getElementById(name);
 const q = (selector, root = document) => root.querySelector(selector);
 const qa = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -47,6 +81,9 @@ const SKIN_ASSETS = {
 
 const runtime = {
   initialized: false,
+  clickSoundBound: false,
+  clickSoundIndex: 0,
+  clickSounds: [],
   activePanel: "menu",
   inventoryCount: null,
   gachaTimer: 0,
@@ -55,6 +92,63 @@ const runtime = {
   spriteCache: new Map(),
   notices: loadNotices()
 };
+
+function clickSoundVolume() {
+  const savedVolume = Number(UI.save?.settings?.volume);
+  const multiplier = Number.isFinite(savedVolume)
+    ? Math.max(0, Math.min(1, savedVolume))
+    : 1;
+  return CLICK_SOUND_VOLUME * multiplier;
+}
+
+function ensureClickSounds() {
+  if (runtime.clickSounds.length || typeof Audio !== "function") return;
+  runtime.clickSounds = Array.from({ length: 4 }, () => {
+    const sound = new Audio(CLICK_SOUND_PATH);
+    sound.preload = "auto";
+    return sound;
+  });
+}
+
+function clickableControlFrom(target) {
+  const element = target instanceof Element ? target.closest(CLICK_SOUND_SELECTOR) : null;
+  if (!element || !element.isConnected) return null;
+  if (
+    element.matches(":disabled, [disabled], [aria-disabled='true']") ||
+    element.closest("[inert], [aria-disabled='true']")
+  ) return null;
+  const style = getComputedStyle(element);
+  if (style.pointerEvents === "none" || style.visibility === "hidden") return null;
+  return element;
+}
+
+function playClickSound() {
+  const volume = clickSoundVolume();
+  if (volume <= 0) return false;
+  ensureClickSounds();
+  if (!runtime.clickSounds.length) return false;
+  const sound = runtime.clickSounds[runtime.clickSoundIndex++ % runtime.clickSounds.length];
+  try {
+    sound.pause();
+    sound.currentTime = 0;
+    sound.volume = volume;
+    const playback = sound.play();
+    playback?.catch?.(() => {});
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function bindClickSounds() {
+  if (runtime.clickSoundBound) return;
+  runtime.clickSoundBound = true;
+  ensureClickSounds();
+  window.addEventListener("click", event => {
+    if (!event.isTrusted || !clickableControlFrom(event.target)) return;
+    playClickSound();
+  }, true);
+}
 
 function ensureCss() {
   id("v060css")?.remove();
@@ -919,6 +1013,7 @@ function backgroundPreloadIdleSheets() {
 function initAfterUI() {
   if (runtime.initialized) return;
   runtime.initialized = true;
+  bindClickSounds();
   ensureMobileNavigation();
   ensureMobilePanelTabs();
   bindNavigation();
@@ -984,6 +1079,8 @@ ensureMobilePanelTabs();
 window.CHERRIFT_V060 = {
   version: VERSION,
   skinAssets: SKIN_ASSETS,
+  clickableControlFrom,
+  playClickSound,
   preload,
   initAfterUI,
   finishBoot,
