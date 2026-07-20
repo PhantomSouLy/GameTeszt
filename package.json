@@ -1,0 +1,16 @@
+{
+  "name": "cherrift",
+  "version": "0.6.2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "node tools/validate.mjs",
+    "smoke": "node tools/smoke.mjs",
+    "test": "npm run validate && npm run smoke"
+  },
+  "devDependencies": {
+    "css-tree": "^3.1.0",
+    "jsdom": "^26.1.0"
+  }
+}
+

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>CHERRIFT v0.6.1 BLOOM HOTFIX</title>
+  <title>CHERRIFT v0.6.2 – MINŐSÉGI FRISSÍTÉS</title>
   <link rel="stylesheet" href="style.css?v=041g" />
   <link rel="stylesheet" href="menu_v040.css?v=041g" />
   <style id="v060BootCss">
@@ -43,6 +43,11 @@
       box-shadow:0 0 18px rgba(255,91,172,.72); transition:width .2s ease; }
     .boot-status-v060 { display:flex; justify-content:space-between; gap:16px;
       margin-top:10px; color:rgba(255,229,243,.72); font-size:12px; }
+    .boot-error-v062 { margin-top:18px; padding:14px; border:1px solid rgba(255,150,190,.5);
+      border-radius:14px; background:rgba(60,8,31,.72); }
+    .boot-error-v062 strong,.boot-error-v062 p { display:block; margin:0 0 7px; }
+    .boot-retry-v062 { min-height:42px; padding:0 18px; border:1px solid rgba(255,235,246,.8);
+      border-radius:10px; color:#fff; font-weight:900; background:linear-gradient(110deg,#d52f7d,#e784b4); }
     @keyframes v060BootPetals { to { transform:translate3d(54px,54px,0) rotate(8deg); } }
     @media (prefers-reduced-motion:reduce) { .boot-v060::before { animation:none; } }
   </style>
@@ -52,10 +57,10 @@
     <div class="boot-card-v060">
       <div class="boot-mark-v060" aria-hidden="true">✦</div>
       <h1 class="boot-logo-v060">CHERRIFT</h1>
-      <p class="boot-sub-v060">Bloom hotfix · v0.6.1</p>
+      <p class="boot-sub-v060">Minőségi javítások és lokalizáció · v0.6.2</p>
       <div class="boot-track-v060"><i id="bootFillV060"></i></div>
       <div class="boot-status-v060">
-        <span id="bootTextV060">Preparing Cherry…</span>
+        <span id="bootTextV060">Cherry előkészítése…</span>
         <b id="bootPercentV060">3%</b>
       </div>
     </div>
@@ -504,13 +509,13 @@
     <div id="toast"></div>
   </div>
 
-  <script src="src/config.js"></script>
-  <script src="src/data.js"></script>
-  <script src="src/storage.js"></script>
-  <script src="src/input.js"></script>
-  <script src="src/game.js"></script>
-  <script src="src/ui.js"></script>
-  <script src="src/cherrift_v040.js?v=061"></script>
-  <script src="src/main.js?v=0612"></script>
+  <script src="src/config.js?v=062"></script>
+  <script src="src/data.js?v=062"></script>
+  <script src="src/storage.js?v=062"></script>
+  <script src="src/input.js?v=062"></script>
+  <script src="src/game.js?v=062"></script>
+  <script src="src/ui.js?v=062"></script>
+  <script src="src/cherrift_v040.js?v=062"></script>
+  <script src="src/main.js?v=062"></script>
 </body>
 </html>

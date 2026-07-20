@@ -2,7 +2,7 @@
   "use strict";
 
   const VERSION = "0.4.2-completion-foundation";
-  const SAVE_SCHEMA = 4;
+  const SAVE_SCHEMA = 5;
   const BACKUP_KEY = "cherrift_save_backup_v04";
 
   if (!window.CherriftStorage || !window.CherriftGame || !window.CHERRIFT_DATA || !window.CHERRIFT_CONFIG) {
@@ -38,6 +38,10 @@
       fpsLimit: 60,
       uiScale: 100,
       viewZoom: 1,
+      language: "hu",
+      preloadArtwork: true,
+      reducedMotion: false,
+      highContrast: false,
       damageNumbers: true,
       compactHud: true,
       ...(defaults.settings || {}),
@@ -48,6 +52,10 @@
     out.settings.fpsLimit = [30, 60].includes(Number(out.settings.fpsLimit)) ? Number(out.settings.fpsLimit) : 60;
     out.settings.uiScale = Math.max(85, Math.min(125, Number(out.settings.uiScale) || 100));
     out.settings.viewZoom = [1, 1.1, 1.2].includes(Number(out.settings.viewZoom)) ? Number(out.settings.viewZoom) : 1;
+    out.settings.language = ["hu", "en"].includes(out.settings.language) ? out.settings.language : "hu";
+    out.settings.preloadArtwork = out.settings.preloadArtwork !== false;
+    out.settings.reducedMotion = !!out.settings.reducedMotion;
+    out.settings.highContrast = !!out.settings.highContrast;
     out.settings.touchMode = out.settings.touchMode !== false;
     out.settings.damageNumbers = out.settings.damageNumbers !== false;
     out.settings.compactHud = out.settings.compactHud !== false;
@@ -75,13 +83,23 @@
 
   storage.load = function loadV042() {
     let loaded;
+    let primaryCorrupt = false;
     try {
-      loaded = originalLoad();
+      const raw = localStorage.getItem(storage.key);
+      if (raw) JSON.parse(raw);
     } catch (_) {
-      loaded = null;
+      primaryCorrupt = true;
     }
 
-    if (!loaded || typeof loaded !== "object") {
+    if (!primaryCorrupt) {
+      try {
+        loaded = originalLoad();
+      } catch (_) {
+        loaded = null;
+      }
+    }
+
+    if (primaryCorrupt || !loaded || typeof loaded !== "object") {
       try {
         const backup = JSON.parse(localStorage.getItem(BACKUP_KEY) || "null");
         loaded = backup && typeof backup === "object" ? backup : originalDefaults();
@@ -183,10 +201,13 @@
     const game = window.UI?.game;
     if (!game || game.mode !== "playing") return;
 
-    if (typeof game.pause === "function") {
+    if (typeof window.UI?.pause === "function") {
+      try { window.UI.pause(); } catch (_) {}
+    } else if (typeof game.pause === "function") {
       try { game.pause(); } catch (_) {}
     } else {
       game.mode = "paused";
+      document.body.classList.remove("is-playing");
       document.getElementById("pauseModal")?.classList.remove("hidden");
     }
 

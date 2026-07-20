@@ -1,6 +1,31 @@
 window.addEventListener("DOMContentLoaded", async () => {
-  const patchCount = 21;
+  const patchCount = 23;
   let loadedPatches = 0;
+  const failedPatches = [];
+
+  function preferredBootLanguage() {
+    try {
+      const save = JSON.parse(localStorage.getItem("cherrift_save_v025_polish") || "null");
+      if (["hu", "en"].includes(save?.settings?.language)) return save.settings.language;
+    } catch (_) {}
+    return document.documentElement.lang === "en" ? "en" : "hu";
+  }
+
+  function localizedBootMessage(message) {
+    const translated = window.CHERRIFT_I18N?.translate?.(message);
+    if (translated && translated !== message) return translated;
+    if (preferredBootLanguage() !== "hu") return message;
+    const copy = {
+      "Loading game systems…": "Játékrendszerek betöltése…",
+      "Reading local progress…": "Helyi mentés beolvasása…",
+      "Preparing the menu…": "Menü előkészítése…",
+      "Finalizing interface…": "Felület véglegesítése…",
+      "Loading failed": "A betöltés sikertelen"
+    };
+    if (copy[message]) return copy[message];
+    if (/^Loading .+…$/.test(message)) return "Játékrendszerek betöltése…";
+    return message;
+  }
 
   function updateBoot(percent, message) {
     const value = Math.max(3, Math.min(100, Math.round(percent)));
@@ -8,8 +33,40 @@ window.addEventListener("DOMContentLoaded", async () => {
     const text = document.getElementById("bootTextV060");
     const label = document.getElementById("bootPercentV060");
     if (fill) fill.style.width = `${value}%`;
-    if (text && message) text.textContent = message;
+    if (text && message) text.textContent = localizedBootMessage(message);
     if (label) label.textContent = `${value}%`;
+  }
+
+  function showBootFailure(error) {
+    const boot = document.getElementById("bootV060");
+    const card = boot?.querySelector(".boot-card-v060");
+    const translate = value => {
+      const translated = window.CHERRIFT_I18N?.translate?.(value);
+      if (translated && translated !== value) return translated;
+      if (preferredBootLanguage() !== "hu") return value;
+      return {
+        "Loading failed": "A betöltés sikertelen",
+        "Some game files could not be loaded.": "Néhány játékfájl nem tölthető be.",
+        "Reload game": "Játék újratöltése"
+      }[value] || value;
+    };
+    updateBoot(100, translate("Loading failed"));
+    document.body.classList.add("v060-booting", "v062-startup-failed");
+    boot?.classList.remove("done");
+    if (card && !document.getElementById("bootErrorV062")) {
+      const details = document.createElement("div");
+      details.id = "bootErrorV062";
+      details.className = "boot-error-v062";
+      details.innerHTML = `<strong>${translate("Loading failed")}</strong><p>${translate("Some game files could not be loaded.")}</p>`;
+      const retry = document.createElement("button");
+      retry.type = "button";
+      retry.className = "boot-retry-v062";
+      retry.textContent = translate("Reload game");
+      retry.addEventListener("click", () => window.location.reload());
+      details.appendChild(retry);
+      card.appendChild(details);
+    }
+    console.error("[CHERRIFT] Startup blocked to avoid a partially initialized game:", error);
   }
 
   async function loadScript(src,label){
@@ -29,6 +86,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       });
     }catch(error){
       console.error(`[CHERRIFT] ${label} failed:`,error);
+      failedPatches.push(label);
     }finally{
       loadedPatches++;
       updateBoot(5 + loadedPatches / patchCount * 40, `Loading ${label}…`);
@@ -36,17 +94,17 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   updateBoot(5, "Loading game systems…");
-  await loadScript("src/cherrift_v042_completion.js?v=061","v0.4 completion");
+  await loadScript("src/cherrift_v042_completion.js?v=062","v0.4 completion");
   await loadScript("src/cherrift_v050.js?v=050","v0.5");
   await loadScript("src/cherrift_mobile_v051.js?v=051","v0.5.1");
   await loadScript("src/cherrift_v052.js?v=052","v0.5.2");
   await loadScript("src/cherrift_v053.js?v=053","v0.5.3");
-  await loadScript("src/cherrift_v055a.js?v=055a","v0.5.5a");
+  await loadScript("src/cherrift_v055a.js?v=062","v0.5.5a");
   await loadScript("src/cherrift_v055b.js?v=055b","v0.5.5b");
   await loadScript("src/cherrift_v055c.js?v=055c","v0.5.5c");
   await loadScript("src/cherrift_v0551.js?v=0551","v0.5.5.1");
   await loadScript("src/cherrift_v0552.js?v=0552","v0.5.5.2");
-  await loadScript("src/cherrift_v0553.js?v=0553","v0.5.5.3");
+  await loadScript("src/cherrift_v0553.js?v=062","v0.5.5.3");
   await loadScript("src/cherrift_v0554.js?v=0554","v0.5.5.4");
   await loadScript("src/cherrift_v0555.js?v=0555","v0.5.5.5");
   await loadScript("src/cherrift_v0556.js?v=0556","v0.5.5.6");
@@ -56,9 +114,14 @@ window.addEventListener("DOMContentLoaded", async () => {
   await loadScript("src/cherrift_v0560.js?v=0560","v0.5.6.0 Gear redesign");
   await loadScript("src/cherrift_v0561.js?v=0561","v0.5.6.1 Wuxia Sakura");
   await loadScript("src/cherrift_v0563.js?v=0563","v0.5.6.3 Warrior VFX fix");
-  await loadScript("src/cherrift_v060.js?v=0612","v0.6.1 Bloom UI + click audio");
+  await loadScript("src/cherrift_v060.js?v=062","v0.6.1 Bloom UI + click audio");
+  await loadScript("src/cherrift_i18n_v062.js?v=062","v0.6.2 Hungarian/English localization");
+  await loadScript("src/cherrift_v062.js?v=062","v0.6.2 quality update");
 
   try {
+    if (failedPatches.length) {
+      throw new Error(`Update files failed: ${failedPatches.join(", ")}`);
+    }
     const save = CherriftStorage.load();
     updateBoot(46, "Reading local progress…");
 
@@ -84,9 +147,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     updateBoot(99, "Finalizing interface…");
     window.CHERRIFT_V060?.finishBoot?.();
   } catch (error) {
-    console.error("[CHERRIFT] Startup failed:", error);
-    updateBoot(100, "Loading completed with a fallback");
-    document.body.classList.remove("v060-booting");
-    document.getElementById("bootV060")?.classList.add("done");
+    showBootFailure(error);
   }
 });

@@ -96,7 +96,7 @@ const runtime = {
 function clickSoundVolume() {
   const savedVolume = Number(UI.save?.settings?.volume);
   const multiplier = Number.isFinite(savedVolume)
-    ? Math.max(0, Math.min(1, savedVolume))
+    ? Math.max(0, Math.min(1, savedVolume / 100))
     : 1;
   return CLICK_SOUND_VOLUME * multiplier;
 }

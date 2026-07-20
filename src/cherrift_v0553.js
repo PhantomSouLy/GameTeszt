@@ -66,10 +66,10 @@ const SKINS = {
         right:"assets/player/skins/succubus_cherry/succubus_cherry_walk_right.png?v=0553"
       }},
       skill:{fps:15,frames:6,duration:.55,dirs:{
-        down:"assets/player/skins/succubus_cherry/succubus_cherry_skill_down.png?v=0553",
-        up:"assets/player/skins/succubus_cherry/succubus_cherry_skill_up.png?v=0553",
-        left:"assets/player/skins/succubus_cherry/succubus_cherry_skill_left.png?v=0553",
-        right:"assets/player/skins/succubus_cherry/succubus_cherry_skill_right.png?v=0553"
+        down:"assets/player/skins/succubus_cherry/succubus_cherry_ranged_down.png?v=062",
+        up:"assets/player/skins/succubus_cherry/succubus_cherry_ranged_up.png?v=062",
+        left:"assets/player/skins/succubus_cherry/succubus_cherry_ranged_left.png?v=062",
+        right:"assets/player/skins/succubus_cherry/succubus_cherry_ranged_right.png?v=062"
       }}
     }
   }

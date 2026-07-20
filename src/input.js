@@ -11,7 +11,9 @@ class CherriftInput {
     window.addEventListener("keydown", e => {
       const k = e.key.toLowerCase();
       this.keys.add(k);
-      if ([" ", "spacebar", "e", "shift"].includes(k)) {
+      const playing = document.body.classList.contains("is-playing") &&
+        (!window.UI?.game || window.UI.game.mode === "playing");
+      if (playing && [" ", "spacebar", "e", "shift"].includes(k)) {
         this.skillQueued = true;
         e.preventDefault();
       }
@@ -48,11 +50,22 @@ class CherriftInput {
     };
     window.addEventListener("pointerup", end, { passive:true });
     window.addEventListener("pointercancel", end, { passive:true });
+
+    const reset = () => {
+      this.keys.clear();
+      this.skillQueued = false;
+      this.pointerActive = false;
+      this.pointerId = null;
+    };
+    window.addEventListener("blur", reset);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) reset();
+    });
   }
 
   shouldStartMove(e) {
-    const hudVisible = !document.getElementById("hud")?.classList.contains("hidden");
-    const inGame = document.body.classList.contains("is-playing") || hudVisible;
+    const inGame = document.body.classList.contains("is-playing") &&
+      (!window.UI?.game || window.UI.game.mode === "playing");
     if (!inGame || !this.touchMode) return false;
     if (e.target.closest("button,input,.modal,.panel,.menu-screen")) return false;
     return true;

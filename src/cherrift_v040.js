@@ -43,26 +43,26 @@
   };
 
   const SKIN_META = {
-    cherry_default:{ splash:"assets/player/skins/base_cherry/base_cherry_splash_art.png", combat:"Ranged", skill:"Bloom Dash", info:"Gyors dash előre, rövid sérthetetlenséggel és ütközési sebzéssel." },
-    fairy_cherry:{ splash:"assets/player/skins/fairy_cherry/fairy_cherry_splash_art.jpg", combat:"Magic", skill:"Magic Burst", info:"Mágikus burst Cherry körül. Több ellenfelet sebez egyszerre." },
-    beastclaw_cherry:{ splash:"assets/player/skins/beastclaw_cherry/beastclaw_cherry_splash_art.png", combat:"Melee", skill:"Savage Rend", info:"Rövid előretörés és nagy területű karmolás. Közelharci burst sebzés." }
+    cherry_default:{ splash:"assets/player/skins/base_cherry/base_cherry_splashart.png", combat:"Ranged", skill:"Bloom Dash", info:"Gyors dash előre, rövid sérthetetlenséggel és ütközési sebzéssel." },
+    fairy_cherry:{ splash:"assets/player/skins/fairy_cherry/fairy_cherry_splashart.jpg", combat:"Magic", skill:"Magic Burst", info:"Mágikus burst Cherry körül. Több ellenfelet sebez egyszerre." },
+    beastclaw_cherry:{ splash:"assets/player/skins/beastclaw_cherry/beastclaw_cherry_splashart.png", combat:"Melee", skill:"Savage Rend", info:"Rövid előretörés és nagy területű karmolás. Közelharci burst sebzés." }
   };
 
   const WORLD1_GROUND = {
-    basic:"assets/map/world1_grass_basic.png",
-    flowersRocks:"assets/map/world1_grass_flowers_rocks.png",
-    dirtClearing:"assets/map/world1_dirt_clearing.png",
-    grassDirtMix:"assets/map/world1_grass_dirt_mix.png",
-    cloverFlowers:"assets/map/world1_grass_clover_flowers.png"
+    basic:"assets/map/world1/world1_grass_seamless.png",
+    flowersRocks:"assets/map/world1/world1_grass_rock.png",
+    dirtClearing:"assets/map/world1/world1_grass_seamless_low.png",
+    grassDirtMix:"assets/map/world1/world1_grass_seamless_low.png",
+    cloverFlowers:"assets/map/world1/world1_grass_seamless.png"
   };
 
   function installConfigData() {
     Object.assign(CHERRIFT_CONFIG.map, {
-      grassNight:"assets/map/grass_tile02.png",
-      flower1:"assets/map/flower1.png",
-      flower2:"assets/map/flower2.png",
-      mushroom:"assets/map/mushroom.png",
-      world1:"assets/map/world1.png",
+      grassNight:"assets/map/world1/world1_grass_seamless.png",
+      flower1:"assets/map/world1/flower1.png",
+      flower2:"assets/map/world1/flower2.png",
+      mushroom:"assets/map/world1/mushroom.png",
+      world1:"assets/map/world1/world1.png",
       world2:"assets/map/world2.png",
       ...WORLD1_GROUND
     });

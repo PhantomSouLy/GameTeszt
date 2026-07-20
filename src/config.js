@@ -37,10 +37,10 @@ window.CHERRIFT_CONFIG = {
             left: "assets/player/skins/base_cherry/base_cherry_walk_left.png?v=025",
             right: "assets/player/skins/base_cherry/base_cherry_walk_right.png?v=025" } },
           skill: { fps: 18, frames: 6, duration: 0.34, dirs: {
-            down: "assets/player/skins/base_cherry/base_cherry_skill_dash_down.png?v=025",
-            up: "assets/player/skins/base_cherry/base_cherry_skill_dash_up.png?v=025",
-            left: "assets/player/skins/base_cherry/base_cherry_skill_dash_left.png?v=025",
-            right: "assets/player/skins/base_cherry/base_cherry_skill_dash_right.png?v=025" } }
+            down: "assets/player/skins/base_cherry/base_cherry_dash_down.png?v=062",
+            up: "assets/player/skins/base_cherry/base_cherry_dash_up.png?v=062",
+            left: "assets/player/skins/base_cherry/base_cherry_dash_left.png?v=062",
+            right: "assets/player/skins/base_cherry/base_cherry_dash_right.png?v=062" } }
         }
       },
       fairy_cherry: {
@@ -80,14 +80,14 @@ window.CHERRIFT_CONFIG = {
   },
 
   map: {
-    grass: "assets/map/grass_tile.png",
-    rockSmall: "assets/map/rock_small.png",
-    rockBig: "assets/map/rock_big.png",
-    bush1: "assets/map/bush_01.png",
-    bush2: "assets/map/bush_02.png",
-    log: "assets/map/log.png",
-    treeSmall: "assets/map/tree_small.png",
-    treeBig: "assets/map/tree_big.png"
+    grass: "assets/map/world1/world1_grass_seamless.png",
+    rockSmall: "assets/map/world1/rock_small.png",
+    rockBig: "assets/map/world1/rock_big.png",
+    bush1: "assets/map/world1/bush_01.png",
+    bush2: "assets/map/world1/bush_02.png",
+    log: "assets/map/world1/log.png",
+    treeSmall: "assets/map/world1/tree_small.png",
+    treeBig: "assets/map/world1/tree_big.png"
   },
 
   pickups: {
