@@ -1,0 +1,40 @@
+name: "Feedback / Visszajelzés"
+description: "Share an idea or balancing/UI feedback / Ossz meg ötletet vagy egyensúly- és UI-visszajelzést"
+title: "[Feedback] "
+labels:
+  - feedback
+body:
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language / Nyelv
+      options:
+        - Magyar
+        - English
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category / Kategória
+      options:
+        - Gameplay / Játékmenet
+        - Interface / Felület
+        - Balance / Egyensúly
+        - Translation / Fordítás
+        - New feature / Új funkció
+        - Other / Egyéb
+    validations:
+      required: true
+  - type: textarea
+    id: feedback
+    attributes:
+      label: Feedback / Visszajelzés
+      description: "What works, what should change, and why? / Mi működik, min változtatnál, és miért?"
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Desired result / Kívánt eredmény
+      description: "Describe the experience you would like to have after the change."

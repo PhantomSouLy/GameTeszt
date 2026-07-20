@@ -1,5 +1,5 @@
 window.addEventListener("DOMContentLoaded", async () => {
-  const patchCount = 23;
+  const patchCount = 24;
   let loadedPatches = 0;
   const failedPatches = [];
 
@@ -94,7 +94,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   updateBoot(5, "Loading game systems…");
-  await loadScript("src/cherrift_v042_completion.js?v=062","v0.4 completion");
+  await loadScript("src/cherrift_v042_completion.js?v=063","v0.4 completion");
   await loadScript("src/cherrift_v050.js?v=050","v0.5");
   await loadScript("src/cherrift_mobile_v051.js?v=051","v0.5.1");
   await loadScript("src/cherrift_v052.js?v=052","v0.5.2");
@@ -113,10 +113,11 @@ window.addEventListener("DOMContentLoaded", async () => {
   await loadScript("src/cherrift_v0559.js?v=0559","v0.5.5.9 Dash/UI reset");
   await loadScript("src/cherrift_v0560.js?v=0560","v0.5.6.0 Gear redesign");
   await loadScript("src/cherrift_v0561.js?v=0561","v0.5.6.1 Wuxia Sakura");
-  await loadScript("src/cherrift_v0563.js?v=0563","v0.5.6.3 Warrior VFX fix");
+  await loadScript("src/cherrift_v0563.js?v=063","v0.6.3 Warrior VFX grid fix");
   await loadScript("src/cherrift_v060.js?v=062","v0.6.1 Bloom UI + click audio");
   await loadScript("src/cherrift_i18n_v062.js?v=062","v0.6.2 Hungarian/English localization");
   await loadScript("src/cherrift_v062.js?v=062","v0.6.2 quality update");
+  await loadScript("src/cherrift_v063.js?v=063","v0.6.3 mail, reports, equipment and effects");
 
   try {
     if (failedPatches.length) {

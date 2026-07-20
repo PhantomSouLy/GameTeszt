@@ -115,6 +115,50 @@ if (existsSync(wavPath)) {
   }
 }
 
+function pngInfo(file) {
+  const data = readFileSync(file);
+  const signature = data.subarray(0, 8).toString("hex");
+  if (signature !== "89504e470d0a1a0a" || data.length < 26) return null;
+  return {
+    width: data.readUInt32BE(16),
+    height: data.readUInt32BE(20),
+    colorType: data[25]
+  };
+}
+
+const equipmentRoot = join(root, "assets", "items", "equipments");
+const equipmentPngs = existsSync(equipmentRoot)
+  ? walk(equipmentRoot).filter(file => extname(file).toLowerCase() === ".png")
+  : [];
+if (equipmentPngs.length !== 28) {
+  errors.push(`assets/items/equipments: expected 28 equipment icons, found ${equipmentPngs.length}`);
+}
+for (const file of equipmentPngs) {
+  const info = pngInfo(file);
+  if (!info) errors.push(`${relative(root, file)}: invalid PNG header`);
+  else if (info.width !== 128 || info.height !== 128) {
+    errors.push(`${relative(root, file)}: expected 128×128, found ${info.width}×${info.height}`);
+  }
+}
+
+for (const name of ["purple_slash.png", "purple_slash2.png", "purple_slash3.png", "purple_slash4.png"]) {
+  const file = join(root, "assets", "effects", "base_effects", name);
+  const info = existsSync(file) ? pngInfo(file) : null;
+  if (!info) errors.push(`assets/effects/base_effects/${name}: missing or invalid PNG`);
+  else if (info.width !== 128 || info.height !== 128 || info.colorType !== 6) {
+    errors.push(`assets/effects/base_effects/${name}: expected 128×128 RGBA PNG`);
+  }
+}
+
+for (const name of ["warrior_slash_effects_true_rgba.png", "warrior_whirlwind_effects_true_rgba.png"]) {
+  const file = join(root, "assets", "effects", "warrior_cherry", name);
+  const info = existsSync(file) ? pngInfo(file) : null;
+  if (!info) errors.push(`assets/effects/warrior_cherry/${name}: missing or invalid PNG`);
+  else if (info.width !== 1448 || info.height !== 1086 || info.colorType !== 6) {
+    errors.push(`assets/effects/warrior_cherry/${name}: expected 1448×1086 RGBA PNG`);
+  }
+}
+
 console.log(`Validated ${javascriptFiles.length} JavaScript files, ${cssFiles.length} CSS files and ${sourceFiles.length} source files.`);
 for (const warning of warnings) console.warn(`WARN: ${warning}`);
 for (const error of errors) console.error(`ERROR: ${error}`);

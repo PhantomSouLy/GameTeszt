@@ -26,7 +26,7 @@
     const defaults = originalDefaults();
     const out = save && typeof save === "object" ? save : {};
 
-    out.schemaVersion = SAVE_SCHEMA;
+    out.schemaVersion = Math.max(SAVE_SCHEMA, Number(out.schemaVersion) || 0);
     out.coins = Math.max(0, Number(out.coins) || 0);
     out.keys = Math.max(0, Number(out.keys) || 0);
     out.inventory = Array.isArray(out.inventory) ? out.inventory.filter(Boolean) : [];

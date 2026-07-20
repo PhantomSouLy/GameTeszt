@@ -1,4 +1,4 @@
-# CHERRIFT v0.6.2 — Quality & Localization Update
+# CHERRIFT v0.6.3 — Test Build Systems Update
 
 CHERRIFT egy böngészős survivor/action RPG prototípus, Cherry-kinézetekkel, felszerelésekkel, pályaprogresszióval, Gachával és mobilos érintéses irányítással.
 
@@ -9,6 +9,11 @@ CHERRIFT egy böngészős survivor/action RPG prototípus, Cherry-kinézetekkel,
 ### Mi van ebben a buildben?
 
 - Teljes, azonnal váltható magyar és angol felület a Settings → General → Language menüben.
+- Helyi, mentett Mail rendszer olvasatlan jelzéssel és egyszer átvehető mellékletekkel.
+- Beépített magyar/angol Feedback és Bug Report felület, vágólap- és GitHub Issue-kimenettel.
+- Jól látható `TESZTVERZIÓ · v0.6.3` jelzés, valamint nagy Erő / HP / ATK kártyák a főmenüben és a loadoutban.
+- Az új felszerelésgrafikák ritkaság és slot szerint logikusan bekötve; a régi emoji-ikonok helyett valódi item art jelenik meg.
+- Common/Rare melee vágáseffekt, továbbá a Warrior 3×2 slash és 4×2 Whirlwind sprite sheetjének helyes animációja.
 - Stabil Play → World Select → run indítás desktopon és mobilon.
 - Javított Library, benne Profile, Stats, Gear, Enemies, Skins és Worlds fülekkel.
 - Elérhető Daily Quests, Achievements, Login Rewards és Shop a Library szolgáltatássorából.
@@ -43,7 +48,7 @@ npm install
 npm test
 ```
 
-Az `npm test` ellenőrzi a JavaScript-szintaxist, a közvetlen assethivatkozásokat, a betöltési patch-számot, majd 1440×900 desktop és 390×844 mobil DOM-környezetben végigpróbálja az indulást, a PLAY-t, a Library/Skins oldalt, a nyelvváltást, a kamerát, az input-resetet és a mentés-visszaállítást.
+Az `npm test` ellenőrzi a JavaScript-szintaxist, a közvetlen assethivatkozásokat, a betöltési patch-számot, majd 1440×900 desktop és 390×844 mobil DOM-környezetben végigpróbálja az indulást, a PLAY-t, a Library/Skins oldalt, a nyelvváltást, a kamerát, az input-resetet, a mentés-visszaállítást, a Mailt, a report-formokat és az új asset-kiosztást.
 
 ### Mentés és jelenlegi korlátok
 
@@ -57,6 +62,11 @@ Az `npm test` ellenőrzi a JavaScript-szintaxist, a közvetlen assethivatkozáso
 ### Included in this build
 
 - Complete runtime-switchable Hungarian and English UI under Settings → General → Language.
+- Local, persisted Mail with unread badges and one-time claimable attachments.
+- Built-in Hungarian/English Feedback and Bug Report screen with clipboard and GitHub Issue output.
+- A prominent `TEST BUILD · v0.6.3` label and large Power / HP / ATK cards on the home and loadout screens.
+- New equipment artwork mapped logically by rarity and slot instead of the previous emoji icons.
+- Common/Rare melee slash art plus correctly sliced 3×2 Warrior slash and 4×2 Whirlwind sheets.
 - Stable Play → World Select → run launch on desktop and mobile.
 - Fixed Library with Profile, Stats, Gear, Enemies, Skins and Worlds tabs.
 - Daily Quests, Achievements, Login Rewards and Shop are reachable from the Library service bar.
@@ -91,6 +101,7 @@ Then open `http://localhost:8000`.
 - [0.6 → 1.0 BETA roadmap](ROADMAP_0.6_TO_1.0_HU_EN.md)
 - [v0.6.2 audit report](AUDIT_V062_HU_EN.md)
 - [v0.6.2 changelog](CHANGELOG_V062_HU_EN.md)
-- [Installation / Telepítés](INSTALL_V062_HU_EN.md)
+- [v0.6.3 changelog](CHANGELOG_V063_HU_EN.md)
+- [v0.6.3 Installation / Telepítés](INSTALL_V063_HU_EN.md)
 
 The project runs entirely in the browser and does not require a production npm build step.

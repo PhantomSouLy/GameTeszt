@@ -1,6 +1,6 @@
 {
   "name": "cherrift",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,4 +13,3 @@
     "jsdom": "^26.1.0"
   }
 }
-

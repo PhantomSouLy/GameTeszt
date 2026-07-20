@@ -123,6 +123,13 @@ function installBrowserStubs(window, width, height) {
     }
     set src(value) {
       this._src = String(value);
+      if (this._src.includes("assets/effects/warrior_cherry/")) {
+        this.width = this.naturalWidth = 1448;
+        this.height = this.naturalHeight = 1086;
+      } else if (this._src.includes("assets/effects/base_effects/") || this._src.includes("assets/items/equipments/")) {
+        this.width = this.naturalWidth = 128;
+        this.height = this.naturalHeight = 128;
+      }
       window.setTimeout(() => {
         this.complete = true;
         this.onload?.(new window.Event("load"));
@@ -162,6 +169,16 @@ function installBrowserStubs(window, width, height) {
   window.requestIdleCallback ||= callback => window.setTimeout(() => callback({ didTimeout: false, timeRemaining: () => 20 }), 0);
   window.cancelIdleCallback ||= handle => window.clearTimeout(handle);
   window.ResizeObserver ||= class { observe() {} unobserve() {} disconnect() {} };
+  window.__openedUrls = [];
+  window.__clipboardText = "";
+  window.open = url => {
+    window.__openedUrls.push(String(url));
+    return { closed: false, close() {} };
+  };
+  Object.defineProperty(window.navigator, "clipboard", {
+    configurable: true,
+    value: { writeText: async value => { window.__clipboardText = String(value); } }
+  });
 }
 
 async function waitFor(check, message, timeout = 15000) {
@@ -189,7 +206,7 @@ async function loadApp(name, width, height) {
   });
 
   await waitFor(
-    () => dom.window.CHERRIFT_V062 && dom.window.UI?.save && dom.window.UI?.game,
+    () => dom.window.CHERRIFT_V063 && dom.window.UI?.save && dom.window.UI?.game,
     `${name} startup`
   );
   assert.equal(dom.window.document.body.classList.contains("v062-startup-failed"), false, `${name}: startup failure screen`);
@@ -208,6 +225,53 @@ async function exercise(name, width, height) {
     assert.deepEqual([...window.CHERRIFT_V060.diagnostics().missingElements], [], `${name}: v0.6 UI is complete`);
     assert.deepEqual([...window.CHERRIFT_V062.diagnostics().duplicateIds], [], `${name}: no duplicate IDs`);
     assert.equal(window.CHERRIFT_V062.diagnostics().libraryServices, true, `${name}: Library services are present`);
+    assert.equal(window.CHERRIFT_V063.displayVersion, "v0.6.3", `${name}: v0.6.3 patch is active`);
+    assert.match(document.title, /0\.6\.3/, `${name}: document title shows the current build`);
+    assert.match(document.getElementById("testBuildBannerV063")?.textContent || "", /TESZTVERZIÓ/, `${name}: home clearly identifies the test build`);
+    assert.equal(document.querySelectorAll("#mainStatsV063 > div").length, 3, `${name}: home has Power, HP and ATK cards`);
+    assert.equal(document.querySelectorAll("#loadoutStatsV063 > div").length, 3, `${name}: loadout has large stats in its stage`);
+
+    const expectedIcons = {
+      Common: {
+        Weapon: "steel_sword.png",
+        Armor: "leather_chestplate.png",
+        Ring: "copper_ring.png"
+      },
+      Uncommon: {
+        Weapon: "sword_sword.png",
+        Helmet: "reinforced_leather_helmet.png",
+        Necklace: "silver_necklance.png"
+      },
+      Rare: {
+        Weapon: "iron_sword.png",
+        Gloves: "iron_gloves.png",
+        Ring: "emerald_silver_ring.png"
+      },
+      Legendary: {
+        Weapon: "royal_sword.png",
+        Boots: "royal_leg_armor.png",
+        Necklace: "royal_necklance.png"
+      }
+    };
+    for (const [rarity, slots] of Object.entries(expectedIcons)) {
+      for (const [slot, filename] of Object.entries(slots)) {
+        const item = { rarity, slot, type: "Crimson", stats: {} };
+        assert.ok(window.CHERRIFT_V063.gearIconPath(item).endsWith(filename), `${name}: ${rarity} ${slot} maps to ${filename}`);
+        assert.match(UI.gearEmoji(item), /<img class="gear-icon-v063"/, `${name}: equipment uses image markup`);
+      }
+    }
+    assert.deepEqual(
+      { columns: window.CHERRIFT_V0563.sheets.slash.columns, rows: window.CHERRIFT_V0563.sheets.slash.rows, frames: window.CHERRIFT_V0563.sheets.slash.frames },
+      { columns: 3, rows: 2, frames: 6 },
+      `${name}: Warrior slash uses its real 3×2 grid`
+    );
+    assert.deepEqual(
+      { columns: window.CHERRIFT_V0563.sheets.whirlwind.columns, rows: window.CHERRIFT_V0563.sheets.whirlwind.rows, frames: window.CHERRIFT_V0563.sheets.whirlwind.frames },
+      { columns: 4, rows: 2, frames: 8 },
+      `${name}: Warrior Whirlwind uses its real 4×2 grid`
+    );
+    assert.equal(window.CHERRIFT_V063.isBaseMeleeSkin({ player: { skin: "beastclaw_cherry" } }), true, `${name}: Rare generic melee skin receives the base slash`);
+    assert.equal(window.CHERRIFT_V063.isBaseMeleeSkin({ player: { skin: "warrior_cherry" } }), false, `${name}: Warrior keeps its dedicated effect`);
 
     click(window, document.getElementById("dashboardPlayV060"), `${name}: dashboard Play`);
     await waitFor(() => !document.getElementById("worlds")?.classList.contains("hidden"), `${name} World Select`);
@@ -243,6 +307,56 @@ async function exercise(name, width, height) {
     assert.ok(document.querySelectorAll("#libraryBodyV0551 .v0551-collect").length > 0, `${name}: Library Skins has visual cards`);
     assert.equal(window.getComputedStyle(document.getElementById("raidWarningV040")).pointerEvents, "none", `${name}: raid overlay cannot intercept menu clicks`);
 
+    const dailyFromLibrary = document.querySelector('#libraryServicesV062 [data-v062-open="dailyQuests"]');
+    click(window, dailyFromLibrary, `${name}: Library Daily service`);
+    await waitFor(() => !document.getElementById("dailyQuests")?.classList.contains("hidden"), `${name} Library child opens`);
+    click(window, document.querySelector("#dailyQuests .back"), `${name}: Back from Library child`);
+    await waitFor(() => !document.getElementById("libraryV0551")?.classList.contains("hidden"), `${name} return to Library`);
+    await waitFor(() => document.querySelector('[data-library-tab="skins"]')?.classList.contains("active"), `${name} Library active tab restore`);
+    assert.equal(document.querySelector('[data-library-tab="skins"]')?.classList.contains("active"), true, `${name}: Library restores its active tab`);
+
+    const unreadBeforeMail = window.CHERRIFT_V063.unreadCount();
+    click(window, document.querySelector('#libraryServicesV062 [data-v063-open="mailV063"]'), `${name}: Library Mail service`);
+    await waitFor(() => !document.getElementById("mailV063")?.classList.contains("hidden"), `${name} Mail opens`);
+    assert.equal(document.querySelectorAll("[data-v063-mail-id]").length, 2, `${name}: Mail contains the version messages`);
+    assert.equal(window.CHERRIFT_V063.unreadCount(), unreadBeforeMail - 1, `${name}: reading a message updates unread state`);
+    click(window, document.querySelector('[data-v063-mail-id="v063_tester_supply"]'), `${name}: tester supply mail`);
+    const coinsBeforeMail = UI.save.coins;
+    const keysBeforeMail = UI.save.keys;
+    click(window, document.querySelector('[data-v063-claim-mail="v063_tester_supply"]'), `${name}: claim mail reward`);
+    assert.equal(UI.save.coins, coinsBeforeMail + 30, `${name}: Mail coins are credited`);
+    assert.equal(UI.save.keys, keysBeforeMail + 1, `${name}: Mail key is credited`);
+    assert.equal(window.CHERRIFT_V063.claimMail("v063_tester_supply"), false, `${name}: Mail reward cannot be claimed twice`);
+    click(window, document.querySelector("#mailV063 .back"), `${name}: Back from Mail`);
+    await waitFor(() => !document.getElementById("libraryV0551")?.classList.contains("hidden"), `${name} Mail returns to Library`);
+    await waitFor(() => document.querySelector('[data-library-tab="skins"]')?.classList.contains("active"), `${name} Mail Library tab restore`);
+    assert.equal(document.querySelector('[data-library-tab="skins"]')?.classList.contains("active"), true, `${name}: Mail return preserves Library tab`);
+
+    UI.open("supportV063");
+    const feedbackTitle = document.querySelector('#supportV063 [data-v063-field="title"]');
+    const feedbackMessage = document.querySelector('#supportV063 [data-v063-field="message"]');
+    feedbackTitle.value = "Great equipment update";
+    feedbackTitle.dispatchEvent(new window.Event("input", { bubbles: true }));
+    feedbackMessage.value = "The new item icons are much clearer.";
+    feedbackMessage.dispatchEvent(new window.Event("input", { bubbles: true }));
+    click(window, document.querySelector("#supportV063 [data-v063-copy-report]"), `${name}: copy feedback report`);
+    await waitFor(() => window.__clipboardText.includes("[Feedback] Great equipment update"), `${name} feedback clipboard`);
+    click(window, document.querySelector('#supportV063 [data-v063-support-type="bug"]'), `${name}: Bug Report tab`);
+    const bugValues = {
+      title: "Example freeze",
+      steps: "Open the Library and choose Skins.",
+      expected: "The cards appear.",
+      actual: "The screen stops responding."
+    };
+    for (const [fieldName, value] of Object.entries(bugValues)) {
+      const field = document.querySelector(`#supportV063 [data-v063-field="${fieldName}"]`);
+      field.value = value;
+      field.dispatchEvent(new window.Event("input", { bubbles: true }));
+    }
+    click(window, document.querySelector("#supportV063 [data-v063-open-issue]"), `${name}: open bug issue`);
+    assert.match(window.__openedUrls.at(-1) || "", /github\.com\/PhantomSouLy\/CHERRIFT\/issues\/new/, `${name}: Bug Report opens the project Issue form`);
+    assert.match(decodeURIComponent(window.__openedUrls.at(-1) || ""), /v0\.6\.3/, `${name}: report includes build diagnostics`);
+
     UI.open("chests");
     UI.save.settings.reducedMotion = true;
     const keysBeforeGacha = UI.save.keys;
@@ -272,6 +386,11 @@ async function exercise(name, width, height) {
     language.dispatchEvent(new window.Event("change", { bubbles: true }));
     assert.equal(document.documentElement.lang, "en", `${name}: English language applies`);
     assert.equal(document.querySelector("#settings h2")?.textContent.trim(), "Settings", `${name}: English Settings title`);
+    assert.match(document.getElementById("testBuildBannerV063")?.textContent || "", /TEST BUILD/, `${name}: test-build banner translates to English`);
+    UI.open("mailV063");
+    assert.equal(document.querySelector("#mailV063 .panel-head-v063 h2")?.textContent.trim(), "Mail", `${name}: Mail header translates to English`);
+    UI.open("supportV063");
+    assert.equal(document.querySelector("#supportV063 .panel-head-v063 h2")?.textContent.trim(), "Feedback & bug report", `${name}: Support header translates to English`);
     assert.equal(window.CHERRIFT_I18N.translate("World 1-1 · Blooming Meadow"), "World 1-1 · Blooming Meadow", `${name}: English compound stage title`);
     assert.equal(window.CHERRIFT_I18N.translate("Válassz pályát lapozással, majd lent nyomj Play-t."), "Browse the stages, then press Play below.", `${name}: legacy Hungarian copy translates to English`);
     UI.open("dailyQuests");
@@ -296,13 +415,17 @@ async function exercise(name, width, height) {
     window.localStorage.setItem("cherrift_save_backup_v04", JSON.stringify({ coins: 777, selectedSkin: "cherry_default" }));
     const recovered = window.CherriftStorage.load();
     assert.equal(recovered.coins, 777, `${name}: corrupt save recovers from backup`);
-    assert.equal(recovered.schemaVersion, 5, `${name}: save migrates to schema 5`);
+    assert.equal(recovered.schemaVersion, 6, `${name}: save migrates to schema 6`);
+    assert.ok(recovered.mailbox?.states?.v063_welcome, `${name}: Mail state survives save migration`);
 
     if (width <= 820) {
       assert.equal(document.querySelectorAll("#globalMobileNavV052 [data-v060-open]").length, 6, `${name}: mobile nav includes all six destinations`);
       assert.ok(document.getElementById("upgradeTabsV061"), `${name}: Player Upgrade uses compact tabs`);
       assert.ok(document.getElementById("gearTabsV061"), `${name}: Gear uses compact tabs`);
       assert.ok(document.getElementById("libraryServicesV062"), `${name}: mobile Library exposes services`);
+      assert.equal(document.querySelectorAll(".mobile-power-v051 > div").length, 3, `${name}: mobile home shows Power, HP and ATK without a separate page`);
+      assert.ok(document.querySelector('.mobile-header-tool-v063[data-open="mailV063"]'), `${name}: mobile home exposes Mail`);
+      assert.ok(document.querySelector('.mobile-header-tool-v063[data-open="supportV063"]'), `${name}: mobile home exposes Feedback`);
     }
 
     const meaningfulErrors = errors.filter(error => !/Not implemented: HTMLCanvasElement|Could not load link/i.test(error));
