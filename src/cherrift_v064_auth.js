@@ -1,8 +1,11 @@
 (() => {
 "use strict";
 
-const VERSION = "0.6.3-auth.1";
+const VERSION = "0.6.3-auth.2-cloud";
+const CLOUD_SAVE_VERSION = "0.6.3-cloud.1";
 const CONFIG = window.CHERRIFT_SUPABASE_CONFIG || {};
+const CLOUD_TABLE = CONFIG.cloudSaveTable || "game_saves";
+const SAVE_DEBOUNCE_MS = 650;
 const id = name => document.getElementById(name);
 const q = (selector, root = document) => root.querySelector(selector);
 
@@ -10,27 +13,32 @@ const COPY = {
   hu: {
     kicker: "FIÓK HOZZÁFÉRÉS",
     title: "Hogyan szeretnéd folytatni?",
-    intro: "Lépj be Discorddal, vagy próbáld ki a játékot vendégként.",
+    intro: "Lépj be Discorddal a felhőmentéshez, vagy játssz vendégként helyi mentéssel.",
     guest: "Vendégként folytatom",
-    guestMeta: "Helyi mentés ezen az eszközön",
+    guestMeta: "Helyi mentés csak ezen az eszközön",
     discord: "Belépés Discorddal",
-    discordMeta: "Biztonságos Supabase OAuth belépés",
+    discordMeta: "Supabase felhőmentés minden eszközön",
     warningTitle: "A vendégmentés elveszhet",
-    warning: "A haladás csak ebben a böngészőben tárolódik. A böngészőadatok törlése, privát mód vagy másik eszköz esetén nem állítható vissza.",
+    warning: "A Guest-haladás csak ebben a böngészőben tárolódik. A böngészőadatok törlése, privát mód vagy másik eszköz esetén nem állítható vissza.",
     privacy: "A CHERRIFT nem látja és nem tárolja a Discord-jelszavadat.",
-    checking: "Discord munkamenet ellenőrzése…",
+    checking: "Discord munkamenet és mentés ellenőrzése…",
+    loadingCloud: "Felhőmentés betöltése…",
     redirecting: "Átirányítás a Discord belépéshez…",
     welcomeBack: "Üdv újra, Cherry!",
     loginFailed: "A Discord-belépés nem sikerült.",
     serviceUnavailable: "A Discord-belépés most nem érhető el. Vendégként továbbra is játszhatsz.",
+    cloudUnavailable: "A Supabase felhőmentés nem érhető el. Futtasd a supabase/game_saves.sql fájlt a Supabase SQL Editorban, majd próbáld újra.",
+    cloudSaveFailed: "A felhőmentés átmenetileg nem sikerült. A játék a következő mentésnél újrapróbálja.",
     signedOut: "Kijelentkeztél a Discord-fiókból.",
     connected: "Discord-fiók csatlakoztatva",
+    cloudActive: "Discord mód · Supabase felhőmentés",
     localOnly: "Vendégmód · csak helyi mentés",
     signOut: "Kijelentkezés",
     accountKicker: "FIÓK",
     account: "CHERRIFT-fiók",
     accountIntro: "Discord-azonosítás és a jelenlegi mentési mód.",
-    accountReady: "A Discord-belépés aktív. A felhőmentés külön adatbázis-frissítésben érkezik; ez a build még a helyi játékmentést használja.",
+    accountReady: "A haladás ehhez a Discord-fiókhoz kötve a Supabase-ben tárolódik, és másik eszközön is automatikusan betöltődik.",
+    accountMemoryOnly: "A Discord-fiók aktív, de ebben a tesztkörnyezetben nincs adatbázis-kapcsolat.",
     guestAccount: "Jelenleg vendégként játszol. A mentés csak ezen az eszközön található.",
     discordLogin: "Discord Login",
     testBuild: "TESZTVERZIÓ · v0.6.3",
@@ -39,27 +47,32 @@ const COPY = {
   en: {
     kicker: "ACCOUNT ACCESS",
     title: "How would you like to continue?",
-    intro: "Sign in with Discord or try the game as a guest.",
+    intro: "Sign in with Discord for cloud saves, or play as a Guest with a local save.",
     guest: "Continue as Guest",
-    guestMeta: "Local save on this device",
+    guestMeta: "Local save on this device only",
     discord: "Continue with Discord",
-    discordMeta: "Secure Supabase OAuth sign-in",
+    discordMeta: "Supabase cloud save across devices",
     warningTitle: "Guest progress can be lost",
-    warning: "Progress is stored only in this browser. It cannot be restored after clearing browser data, using private mode or moving to another device.",
+    warning: "Guest progress is stored only in this browser. It cannot be restored after clearing browser data, using private mode or moving to another device.",
     privacy: "CHERRIFT never sees or stores your Discord password.",
-    checking: "Checking your Discord session…",
+    checking: "Checking your Discord session and save…",
+    loadingCloud: "Loading cloud save…",
     redirecting: "Redirecting to Discord sign-in…",
     welcomeBack: "Welcome back, Cherry!",
     loginFailed: "Discord sign-in was not completed.",
     serviceUnavailable: "Discord sign-in is temporarily unavailable. You can still continue as Guest.",
+    cloudUnavailable: "Supabase cloud saves are unavailable. Run supabase/game_saves.sql in the Supabase SQL Editor, then try again.",
+    cloudSaveFailed: "Cloud saving temporarily failed. The game will retry on the next save.",
     signedOut: "You signed out of Discord.",
     connected: "Discord account connected",
+    cloudActive: "Discord mode · Supabase cloud save",
     localOnly: "Guest mode · local save only",
     signOut: "Sign out",
     accountKicker: "ACCOUNT",
     account: "CHERRIFT Account",
     accountIntro: "Discord identity and the current save mode.",
-    accountReady: "Discord sign-in is active. Cloud saves require a separate database update; this build still uses the local game save.",
+    accountReady: "Progress is tied to this Discord account, stored in Supabase and automatically loaded on other devices.",
+    accountMemoryOnly: "Discord is active, but this test environment has no database connection.",
     guestAccount: "You are currently playing as a guest. The save exists only on this device.",
     discordLogin: "Discord Login",
     testBuild: "TEST BUILD · v0.6.3",
@@ -78,7 +91,20 @@ const runtime = {
   gateVisible: false,
   bootReleased: false,
   startPromise: null,
-  subscription: null
+  subscription: null,
+  bootstrapPromise: null,
+  bootstrapDone: false,
+  bootstrapErrorKey: "",
+  bootstrapErrorDetail: "",
+  loadGuestSave: null,
+  cloudReady: false,
+  memoryOnly: false,
+  pendingSave: null,
+  saveTimer: 0,
+  savePromise: Promise.resolve(),
+  lastSavedJson: "",
+  lastCloudSavedAt: "",
+  cloudErrorShown: false
 };
 
 function language() {
@@ -97,6 +123,31 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+function cloneJson(value) {
+  return JSON.parse(JSON.stringify(value ?? {}));
+}
+
+function isPlainObject(value) {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function mergeDefaults(defaultValue, savedValue) {
+  if (Array.isArray(defaultValue)) return Array.isArray(savedValue) ? cloneJson(savedValue) : cloneJson(defaultValue);
+  if (isPlainObject(defaultValue)) {
+    const source = isPlainObject(savedValue) ? savedValue : {};
+    const merged = {};
+    for (const [key, value] of Object.entries(defaultValue)) merged[key] = mergeDefaults(value, source[key]);
+    for (const [key, value] of Object.entries(source)) if (!(key in merged)) merged[key] = cloneJson(value);
+    return merged;
+  }
+  return savedValue === undefined ? defaultValue : savedValue;
+}
+
+function normalizeCloudSave(value) {
+  const defaults = window.CherriftStorage?.defaults?.() || {};
+  return mergeDefaults(defaults, isPlainObject(value) ? value : {});
 }
 
 function authRedirectUrl() {
@@ -156,6 +207,189 @@ function accountFromSession(session = runtime.session) {
     username: metadata.user_name || metadata.preferred_username || identity.user_name || identity.preferred_username || "",
     avatar: metadata.avatar_url || metadata.picture || identity.avatar_url || identity.picture || ""
   };
+}
+
+function applyDiscordProfileToSave(save, session = runtime.session) {
+  const account = accountFromSession(session);
+  if (!account || !save) return account;
+  save.profile ||= { name: "Cherry Player", createdAt: Date.now() };
+  if (save.profile.authProvider !== "discord" && !save.profile.localNameBeforeDiscord) {
+    save.profile.localNameBeforeDiscord = save.profile.name || "Cherry Player";
+  }
+  save.profile.authProvider = "discord";
+  save.profile.discordUserId = account.id;
+  save.profile.discordId = account.discordId;
+  save.profile.discordUsername = account.username;
+  save.profile.name = account.name;
+  save.profile.avatarUrl = account.avatar;
+  return account;
+}
+
+function applyGuestProfileToSave(save) {
+  if (!save) return save;
+  save.profile ||= { name: "Cherry Player", createdAt: Date.now() };
+  if (save.profile.authProvider === "discord") {
+    save.profile.name = save.profile.localNameBeforeDiscord || "Cherry Player";
+  }
+  save.profile.authProvider = "guest";
+  save.profile.discordUserId = "";
+  save.profile.discordId = "";
+  save.profile.discordUsername = "";
+  save.profile.avatarUrl = "";
+  return save;
+}
+
+function currentGuestSave() {
+  const loader = runtime.loadGuestSave || (() => window.CherriftStorage?.load?.() || window.CherriftStorage?.defaults?.() || {});
+  return loader();
+}
+
+async function selectCloudSave(userId) {
+  if (typeof runtime.client?.from !== "function") return { supported: false, row: null };
+  const result = await runtime.client
+    .from(CLOUD_TABLE)
+    .select("save_data, save_version, updated_at")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (result?.error) throw result.error;
+  return { supported: true, row: result?.data || null };
+}
+
+async function upsertCloudSnapshot(snapshot) {
+  const account = accountFromSession();
+  if (!account || typeof runtime.client?.from !== "function") return false;
+  const payload = {
+    user_id: account.id,
+    save_data: cloneJson(snapshot),
+    save_version: CLOUD_SAVE_VERSION,
+    updated_at: new Date().toISOString()
+  };
+  const result = await runtime.client
+    .from(CLOUD_TABLE)
+    .upsert(payload, { onConflict: "user_id" });
+  if (result?.error) throw result.error;
+  runtime.lastCloudSavedAt = payload.updated_at;
+  return true;
+}
+
+function cloudErrorDetail(error) {
+  return error?.message || error?.details || error?.hint || String(error || "");
+}
+
+async function bootstrapSave(loadGuestSave) {
+  if (runtime.bootstrapPromise) return runtime.bootstrapPromise;
+  runtime.loadGuestSave = typeof loadGuestSave === "function" ? loadGuestSave : null;
+  runtime.bootstrapPromise = (async () => {
+    const loadGuest = () => currentGuestSave();
+    const oauthError = oauthErrorFromUrl();
+    try {
+      if (!runtime.client) {
+        runtime.mode = "gate";
+        runtime.bootstrapErrorKey = "serviceUnavailable";
+        return loadGuest();
+      }
+
+      runtime.statusKey = "checking";
+      const sessionResult = await runtime.client.auth.getSession();
+      if (sessionResult?.error) throw sessionResult.error;
+      const session = sessionResult?.data?.session;
+      if (!session?.user) {
+        runtime.mode = "gate";
+        if (oauthError) {
+          runtime.bootstrapErrorKey = "loginFailed";
+          runtime.bootstrapErrorDetail = oauthError;
+        }
+        return loadGuest();
+      }
+
+      runtime.session = session;
+      runtime.mode = "discord";
+      runtime.statusKey = "loadingCloud";
+      const cloud = await selectCloudSave(session.user.id);
+
+      if (!cloud.supported) {
+        const memorySave = normalizeCloudSave(loadGuest());
+        applyDiscordProfileToSave(memorySave, session);
+        runtime.memoryOnly = true;
+        runtime.cloudReady = false;
+        runtime.lastSavedJson = JSON.stringify(memorySave);
+        console.warn("[CHERRIFT Cloud Save] Database API is unavailable in this environment; using memory-only Discord mode.");
+        return memorySave;
+      }
+
+      let save;
+      if (cloud.row?.save_data) {
+        save = normalizeCloudSave(cloud.row.save_data);
+      } else {
+        save = normalizeCloudSave(loadGuest());
+        applyDiscordProfileToSave(save, session);
+        await upsertCloudSnapshot(save);
+      }
+
+      applyDiscordProfileToSave(save, session);
+      runtime.cloudReady = true;
+      runtime.lastSavedJson = JSON.stringify(save);
+      runtime.lastCloudSavedAt = cloud.row?.updated_at || runtime.lastCloudSavedAt;
+      return save;
+    } catch (error) {
+      console.error("[CHERRIFT Cloud Save] Initial cloud load failed:", error);
+      runtime.bootstrapErrorKey = "cloudUnavailable";
+      runtime.bootstrapErrorDetail = cloudErrorDetail(error);
+      runtime.cloudReady = false;
+      runtime.memoryOnly = false;
+      runtime.mode = "gate";
+      runtime.session = null;
+      try { await runtime.client?.auth?.signOut?.({ scope: "local" }); } catch (_) {}
+      return loadGuest();
+    } finally {
+      runtime.bootstrapDone = true;
+      cleanOAuthUrl();
+    }
+  })();
+  return runtime.bootstrapPromise;
+}
+
+function queueCloudSave(data) {
+  if (runtime.mode !== "discord") return false;
+  if (runtime.memoryOnly) return true;
+  if (!runtime.cloudReady || !runtime.session?.user) return false;
+  runtime.pendingSave = cloneJson(data);
+  window.clearTimeout(runtime.saveTimer);
+  runtime.saveTimer = window.setTimeout(() => { flushCloudSave(); }, SAVE_DEBOUNCE_MS);
+  return true;
+}
+
+async function flushCloudSave() {
+  window.clearTimeout(runtime.saveTimer);
+  runtime.saveTimer = 0;
+  const snapshot = runtime.pendingSave;
+  runtime.pendingSave = null;
+  if (!snapshot || runtime.mode !== "discord" || runtime.memoryOnly || !runtime.cloudReady) return true;
+  const serialized = JSON.stringify(snapshot);
+  if (serialized === runtime.lastSavedJson) return true;
+
+  runtime.savePromise = runtime.savePromise.catch(() => {}).then(async () => {
+    try {
+      await upsertCloudSnapshot(snapshot);
+      runtime.lastSavedJson = serialized;
+      runtime.cloudErrorShown = false;
+      renderAccountSettings();
+      return true;
+    } catch (error) {
+      console.error("[CHERRIFT Cloud Save] Save failed:", error);
+      if (!runtime.pendingSave) runtime.pendingSave = snapshot;
+      if (!runtime.cloudErrorShown) {
+        runtime.cloudErrorShown = true;
+        window.UI?.toast?.(text("cloudSaveFailed"));
+      }
+      return false;
+    } finally {
+      if (runtime.pendingSave && !runtime.saveTimer) {
+        runtime.saveTimer = window.setTimeout(() => { flushCloudSave(); }, SAVE_DEBOUNCE_MS * 2);
+      }
+    }
+  });
+  return runtime.savePromise;
 }
 
 function ensureGate() {
@@ -262,10 +496,8 @@ function openGate(options = {}) {
   runtime.mode = "gate";
   runtime.busy = false;
   runtime.statusKey = options.statusKey || "";
-  if (options.errorKey) {
-    runtime.errorKey = options.errorKey;
-    runtime.errorDetail = options.errorDetail || "";
-  }
+  runtime.errorKey = options.errorKey || runtime.errorKey || "";
+  runtime.errorDetail = options.errorDetail || runtime.errorDetail || "";
   gate.hidden = false;
   document.body.classList.add("auth-gated-v064");
   renderGate();
@@ -289,41 +521,29 @@ function closeGate(mode) {
 function saveProfile() {
   if (!window.UI?.save) return;
   try { window.CherriftStorage?.save?.(window.UI.save); } catch (error) {
-    console.warn("[CHERRIFT Auth] Local profile update could not be saved:", error);
+    console.warn("[CHERRIFT Auth] Profile update could not be saved:", error);
   }
 }
 
 function applyDiscordProfile(session) {
-  const account = accountFromSession(session);
-  if (!account || !window.UI?.save) return account;
-  const save = window.UI.save;
-  save.profile ||= { name: "Cherry Player", createdAt: Date.now() };
-  if (save.profile.authProvider !== "discord" && !save.profile.localNameBeforeDiscord) {
-    save.profile.localNameBeforeDiscord = save.profile.name || "Cherry Player";
-  }
-  save.profile.authProvider = "discord";
-  save.profile.discordUserId = account.id;
-  save.profile.discordId = account.discordId;
-  save.profile.discordUsername = account.username;
-  save.profile.name = account.name;
-  save.profile.avatarUrl = account.avatar;
-  saveProfile();
+  const account = applyDiscordProfileToSave(window.UI?.save, session);
+  if (account) saveProfile();
   return account;
 }
 
-function applyGuestProfile() {
-  if (!window.UI?.save) return;
-  const save = window.UI.save;
-  save.profile ||= { name: "Cherry Player", createdAt: Date.now() };
-  if (save.profile.authProvider === "discord") {
-    save.profile.name = save.profile.localNameBeforeDiscord || "Cherry Player";
+function switchUiToGuestSave() {
+  runtime.mode = "guest";
+  runtime.cloudReady = false;
+  runtime.memoryOnly = false;
+  runtime.pendingSave = null;
+  window.clearTimeout(runtime.saveTimer);
+  const save = applyGuestProfileToSave(currentGuestSave());
+  if (window.UI) window.UI.save = save;
+  if (window.UI?.game) window.UI.game.save = save;
+  try { window.CherriftStorage?.save?.(save); } catch (error) {
+    console.warn("[CHERRIFT Auth] Guest save could not be restored:", error);
   }
-  save.profile.authProvider = "guest";
-  save.profile.discordUserId = "";
-  save.profile.discordId = "";
-  save.profile.discordUsername = "";
-  save.profile.avatarUrl = "";
-  saveProfile();
+  return save;
 }
 
 function setAvatar(holder, account) {
@@ -351,7 +571,7 @@ function renderMainAccount() {
   const button = q(".discord-login", card);
   setAvatar(q(".avatar-badge", card), account);
   if (name) name.textContent = account?.name || (language() === "hu" ? "Vendég" : "Guest");
-  if (description) description.textContent = account ? text("connected") : text("localOnly");
+  if (description) description.textContent = account ? text(runtime.cloudReady ? "cloudActive" : "connected") : text("localOnly");
   if (button) {
     button.disabled = false;
     button.removeAttribute("aria-disabled");
@@ -371,21 +591,24 @@ function renderAccountSettings() {
   const avatar = account?.avatar
     ? '<img src="' + escapeHtml(account.avatar) + '" alt="' + escapeHtml(account.name) + '" referrerpolicy="no-referrer" draggable="false">'
     : '<span aria-hidden="true">🐰</span>';
+  const accountDescription = account
+    ? text(runtime.cloudReady ? "accountReady" : "accountMemoryOnly")
+    : text("guestAccount");
   page.innerHTML = [
     '<header><small>' + escapeHtml(text("accountKicker")) + '</small><h3>' + escapeHtml(text("account")) + '</h3><p>' + escapeHtml(text("accountIntro")) + '</p></header>',
     '<article class="auth-account-v064 ' + (account ? "connected" : "guest") + '">',
       '<div class="auth-account-avatar-v064">' + avatar + '</div>',
       '<div class="auth-account-copy-v064">',
-        '<small>' + escapeHtml(account ? text("connected") : text("localOnly")) + '</small>',
+        '<small>' + escapeHtml(account ? text(runtime.cloudReady ? "cloudActive" : "connected") : text("localOnly")) + '</small>',
         '<h4>' + escapeHtml(account?.name || (language() === "hu" ? "Vendég" : "Guest")) + '</h4>',
-        '<p>' + escapeHtml(account ? text("accountReady") : text("guestAccount")) + '</p>',
+        '<p>' + escapeHtml(accountDescription) + '</p>',
       '</div>',
       '<button type="button" data-auth-action="' + (account ? "signout" : "open") + '">' + escapeHtml(account ? text("signOut") : text("discordLogin")) + '</button>',
     '</article>'
   ].join("");
   const tab = q('[data-v060-settings="account"]');
   const badge = q("em", tab);
-  if (badge) badge.textContent = account ? "LIVE" : "LOGIN";
+  if (badge) badge.textContent = account ? (runtime.cloudReady ? "CLOUD" : "LIVE") : "LOGIN";
 }
 
 function syncAccountUi() {
@@ -406,7 +629,9 @@ function completeDiscordSession(session) {
 
 function continueAsGuest() {
   runtime.session = null;
-  applyGuestProfile();
+  runtime.mode = "guest";
+  applyGuestProfileToSave(window.UI?.save);
+  saveProfile();
   closeGate("guest");
   syncAccountUi();
   window.UI?.refreshMenu?.();
@@ -442,12 +667,14 @@ async function signOut() {
   runtime.busy = true;
   syncAccountUi();
   try {
+    await flushCloudSave();
     const result = runtime.client ? await runtime.client.auth.signOut({ scope: "local" }) : null;
     if (result?.error) throw result.error;
     runtime.session = null;
-    applyGuestProfile();
+    switchUiToGuestSave();
     openGate({ statusKey: "signedOut" });
     syncAccountUi();
+    window.UI?.refreshMenu?.();
     return true;
   } catch (error) {
     console.error("[CHERRIFT Auth] Sign out failed:", error);
@@ -479,10 +706,11 @@ function bindAuthSubscription() {
   if (!runtime.client || runtime.subscription) return;
   const result = runtime.client.auth.onAuthStateChange((event, session) => {
     window.setTimeout(() => {
-      if (session?.user) completeDiscordSession(session);
+      if (!runtime.bootstrapDone) return;
+      if (session?.user && runtime.mode !== "discord") completeDiscordSession(session);
       else if (event === "SIGNED_OUT" && runtime.mode === "discord") {
         runtime.session = null;
-        applyGuestProfile();
+        switchUiToGuestSave();
         openGate({ statusKey: "signedOut" });
         syncAccountUi();
       }
@@ -496,31 +724,40 @@ async function startAuthGate() {
   runtime.startPromise = (async () => {
     ensureGate();
     renderGate();
-    const oauthError = oauthErrorFromUrl();
     try {
-      if (!runtime.client) {
-        openGate({ errorKey: "serviceUnavailable" });
-        return;
-      }
-      runtime.statusKey = "checking";
-      renderGate();
-      const result = await runtime.client.auth.getSession();
-      if (result?.error) throw result.error;
-      if (result?.data?.session?.user) {
-        completeDiscordSession(result.data.session);
+      if (runtime.bootstrapPromise) await runtime.bootstrapPromise;
+      if (runtime.session?.user && runtime.mode === "discord") {
+        applyDiscordProfile(runtime.session);
+        closeGate("discord");
+        syncAccountUi();
       } else {
-        openGate(oauthError ? { errorKey: "loginFailed", errorDetail: oauthError } : {});
+        openGate({
+          errorKey: runtime.bootstrapErrorKey || "",
+          errorDetail: runtime.bootstrapErrorDetail || ""
+        });
       }
-    } catch (error) {
-      console.error("[CHERRIFT Auth] Session check failed:", error);
-      openGate({ errorKey: "serviceUnavailable", errorDetail: error?.message || "" });
     } finally {
-      cleanOAuthUrl();
       releaseBoot();
     }
   })();
   return runtime.startPromise;
 }
+
+const previousStorageSave = window.CherriftStorage?.save?.bind(window.CherriftStorage);
+if (previousStorageSave) {
+  window.CherriftStorage.save = function saveByAccountMode(data) {
+    if (runtime.mode === "discord") {
+      queueCloudSave(data);
+      return;
+    }
+    return previousStorageSave(data);
+  };
+}
+
+window.addEventListener("pagehide", () => { flushCloudSave(); });
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") flushCloudSave();
+});
 
 document.addEventListener("click", event => {
   const languageButton = event.target.closest?.("[data-auth-language]");
@@ -596,9 +833,16 @@ window.CHERRIFT_AUTH = {
       gateVisible: runtime.gateVisible,
       busy: runtime.busy,
       signedIn: !!account,
+      cloudReady: runtime.cloudReady,
+      memoryOnly: runtime.memoryOnly,
+      cloudTable: CLOUD_TABLE,
+      savePending: !!runtime.pendingSave,
+      lastCloudSavedAt: runtime.lastCloudSavedAt,
       account: account ? { id: account.id, discordId: account.discordId, name: account.name, username: account.username, avatar: account.avatar } : null
     };
   },
+  bootstrapSave,
+  flushCloudSave,
   openGate,
   continueAsGuest,
   signInWithDiscord,
@@ -607,5 +851,5 @@ window.CHERRIFT_AUTH = {
   applySessionForTesting: completeDiscordSession
 };
 
-console.info("[CHERRIFT] Supabase Discord auth gate loaded.");
+console.info("[CHERRIFT] Supabase Discord auth and cloud save loaded.");
 })();

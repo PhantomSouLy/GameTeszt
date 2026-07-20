@@ -11,6 +11,7 @@ CHERRIFT egy böngészős survivor/action RPG prototípus, Cherry-kinézetekkel,
 - Teljes, azonnal váltható magyar és angol felület a Settings → General → Language menüben.
 - Helyi, mentett Mail rendszer olvasatlan jelzéssel és egyszer átvehető mellékletekkel.
 - Betöltés utáni Guest / Discord belépőképernyő, Supabase Authtal, tartós Discord-munkamenettel és Beállítások → Fiók kijelentkezéssel.
+- Discord-fiókhoz kötött Supabase felhőmentés, külön Guest `localStorage` mentéssel és első belépéskori automatikus migrációval.
 - Beépített magyar/angol Feedback és Bug Report felület, vágólap- és GitHub Issue-kimenettel.
 - Jól látható `TESZTVERZIÓ · v0.6.3` jelzés, valamint nagy Erő / HP / ATK kártyák a főmenüben és a loadoutban.
 - Az új felszerelésgrafikák ritkaság és slot szerint logikusan bekötve; a régi emoji-ikonok helyett valódi item art jelenik meg.
@@ -20,7 +21,7 @@ CHERRIFT egy böngészős survivor/action RPG prototípus, Cherry-kinézetekkel,
 - Elérhető Daily Quests, Achievements, Login Rewards és Shop a Library szolgáltatássorából.
 - Vizuális Bloom Chest Gacha, jutalomkártyával és ritkaság-/statkijelzéssel.
 - Korrekt, közelebbi és valóban működő kamerabeállítás.
-- Automatikus helyi mentés, mentésséma-migráció és sérült mentés esetén backup-visszaállítás.
+- Automatikus mentés, mentésséma-migráció és sérült Guest-mentés esetén backup-visszaállítás.
 - `click.wav` hang az aktív, kattintható vezérlőkön; letiltott elemek nem adnak kattintáshangot.
 - Mobilon hatcélpontos alsó navigáció, kompakt Gear és Player Upgrade fülek.
 
@@ -53,8 +54,11 @@ Az `npm test` ellenőrzi a JavaScript-szintaxist, a közvetlen assethivatkozáso
 
 ### Mentés és jelenlegi korlátok
 
-- A mentés jelenleg a böngésző `localStorage` tárhelyén marad; nincs még felhőszinkron.
-- A Discord-login működik Supabase Authon keresztül. A felhőmentéshez még külön adatbázistábla és RLS-szabályok szükségesek; a játékmentés ebben a buildben továbbra is helyi.
+- Guest módban a mentés a böngésző `localStorage` tárhelyén marad.
+- Discord módban a mentés a Supabase `game_saves` táblájába kerül, és másik eszközön ugyanazzal a Discord-fiókkal automatikusan betöltődik.
+- Az első Discord-belépés a meglévő Guest-mentést csak akkor másolja fel, ha a fiókhoz még nincs felhőmentés; a Guest-mentés külön megmarad.
+- A felhőmentés használata előtt egyszer futtatni kell a `supabase/game_saves.sql` fájlt a Supabase SQL Editorban.
+- A szinkronizálás jelenleg utolsó írás nyer elven működik, ezért ugyanazzal a fiókkal két eszközön egyszerre játszani nem ajánlott.
 - World 3 jelenleg előzetes/placeholder tartalom, teljesítése a 0.7 célja.
 - A régi verziók egymásra épülő patch-fájljai működnek, de a 0.9 előtt moduláris buildbe kell őket összevonni.
 
@@ -65,6 +69,7 @@ Az `npm test` ellenőrzi a JavaScript-szintaxist, a közvetlen assethivatkozáso
 - Complete runtime-switchable Hungarian and English UI under Settings → General → Language.
 - Local, persisted Mail with unread badges and one-time claimable attachments.
 - A post-loader Guest / Discord gate powered by Supabase Auth, persistent Discord sessions and sign-out under Settings → Account.
+- Discord-account Supabase cloud saves, a separate Guest `localStorage` save and automatic first-sign-in migration.
 - Built-in Hungarian/English Feedback and Bug Report screen with clipboard and GitHub Issue output.
 - A prominent `TEST BUILD · v0.6.3` label and large Power / HP / ATK cards on the home and loadout screens.
 - New equipment artwork mapped logically by rarity and slot instead of the previous emoji icons.
@@ -74,7 +79,7 @@ Az `npm test` ellenőrzi a JavaScript-szintaxist, a közvetlen assethivatkozáso
 - Daily Quests, Achievements, Login Rewards and Shop are reachable from the Library service bar.
 - Visual Bloom Chest Gacha with reward art, rarity and stat cards.
 - A fair, closer camera whose View zoom setting now affects the final renderer.
-- Automatic local saving, schema migration and backup recovery for malformed saves.
+- Automatic saving, schema migration and backup recovery for malformed Guest saves.
 - `click.wav` on enabled interactive controls; disabled/decorative controls stay silent.
 - Six-destination mobile navigation plus compact Gear and Player Upgrade tabs.
 
@@ -93,8 +98,11 @@ Then open `http://localhost:8000`.
 
 ### Current limits
 
-- Saves are device-local until the account/cloud-save milestone.
-- Discord login is active through Supabase Auth. Cloud saves still require a dedicated database table and RLS policies; this build continues to use the local game save.
+- Guest mode keeps a browser-local `localStorage` save.
+- Discord mode stores progress in the Supabase `game_saves` table and restores it on other devices signed into the same Discord account.
+- On first Discord sign-in, the existing Guest save is copied only when no cloud save exists yet; the Guest save remains separate.
+- Run `supabase/game_saves.sql` once in the Supabase SQL Editor before enabling the deployed cloud-save build.
+- Synchronization currently uses last-write-wins, so playing the same account on two devices at the same time is not recommended.
 - World 3 is preview/placeholder content scheduled for completion in 0.7.
 - The legacy sequential patch stack should be consolidated before the 1.0 BETA.
 
@@ -106,5 +114,6 @@ Then open `http://localhost:8000`.
 - [v0.6.3 changelog](CHANGELOG_V063_HU_EN.md)
 - [v0.6.3 Installation / Telepítés](INSTALL_V063_HU_EN.md)
 - [Supabase Discord setup / beállítás](SUPABASE_DISCORD_SETUP_HU_EN.md)
+- [Supabase cloud save setup / felhőmentés](SUPABASE_CLOUD_SAVE_SETUP_HU_EN.md)
 
 The project runs entirely in the browser and does not require a production npm build step.

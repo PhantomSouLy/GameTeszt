@@ -17,6 +17,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (preferredBootLanguage() !== "hu") return message;
     const copy = {
       "Loading game systems…": "Játékrendszerek betöltése…",
+      "Checking account and save…": "Fiók és mentés ellenőrzése…",
+      "Loading cloud save…": "Felhőmentés betöltése…",
       "Reading local progress…": "Helyi mentés beolvasása…",
       "Preparing the menu…": "Menü előkészítése…",
       "Finalizing interface…": "Felület véglegesítése…",
@@ -118,14 +120,18 @@ window.addEventListener("DOMContentLoaded", async () => {
   await loadScript("src/cherrift_i18n_v062.js?v=062","v0.6.2 Hungarian/English localization");
   await loadScript("src/cherrift_v062.js?v=062","v0.6.2 quality update");
   await loadScript("src/cherrift_v063.js?v=063","v0.6.3 mail, reports, equipment and effects");
-  await loadScript("src/cherrift_v064_auth.js?v=064","v0.6.3 Supabase Discord login");
+  await loadScript("src/cherrift_v064_auth.js?v=065","v0.6.3 Supabase Discord cloud save");
 
   try {
     if (failedPatches.length) {
       throw new Error(`Update files failed: ${failedPatches.join(", ")}`);
     }
-    const save = CherriftStorage.load();
-    updateBoot(46, "Reading local progress…");
+    updateBoot(44, "Checking account and save…");
+    const loadGuestSave = () => CherriftStorage.load();
+    const save = window.CHERRIFT_AUTH?.bootstrapSave
+      ? await window.CHERRIFT_AUTH.bootstrapSave(loadGuestSave)
+      : loadGuestSave();
+    updateBoot(46, window.CHERRIFT_AUTH?.getState?.().mode === "discord" ? "Loading cloud save…" : "Reading local progress…");
 
     if (window.CHERRIFT_V060?.preload) {
       const preloadResult = await window.CHERRIFT_V060.preload(save, (done, total, message) => {
